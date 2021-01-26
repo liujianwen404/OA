@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('内推申请列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="addInterpolate()" shiro:hasPermission="hr:interpolate:add">
+                    <i class="fa fa-plus"></i> 我要内推
+                </a>
+
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:interpolate:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:interpolate:remove')}]];
+        var interpolateSexDatas = [[${@dict.getType('sys_user_sex')}]];
+        var interpolateEducationDatas = [[${@dict.getType('sys_education')}]];
+        var prefix = ctx + "hr/interpolate";
+        var recruitPostAllDatas = [[${@postService.getPostAll()}]];
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "内推申请",
+                uniqueId: "interpolateId",
+                columns: [
+                    {
+                        title: '序号',
+                        formatter: function (value, row, index) {
+                            return index+1;
+                        }
+                    },
+                    {
+                        field: 'interpolateSex',
+                        title: '内推性别',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(interpolateSexDatas, value);
+                        }
+                    },
+                    {
+                        field: 'interpolatePostId',
+                        title: '推荐岗位id',
+                        formatter: function(value, row, index) {
+                            return $.table.selectPostLabel(recruitPostAllDatas, value);
+                        }
+                    },
+                    {
+                        field: 'resume',
+                        title: '简历',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success " href="javascript:void(0)" onclick="preview(\'' + value + '\')">下载</a>');
+
+
+                            return actions.join('');
+                        }
+                    },
+                    {
+                        field: 'todoUserName',
+                        title: '当前处理人'
+                    },
+                    {
+                        field: 'createTime',
+                        title: '推荐日期'
+                    },
+                    {
+                        field: 'dutyFlag',
+                        title: '是否在岗',
+                        formatter: function(value, row, index) {
+                            if (value == 0){
+                                return '否';
+                            }
+                            return '是';
+                        }
+                    },{
+                        field: 'auditStatus',
+                        title: '审核状态',
+                        formatter: function(value, row, index) {
+                            //0：待审核，1：审核中，2：通过，3：未通过
+                            if (value == 0){
+                                return '待提交';
+                            }
+                            if (value == 1){
+                                return '审核中';
+                            }
+                            if (value == 2){
+                                return '通过';
+                            }
+                            if (value == 4){
+                                return '撤销';
+                            }
+                            return '拒绝';
+                        }
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        formatter: function (value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showHistoryDialog(\'' + row.instanceId + '\')"><i class="fa fa-list"></i> 审批历史</a> ');
+                            actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showProcessImgDialog(\'' + row.instanceId + '\')"><i class="fa fa-image"></i> 进度查看</a> ');
+                            return actions.join('');
+                        }
+                    }
+                ]
+            };
+            $.table.init(options);
+        });
+        /* 查看审批历史 */
+        function showHistoryDialog(instanceId) {
+            var url = ctx + 'process/general/historyList/' + instanceId;
+            $.modal.open("查看审批历史", url);
+        }
+
+        function showProcessImgDialog(instanceId) {
+            var url = ctx + 'process/general/processImg/' + instanceId;
+            $.modal.open("查看流程图 (标红表示已结束或活动中的流程)", url);
+        }
+
+        function addInterpolate() {
+            openDiv("招聘岗位申请" ,  prefix + "/add",1500);
+        }
+
+        function openDiv(title, url, width, height, callback) {
+            //如果是移动端，就使用自适应大小弹窗
+            if ($.common.isMobile()) {
+                width = 'auto';
+                height = 'auto';
+            }
+            if ($.common.isEmpty(title)) {
+                title = false;
+            }
+            if ($.common.isEmpty(url)) {
+                url = "/404.html";
+            }
+            if ($.common.isEmpty(width)) {
+                width = 800;
+            }
+            if ($.common.isEmpty(height)) {
+                height = ($(window).height() - 50);
+            }
+
+            layer.open({
+                type: 2,
+                area: [width + 'px', height + 'px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: title,
+                content: url,
+                btn: ['保存', '关闭'],
+                // 弹层外区域关闭
+                shadeClose: false,
+                yes: function(index, layero) {
+                    // debugger
+                    var iframeWin = layero.find('iframe')[0];
+                    iframeWin.contentWindow.submitHandler(index, layero);
+                },
+               /* btn2: function(index, layero) {
+                    // debugger
+                    var iframeWin = layero.find('iframe')[0];
+                    iframeWin.contentWindow.submitHandlerPush(index, layero);
+                    return false //开启该代码可禁止点击该按钮关闭
+                },*/
+                cancel: function(index) {
+                    // debugger
+                    return true;
+                }
+            });
+        }
+
+
+        function preview(url) {
+
+                window.location.href = ctx + "common/download/resource?resource=" + url;
+
+        }
+
+    </script>
+</body>
+</html>

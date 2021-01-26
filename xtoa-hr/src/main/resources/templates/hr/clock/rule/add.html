@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('补卡规则配置')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-clock-rule-add" th:object="${hrFillClockRule}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">1月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="january" th:value="${#dates.format(hrFillClockRule.january, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('january')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">2月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="february" th:value="${#dates.format(hrFillClockRule.february, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('february')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">3月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="march" th:value="${#dates.format(hrFillClockRule.march, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('march')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">4月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="april" th:value="${#dates.format(hrFillClockRule.april, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('april')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">5月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="may" th:value="${#dates.format(hrFillClockRule.may, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('may')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">6月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="june" th:value="${#dates.format(hrFillClockRule.june, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('june')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">7月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="july" th:value="${#dates.format(hrFillClockRule.july, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('july')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">8月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="august" th:value="${#dates.format(hrFillClockRule.august, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('august')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">9月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="september" th:value="${#dates.format(hrFillClockRule.september, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('september')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">10月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="october" th:value="${#dates.format(hrFillClockRule.october, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('october')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">11月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="november" th:value="${#dates.format(hrFillClockRule.november, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('november')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">12月：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="december" th:value="${#dates.format(hrFillClockRule.december, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="MM-dd" type="text">
+                        <span class='input-group-addon input-sm' onclick="removeMonthName('december')">
+                                <i class='fa fa-times-circle'>清除</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/clock/rule"
+        $("#form-clock-rule-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-clock-rule-add').serialize());
+            }
+        }
+
+        $("input[name='january']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='february']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='march']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='april']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='may']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='june']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='july']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='august']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='september']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='october']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='november']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='december']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        function removeMonthName(monthName) {
+            $("input[name="+monthName+"]").val("");
+        }
+    </script>
+</body>
+</html>

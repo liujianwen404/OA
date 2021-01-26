@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrRecruitNeedMapper">
+    <resultMap type="com.ruoyi.hr.domain.HrRecruitNeed" id="HrRecruitNeedResult">
+        <id property="recruitNeedId" column="recruit_need_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="recruitDeptId" column="recruit_dept_id"/>
+            <result property="recruitPostId" column="recruit_post_id"/>
+            <result property="applyDate" column="apply_date"/>
+            <result property="applyDutyDate" column="apply_duty_date"/>
+            <result property="recruitCount" column="recruit_count"/>
+            <result property="recruitDescription" column="recruit_description"/>
+            <result property="recruitEducation" column="recruit_education"/>
+            <result property="recruitMinAge" column="recruit_min_age"/>
+            <result property="recruitMaxAge" column="recruit_max_age"/>
+            <result property="recruitMarriage" column="recruit_marriage"/>
+            <result property="recruitSex" column="recruit_sex"/>
+            <result property="recruitMajor" column="recruit_major"/>
+            <result property="recruitEfl" column="recruit_EFL"/>
+            <result property="recruitSkill" column="recruit_skill"/>
+            <result property="recruitMinSalary" column="recruit_min_salary"/>
+            <result property="recruitMaxSalary" column="recruit_max_salary"/>
+            <result property="recruitProbationDate" column="recruit_probation_date"/>
+            <result property="recruitProbationSalary" column="recruit_probation_salary"/>
+            <result property="recruitJobDescription" column="recruit_job_description"/>
+            <result property="recruitType" column="recruit_type"/>
+            <result property="showType" column="show_type"/>
+            <result property="releaseStatus" column="release_status"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="instanceId" column="instance_id"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.recruit_need_id,
+            entity.emp_name,
+            entity.recruit_dept_id,
+            entity.recruit_post_id,
+            entity.apply_date,
+            entity.apply_duty_date,
+            entity.recruit_count,
+            entity.recruit_description,
+            entity.recruit_education,
+            entity.recruit_min_age,
+            entity.recruit_max_age,
+            entity.recruit_marriage,
+            entity.recruit_sex,
+            entity.recruit_major,
+            entity.recruit_EFL,
+            entity.recruit_skill,
+            entity.recruit_min_salary,
+            entity.recruit_max_salary,
+            entity.recruit_probation_date,
+            entity.recruit_probation_salary,
+            entity.recruit_job_description,
+            entity.recruit_type,
+            entity.show_type,
+            entity.release_status,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.audit_status,
+            entity.instance_id,
+            entity.update_time
+        </sql>
+
+    <select id="selectHrRecruitNeedList" parameterType="com.ruoyi.hr.domain.HrRecruitNeed" resultMap="HrRecruitNeedResult">
+        select <include refid="baseColumns"/> from t_hr_recruit_need entity
+        <where>
+            <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+                <if test="recruitDeptId != null "> and entity.recruit_dept_id = #{recruitDeptId}</if>
+                <if test="recruitPostId != null "> and entity.recruit_post_id = #{recruitPostId}</if>
+                <if test="applyDate != null "> and entity.apply_date = #{applyDate}</if>
+                <if test="applyDutyDate != null "> and entity.apply_duty_date = #{applyDutyDate}</if>
+                <if test="recruitCount != null "> and entity.recruit_count = #{recruitCount}</if>
+                <if test="recruitDescription != null  and recruitDescription != ''"> and entity.recruit_description = #{recruitDescription}</if>
+                <if test="recruitEducation != null  and recruitEducation != ''"> and entity.recruit_education = #{recruitEducation}</if>
+                <if test="recruitMinAge != null "> and entity.recruit_min_age = #{recruitMinAge}</if>
+                <if test="recruitMaxAge != null "> and entity.recruit_max_age = #{recruitMaxAge}</if>
+                <if test="recruitMarriage != null  and recruitMarriage != ''"> and entity.recruit_marriage = #{recruitMarriage}</if>
+                <if test="recruitSex != null  and recruitSex != ''"> and entity.recruit_sex = #{recruitSex}</if>
+                <if test="recruitMajor != null  and recruitMajor != ''"> and entity.recruit_major = #{recruitMajor}</if>
+                <if test="recruitEfl != null  and recruitEfl != ''"> and entity.recruit_EFL = #{recruitEfl}</if>
+                <if test="recruitSkill != null  and recruitSkill != ''"> and entity.recruit_skill = #{recruitSkill}</if>
+                <if test="recruitMinSalary != null "> and entity.recruit_min_salary = #{recruitMinSalary}</if>
+                <if test="recruitMaxSalary != null "> and entity.recruit_max_salary = #{recruitMaxSalary}</if>
+                <if test="recruitProbationDate != null  and recruitProbationDate != ''"> and entity.recruit_probation_date = #{recruitProbationDate}</if>
+                <if test="recruitProbationSalary != null "> and entity.recruit_probation_salary = #{recruitProbationSalary}</if>
+                <if test="recruitJobDescription != null  and recruitJobDescription != ''"> and entity.recruit_job_description = #{recruitJobDescription}</if>
+                <if test="recruitType != null "> and entity.recruit_type = #{recruitType}</if>
+                <if test="showType != null "> and entity.show_type = #{showType}</if>
+                <if test="releaseStatus != null "> and entity.release_status = #{releaseStatus}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+</where>
+        order by create_time desc
+    </select>
+
+
+    <update id="deleteHrRecruitNeedById" parameterType="Long">
+        update  t_hr_recruit_need set del_flag =  '1' where recruit_need_id = #{recruitNeedId}
+    </update>
+
+    <update id="deleteHrRecruitNeedByIds" parameterType="String">
+        update  t_hr_recruit_need set del_flag =  '1' where recruit_need_id in
+        <foreach item="recruitNeedId" collection="array" open="(" separator="," close=")">
+            #{recruitNeedId}
+        </foreach>
+    </update>
+
+</mapper>

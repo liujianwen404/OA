@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('员工调动列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+
+                        <li class="select-time">
+                            <label style="width: 80px">调动时间：</label>
+                            <input type="text" class="time-input" name="jobTransferrDate" placeholder="调动时间"/>
+                        </li>
+                        <li>
+                            <label>所属部门：</label>
+                            <select id="jobTransferDeptId" name="jobTransferDeptId" th:with="deptAll=${@deptService.getDeptAll()}">
+                                <option value="">所有</option>
+                                <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>岗位：</label>
+                            <select id="jobTransferPostId" name="jobTransferPostId" th:with="postAll=${@postService.getPostAll()}">
+                                <option value="">所有</option>
+                                <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label>姓名：</label>
+                            <input type="text" name="empName"/>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+           <!-- <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="hr:report:jobTransfer:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="hr:report:jobTransfer:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:report:jobTransfer:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>-->
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:report:jobTransfer:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('hr:report:jobTransfer:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('hr:report:jobTransfer:remove')}]];
+    var prefix = ctx + "hr/report/jobTransfer";
+
+    $(function() {
+        // // debugger
+        var sexMap = {};
+        $('#sex option').each(function(i, n){
+            sexMap[$(n).val()] = $(n).text();
+        });
+
+        var deptIdMap = {};
+        $('#jobTransferDeptId option').each(function(i, n){
+            deptIdMap[$(n).val()] = $(n).text();
+        });
+
+        var postIdsMap = {};
+        $('#jobTransferPostId option').each(function(i, n){
+            postIdsMap[$(n).val()] = $(n).text();
+        });
+
+        //获取两个日期之间的天数
+        function DateDiff(start, end) {
+            var sdate = new Date(start);
+            var now = new Date(end);
+            var days = now.getTime() - sdate.getTime();
+            var day = parseInt(days / (1000 * 60 * 60 * 24));
+            return day;
+        }
+
+        //获取指定日期与当前日期之间的天数
+        function DateDiffToNow(start) {
+            var sdate = new Date(start);
+            var now = new Date();
+            var days = now.getTime() - sdate.getTime();
+            var day = parseInt(days / (1000 * 60 * 60 * 24));
+            return day;
+        }
+
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "调动报表",
+            columns: [{
+                checkbox: false
+            },
+
+                {
+                    field: 'empName',
+                    title: '姓名'
+                },
+                {
+                    field: 'empId',
+                    title: '工号'
+                },
+                {
+                    field: 'jobTransferDeptId',
+                    title: '原部门',
+                    formatter: function(val, row, index){return deptIdMap[val];}
+
+                },
+                {
+                    field: 'jobTransferPostId',
+                    title: '原岗位',
+                    formatter: function(val, row, index){return postIdsMap[val];}
+                },
+                {
+                    field: 'currentDeptId',
+                    title: '新部门',
+                    formatter: function(val, row, index){return deptIdMap[val];}
+
+                },
+                {
+                    field: 'currentPostId',
+                    title: '新岗位',
+                    formatter: function(val, row, index){return postIdsMap[val];}
+                },
+                {
+                    field: 'nonManagerDate',
+                    title: '入职时间'
+                },
+                {
+                    field: 'jobTransferrDate',
+                    title: '调动时间'
+                },
+                {
+                    title: '原部门工作时长/天数',
+                    formatter: function (val, row, index) {
+                        return DateDiff(row.nonManagerDate,row.jobTransferrDate);
+                    }
+
+                },
+                {
+                    title: '新部门工作时长/天数',
+                    formatter: function (val, row, index) {
+                        return DateDiffToNow(row.jobTransferrDate);
+                    }
+
+                },
+
+                /*
+                {
+                    field: 'jobTransferType',
+                    title: '调动类型',
+                    formatter: function (val, row, index) {
+                        return empStatusMap[val];
+                    }
+
+                },
+                 {
+                     field: 'createId',
+                     title: '创建者id'
+                 },
+                 {
+                     field: 'updateId',
+                     title: '更新者id'
+                 },
+                {
+                    field: 'remark',
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.empId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.empId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }*/
+            ]};
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

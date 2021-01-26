@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrFillClockMapper">
+    <resultMap type="com.ruoyi.base.domain.HrFillClock" id="HrFillClockResult">
+        <id property="id" column="id"/>
+            <result property="reason" column="reason"/>
+            <result property="checkType" column="check_type"/>
+            <result property="applyUserName" column="apply_user_name"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+            <result property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="applyUser" column="apply_user"/>
+            <result property="applyTime" column="apply_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="auditStatus" column="audit_status"/>
+            <result property="remark" column="remark"/>
+        <result property="dates" column="dates"/>
+        <result property="classes" column="classes"/>
+
+        <result property="attendanceInfoId" column="attendance_info_id"/>
+        <result property="classId" column="class_id"/>
+        <result property="classDate" column="class_Date"/>
+        <result property="imgUrls" column="img_urls"/>
+        <result property="empId" column="emp_id"/>
+
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.reason,
+            entity.check_type,
+            entity.apply_user_name,
+            entity.instance_id,
+            entity.dept_id,
+            entity.dept_name,
+            entity.post_id,
+            entity.post_name,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.apply_user,
+            entity.apply_time,
+            entity.del_flag,
+            entity.audit_status,
+            entity.remark,
+            entity.dates,
+            entity.classes,
+
+            entity.attendance_info_id,
+            entity.class_id,
+            entity.class_Date,
+            entity.img_urls,
+            entity.emp_id
+        </sql>
+
+    <select id="selectHrFillClockList" parameterType="com.ruoyi.base.domain.HrFillClock" resultMap="HrFillClockResult">
+        select <include refid="baseColumns"/> from t_hr_fill_clock entity
+        where  entity.del_flag = '0'
+                <if test="reason != null  and reason != ''"> and entity.reason = #{reason}</if>
+                <if test="dates != null "> and entity.dates = #{dates}</if>
+                <if test="classes != null  and classes != ''"> and entity.classes = #{classes}</if>
+                <if test="checkType != null  and checkType != ''"> and entity.check_type = #{checkType}</if>
+
+                <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+                <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+                <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+                <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+                <if test="applyUser != null  and applyUser != ''"> and entity.apply_user = #{applyUser}</if>
+                <if test="applyTime != null "> and entity.apply_time = #{applyTime}</if>
+                <if test="auditStatus != null  and auditStatus != ''"> and entity.audit_status = #{auditStatus}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+        <if test="params.beginApplyTime != null  and params.beginApplyTime != ''"> and entity.apply_time <![CDATA[ >= ]]> #{params.beginApplyTime} </if>
+        <if test="params.endApplyTime != null  and params.endApplyTime != ''"> and entity.apply_time <![CDATA[ <= ]]>  #{params.endApplyTime} </if>
+
+          order by apply_time desc
+    </select>
+
+
+    <update id="deleteHrFillClockById" parameterType="Long">
+        update  t_hr_fill_clock set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrFillClockByIds" parameterType="String">
+        update  t_hr_fill_clock set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectFillClockByCondition" resultType="com.ruoyi.base.domain.HrFillClock">
+        SELECT
+            *
+        FROM
+            t_hr_fill_clock a
+        WHERE
+            1 = 1
+            AND a.apply_user = #{applyUser}
+            AND a.dates =  #{dates}
+            AND a.classes =  #{classes}
+            AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectHrFillClockCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_hr_fill_clock
+        where emp_id = #{userId} and del_flag = '0' and LEFT(class_Date,7) = LEFT(#{classDate},7)
+        and instance_id != '' and instance_id is not null and audit_status in (0,1,2)
+    </select>
+
+    <select id="selectHrFillClockCompleteCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_hr_fill_clock
+        where emp_id = #{empId} and del_flag = '0' and LEFT(class_Date,7) = LEFT(#{classDate},7)
+        and instance_id != '' and instance_id is not null and audit_status = '2'
+    </select>
+
+    <select id="selectHrFillClockNum" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_hr_fill_clock
+        where emp_id = #{empId} and del_flag = '0' and LEFT(class_Date,7) = LEFT(#{classDate},7)
+        and instance_id != '' and instance_id is not null
+    </select>
+
+    <select id="selectHrFillClockListManage" parameterType="com.ruoyi.base.domain.HrFillClock" resultMap="HrFillClockResult">
+        select <include refid="baseColumns"/> from t_hr_fill_clock entity
+        LEFT JOIN t_hr_emp e ON entity.emp_id = e.emp_id
+        LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        where  entity.del_flag = '0'
+        AND e.del_flag = 0
+        AND d.del_flag = 0
+        <if test="reason != null  and reason != ''"> and entity.reason = #{reason}</if>
+        <if test="dates != null "> and entity.dates = #{dates}</if>
+        <if test="classes != null  and classes != ''"> and entity.classes = #{classes}</if>
+        <if test="checkType != null  and checkType != ''"> and entity.check_type = #{checkType}</if>
+        <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+        <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+        <if test="deptId != null "> and ( entity.dept_id = #{deptId} or entity.dept_id IN (
+            SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+            WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0') )</if>
+        <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+        <if test="postId != null "> and entity.post_id = #{postId}</if>
+        <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+        <if test="createId != null "> and entity.create_id = #{createId}</if>
+        <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+        <if test="applyUser != null  and applyUser != ''"> and entity.apply_user = #{applyUser}</if>
+        <if test="applyTime != null "> and entity.apply_time = #{applyTime}</if>
+        <if test="auditStatus != null  and auditStatus != ''"> and entity.audit_status = #{auditStatus}</if>
+        <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+        <if test="params.beginApplyTime != null  and params.beginApplyTime != ''"> and entity.apply_time <![CDATA[ >= ]]> #{params.beginApplyTime} </if>
+        <if test="params.endApplyTime != null  and params.endApplyTime != ''"> and entity.apply_time <![CDATA[ <= ]]>  #{params.endApplyTime} </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by create_time desc
+    </select>
+
+</mapper>

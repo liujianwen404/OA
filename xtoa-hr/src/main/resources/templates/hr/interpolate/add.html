@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增内推申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<style>
+    .input-group label.error {
+        z-index: 99;
+        right: 60px;
+    }
+</style>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-interpolate-add" enctype="multipart/form-data" th:object="${infoForAdd}" >
+
+            <div class="form-group" style="background-color: beige">
+                <h3>推荐人信息</h3>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">推荐人姓名：</label>
+                <div class="col-sm-2">
+                    <input name="" th:field="*{loginName}" class="form-control " readonly="readonly" type="text" required>
+                    <input name="empName" id="empNameForUserName" type="hidden">
+                </div>
+                <!-- 下面三个属性不用保存到数据库，通过createrId可以获取  -->
+                <label class="col-sm-1 control-label">分部：</label>
+                <div class="col-sm-2">
+                    <input name="" class="form-control " readonly="readonly" th:field="*{parentDeptName}" type="text" >
+                </div>
+                <label class="col-sm-1 control-label is-required">部门：</label>
+                <div class="col-sm-2">
+                    <input name="" class="form-control " readonly="readonly" th:field="*{deptName}" type="text" required>
+                </div>
+                <label class="col-sm-1 control-label is-required">岗位：</label>
+                <div class="col-sm-2">
+                    <input name="" class="form-control " readonly="readonly" th:field="*{postNmae}" type="text" >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">入职时间：</label>
+                <div class="col-sm-3">
+                    <input name="" class="form-control " readonly="readonly" th:field="*{nonManagerDate}" type="text" >
+                </div>
+                <label class="col-sm-1 control-label is-required">推荐关系：</label>
+                <div class="col-sm-3">
+                    <input name="interpolateRelation" class="form-control" type="text" required>
+                </div>
+
+            </div>
+            <div class="form-group" style="background-color: beige">
+                <h3>被推荐人信息</h3>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">被推荐人姓名：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateName" class="form-control" type="text" required>
+                </div>
+                <label class="col-sm-1 control-label is-required">生日：</label>
+                <div class="col-sm-2">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="birthday" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" required>
+                    </div>
+                </div>
+                <label class="col-sm-1 control-label">性别：</label>
+                <div class="col-sm-2">
+                    <select name="interpolateSex" class="form-control m-b" th:with="type=${@dict.getType('sys_user_sex')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">籍贯：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateNativePlace" class="form-control" type="text" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">    
+                <label class="col-sm-1 control-label">学历：</label>
+                <div class="col-sm-2">
+                    <select name="interpolateEducation" class="form-control m-b" th:with="type=${@dict.getType('sys_education')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">工作年限：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateJobYear" class="form-control" type="text" required>
+                </div>
+                <label class="col-sm-1 control-label is-required">推荐岗位：</label>
+                <div class="col-sm-2">
+                    <select name="interpolatePostId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" required>
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">手机号码：</label>
+                <div class="col-sm-2">
+                    <input name="phonenumber" class="form-control"   maxlength="11" type="number" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">现居住地：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateResidence" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">简历：</label>
+                <div class="col-sm-2">
+                    <input name="resumeFile" class="form-control" type="file" required>最大50M/1
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">选择审核人：</label>
+                <div class="col-sm-2">
+                    <div class='input-group'>
+                        <input class='form-control' type='hidden' name='auditId' id='auditId' required>
+                        <input class='form-control' type='hidden' name='auditName' id='auditName' required>
+                        <input class='form-control' type='text'  id='userAuditName' readonly="readonly" required>
+                        <span class='input-group-addon input-sm' onclick='selectDictTree("", this)'>
+                            <i class='fa fa-search'>选择</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label is-required">审核人id：</label>
+                <div class="col-sm-8">
+                    <input name="auditId" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">审核人姓名：</label>
+                <div class="col-sm-8">
+                    <input name="auditName" class="form-control" type="text" required>
+                </div>
+            </div>-->
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/interpolate"
+        $("#form-interpolate-add").validate({
+            focusCleanup: true
+        });
+        // debugger
+        var empNameForUserName = '[[${infoForAdd.userName}]]';
+        $("#empNameForUserName").val(empNameForUserName);
+
+        /*for (var i = 0; i < document.getElementsByClassName("readonly").length; i++) {
+            document.getElementsByClassName("readonly")[i].readonly = 'readonly';
+        }*/
+        function submitHandler() {
+            if ($.validate.form()) {
+                // $.operate.save(prefix + "/add", $('#form-interpolate-add').serialize());
+
+                var form = document.getElementById('form-interpolate-add'),
+                formData = new FormData(form);
+                // debugger
+                $.ajax({
+                    url: prefix + "/add",
+                    type: "post",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $.modal.loading("正在处理中，请稍后...");
+                        $.modal.disable();
+                    },
+                    success: function(result) {
+                        $.operate.successCallback(result);
+                    }
+                });
+
+            }
+        }
+
+        $("input[name='birthday']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+
+        // 选择字典处理函数
+        function selectDictTree(columnId, obj) {
+            // var dictType = $.common.nullToStr($(obj).parent().find("input").val());
+            var url = ctx + "system/user/selectUserTree";
+            var options = {
+                title: '选择审核人',
+                width: "380",
+                url: url,
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmit(index, layero){
+            // debugger
+            var body = layer.getChildFrame('body', index);
+            var userId = body.find('#userId').val();
+            var loginName = body.find('#userName').val();
+            var userNameShow = body.find('#userNameShow').val();
+            layer.close(index);
+            $("#auditId").val(userId);
+            $("#userAuditName").val(userNameShow);
+            $("#auditName").val(loginName);
+            // document.getElementById("userName").value=userName;
+        }
+
+    </script>
+</body>
+</html>

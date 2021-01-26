@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.KnowledgeMapper">
+    <resultMap type="com.ruoyi.hr.domain.Knowledge" id="KnowledgeResult">
+        <id property="id" column="id"/>
+            <result property="type" column="type"/>
+            <result property="titel" column="titel"/>
+            <result property="cover" column="cover"/>
+            <result property="content" column="content"/>
+            <result property="status" column="status"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="postId" column="post_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.type,
+            entity.titel,
+            entity.cover,
+            entity.content,
+            entity.status,
+            entity.dept_id,
+            entity.post_id,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectKnowledgeList" parameterType="com.ruoyi.hr.domain.Knowledge" resultMap="KnowledgeResult">
+        select <include refid="baseColumns"/> from t_knowledge entity
+        where  entity.del_flag = '0'
+                <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+                <if test="titel != null  and titel != ''"> and entity.titel = #{titel}</if>
+                <if test="cover != null  and cover != ''"> and entity.cover = #{cover}</if>
+                <if test="content != null  and content != ''"> and entity.content = #{content}</if>
+                <if test="status != null  and status != ''"> and entity.status = #{status}</if>
+        order by update_time desc
+    </select>
+    <select id="selectKnowledgeVisitList" resultMap="KnowledgeResult">
+
+        select entity.* from ${tableName} tableName
+        left join t_knowledge entity on tableName.knowledge_id = entity.id
+        where  tableName.del_flag = '0'
+        <if test="createId != null  and createId != ''"> and tableName.create_id = ${createId} </if>
+        and entity.del_flag = '0' and entity.status = '0'
+        order by tableName.update_time desc
+        LIMIT ${p1},${p2};
+
+        <!--select <include refid="baseColumns"/> from t_knowledge entity where entity.id in (
+        select knowledge_id from ${tableName} tableName
+        where  tableName.del_flag = '0' and tableName.create_id = ${createId}
+        )
+        order by entity.update_time desc
+        LIMIT ${p1},${p2};-->
+
+    </select>
+
+    <select id="selectKnowledgeEnshrineList" resultType="com.ruoyi.hr.domain.Knowledge">
+
+        select entity.* from t_knowledge_enshrine tableName
+        left join t_knowledge entity on tableName.knowledge_id = entity.id
+        where  tableName.del_flag = '0'
+        <if test="createId != null  and createId != ''"> and tableName.create_id = ${createId} </if>
+
+        and entity.del_flag = '0' and entity.status = '0'
+        order by tableName.update_time desc
+        LIMIT ${p1},${p2};
+    </select>
+    <select id="getRanking" resultType="java.util.Map">
+        SELECT
+            count(*) as count,
+            sum(if(entity.create_id  = #{userId},1,0)) as myCount
+        FROM
+            t_knowledge entity
+        WHERE
+            entity.del_flag = '0'
+            AND entity.STATUS = '0'
+    </select>
+    <select id="getRankingDepthead" resultType="java.lang.Integer">
+        SELECT
+            count( * ) + 1
+        FROM
+            ( SELECT count( * ) AS c FROM t_knowledge WHERE del_flag = '0' AND STATUS = '0' GROUP BY create_id ) t
+        WHERE
+            t.c > ( SELECT count( * ) AS c FROM t_knowledge WHERE del_flag = '0' AND STATUS = '0' AND create_id = create_id = #{userId} )
+    </select>
+
+    <select id="getRankingDept" resultType="java.lang.Integer">
+        SELECT
+            count( * ) + 1
+        FROM
+            ( SELECT count( * ) AS c FROM t_knowledge WHERE del_flag = '0' AND STATUS = '0' GROUP BY create_id,dept_id ) t
+        WHERE
+            t.c > ( SELECT count( * ) AS c FROM t_knowledge
+            WHERE del_flag = '0' AND STATUS = '0' AND create_id = #{userId} and dept_id = #{deptId} )
+    </select>
+
+    <update id="deleteKnowledgeById" parameterType="Long">
+        update  t_knowledge set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteKnowledgeByIds" parameterType="String">
+        update  t_knowledge set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<th:block th:include="include :: header('上传照片')" />
+	<th:block th:include="include :: bootstrap-fileinput-css" />
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    
+                    <div class="ibox-content">
+                        
+                        <div class="form-group">
+                            <label class="font-noraml">员工照片上传</label>
+	                        <div class="file-loading">
+					            <input id="uploadZIP" name="file" class="file" type="file" multiple>
+					        </div>
+                        </div>
+                        <hr>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: bootstrap-fileinput-js" />
+    <script type="text/javascript">
+        var uploadUrl = ctx + "employee/emp/uploadZIP";
+        $("#uploadZIP").fileinput({
+            'theme': 'explorer-fas',
+            'uploadUrl': uploadUrl,
+            maxFileCount: 1,
+            overwriteInitial: false,
+            allowedFileExtensions : ['zip'],//接收文件的后缀
+            dropZoneTitle:'选择照片压缩包进行照片批量导入 &hellip;<br>',
+            layoutTemplates:{
+                actionDelete:"",//去除上传预览缩略图中的删除按钮的缩略图标。
+                actionUpload:"", //去除上传预览缩略图中的上传按钮的缩略图标。
+                actionZoom:""   //去除上传预览缩略图中的查看详情预览的缩略图标。
+            },
+        }).on("fileuploaded",function(event,data,previewId,index){
+            if(data.response)
+            {
+                // layer.msg('上传完成!本次上传行数[ '+(data.response.length)+" ]");
+                layer.msg('上传完成!');
+            }
+        }).on("fileerror",function(event,data,msg){
+            console.log(event);
+            console.log(data);
+            console.log(msg);
+            $.modal.alertError("上传失败了！");
+        });
+    </script>
+</body>
+</html>

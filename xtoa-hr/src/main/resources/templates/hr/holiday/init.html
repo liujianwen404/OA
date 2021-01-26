@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('初始化员工假期')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-holiday-init">
+
+            <div class="form-group" style="text-align: center">
+                <label class="col-sm-3 control-label labelReqerd">入职后满1年， 累计</label>
+                <input class='form-control' type="number" name='days' id='days' style="text-align: center;width: 40%;margin-left: 30%;margin-top: 5%;margin-bottom: 5%">天带薪假
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/holiday"
+
+        function doSubmit(index, layero){
+            var body = layer.getChildFrame('body', index);
+            var userId = body.find('#userId').val();
+            var empName = body.find('#empName').val();
+            layer.close(index);
+            $("#empId").val(userId);
+            $("#userId").val(userId);
+            $("#empName").val(empName);
+        }
+
+        $("#form-holiday-init").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            let now = new Date();
+            if ($.validate.form()) {
+                $.modal.confirm("确定要初始化所有员工"+now.getFullYear()+"年的年假吗？",function () {
+                    $.operate.save(prefix + "/initHoliday", $('#form-holiday-init').serialize());
+                });
+            }
+        }
+
+
+        $("input[name='startDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='endDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

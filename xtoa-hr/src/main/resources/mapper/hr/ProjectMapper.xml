@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.ProjectMapper">
+    <resultMap type="com.ruoyi.base.domain.Project" id="ProjectResult">
+        <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="contentDescribe" column="content_describe"/>
+            <result property="empId" column="emp_id"/>
+            <result property="status" column="status"/>
+            <result property="chatId" column="chat_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap type="com.ruoyi.base.domain.VO.ProjectSelectVO" id="ProjectSelectResult">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+            entity.id,
+            entity.name,
+            entity.content_describe,
+            entity.emp_id,
+            entity.status,
+            entity.chat_id,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectProjectList" parameterType="com.ruoyi.base.domain.Project" resultMap="ProjectResult">
+        select <include refid="baseColumns"/> from t_project entity
+        where  entity.del_flag = '0'
+            <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+                <if test="contentDescribe != null  and contentDescribe != ''"> and entity.content_describe = #{contentDescribe}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="status != null "> and entity.status = #{status}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+    <select id="getMyCount" resultType="java.util.HashMap" parameterType="long">
+        SELECT
+            COUNT( tp.id ) myProject,
+            COUNT( tpp.id ) myProjectPlan,
+            COUNT( tppt.id ) myProjectPlanTask
+        FROM
+            t_project tp
+            LEFT JOIN t_project_plan tpp ON tpp.project_id = tp.id
+            LEFT JOIN t_project_plan_task tppt ON tppt.project_id = tp.id
+            AND tppt.project_plan_id = tpp.id
+            LEFT JOIN t_project_emp tpe ON tpe.project_id = tp.id
+        WHERE
+            tpe.emp_id = #{userId}
+    </select>
+    <select id="projectTableInfo" resultType="com.ruoyi.base.domain.VO.ProjectVO">
+        select
+        t.id,
+        t.name,
+        t.content_describe contentDescribe,
+        t.emp_id empId,
+        t.status,
+        t.create_time createTime,
+        e.emp_name empName from t_project t
+        left join t_hr_emp e on t.emp_id=e.emp_id
+        WHERE  t.del_flag = '0'
+        <if test="status != null">AND t.status= #{status}</if>
+        <if test="empName != null  and empName != ''">
+            and e.emp_name like concat('%', #{empName}, '%')
+        </if>
+        ORDER BY t.create_time DESC
+
+    </select>
+
+    <select id="getProjectSelectList" resultMap="ProjectSelectResult">
+        SELECT  entity.id,entity.name FROM t_project entity WHERE  entity.del_flag = '0'
+    </select>
+
+
+    <select id="getMyProjectPlanCount" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT  COUNT( * ) myProjectPlan FROM t_project_plan tpp
+             INNER JOIN t_project tp  ON tpp.project_id = tp.id
+        WHERE
+              tpp.del_flag = '0'
+              and tp.del_flag = '0'
+    </select>
+    <select id="getMyProjectCount" resultType="java.lang.Integer">
+         SELECT
+            COUNT( * ) myProject
+        FROM
+            t_project tp
+        WHERE
+            tp.del_flag = '0'
+    </select>
+    <select id="getMyProjectPlanTaskCount" resultType="java.lang.Integer">
+         SELECT
+            COUNT( * ) myProjectPlan
+        FROM
+            t_project_plan_task tppt
+            LEFT JOIN t_project_plan tpp  ON tppt.project_plan_id = tpp.id
+             LEFT JOIN t_project tp  ON tpp.project_id = tp.id
+        WHERE
+            tppt.del_flag = '0'
+            and tpp.del_flag = '0'
+            and tp.del_flag = '0'
+    </select>
+
+
+    <update id="deleteProjectById" parameterType="Long">
+        update  t_project set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteProjectByIds" parameterType="String">
+        update  t_project set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+</mapper>

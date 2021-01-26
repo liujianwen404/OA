@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.THrLeaveInfoMapper">
+    <resultMap type="com.ruoyi.base.domain.THrLeaveInfo" id="THrLeaveInfoResult">
+        <id property="id" column="id"/>
+            <result property="leaveId" column="leave_id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="type" column="type"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+            <result property="totalHours" column="total_hours"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="postId" column="post_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.leave_id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.type,
+            entity.start_time,
+            entity.end_time,
+            entity.total_hours,
+            entity.dept_id,
+            entity.post_id,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectTHrLeaveInfoList" parameterType="com.ruoyi.base.domain.THrLeaveInfo" resultMap="THrLeaveInfoResult">
+        select <include refid="baseColumns"/> from t_hr_leave_info entity
+        where  entity.del_flag = '0'
+            <if test="leaveId != null "> and entity.leave_id = #{leaveId}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+                <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+                <if test="startTime != null "> and entity.start_time = #{startTime}</if>
+                <if test="endTime != null "> and entity.end_time = #{endTime}</if>
+                <if test="totalHours != null "> and entity.total_hours = #{totalHours}</if>
+                <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteTHrLeaveInfoById" parameterType="Long">
+        update  t_hr_leave_info set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteTHrLeaveInfoByIds" parameterType="String">
+        update  t_hr_leave_info set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

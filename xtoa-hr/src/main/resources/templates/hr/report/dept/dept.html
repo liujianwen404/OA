@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('员工列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <div th:include="include/deptSearch::deptSearch"></div>
+
+                        <li>
+                            <label>状态：</label>
+                            <select id="empStatus" name="empStatus" th:with="type=${@dict.getType('sys_emp_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+
+                        <ul style="display: none">
+                            <li>
+                                <label>所属部门：</label>
+                                <select id="deptName" name="deptName" th:with="deptAll=${@deptService.getDeptAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>岗位：</label>
+                                <select id="postId" name="postId" th:with="postAll=${@postService.getPostAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                                </select>
+                            </li>
+                        </ul>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+           <!-- <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="employee:emp:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="employee:emp:edit">
+                <i class="fa fa-edit"></i> 修改
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="employee:emp:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>-->
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="employee:emp:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('employee:emp:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('employee:emp:remove')}]];
+    var prefix = ctx + "hr/report/dept";
+
+    $(function() {
+        // // debugger
+        var sexMap = {};
+        $('#sex option').each(function(i, n){
+            sexMap[$(n).val()] = $(n).text();
+        });
+
+        var empStatusMap = {};
+        $('#empStatus option').each(function(i, n){
+            empStatusMap[$(n).val()] = $(n).text();
+        });
+
+        var deptIdMap = {};
+        $('#deptName option').each(function(i, n){
+            deptIdMap[$(n).val()] = $(n).text();
+        });
+
+        var postIdsMap = {};
+        $('#postId option').each(function(i, n){
+            postIdsMap[$(n).val()] = $(n).text();
+        });
+
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "员工",
+            columns: [{
+                checkbox: false
+            },
+
+                {
+                    field: 'empName',
+                    title: '员工姓名'
+                },
+                {
+                    field: 'empId',
+                    title: '工号'
+                },
+                {
+                    field: 'deptId',
+                    title: '所属部门',
+                    formatter: function(val, row, index){return deptIdMap[val];}
+
+                },
+                {
+                    field: 'postId',
+                    title: '岗位',
+                    formatter: function(val, row, index){return postIdsMap[val];}
+                },
+                {
+                    field: 'nonManagerDate',
+                    title: '入职时间'
+                },
+                {
+                    field: 'positiveDate',
+                    title: '转正时间'
+                },
+                {
+                    field: 'empStatus',
+                    title: '状态',
+                    formatter: function (val, row, index) {
+                        return empStatusMap[val];
+                    }
+
+                },
+
+                /*
+                {
+                    field: 'sex',
+                    title: '用户性别',
+                    formatter: function(val, row, index){return sexMap[val];}
+                },
+                {
+                    field: 'phonenumber',
+                    title: '手机号码'
+                },
+                {
+                    field: 'birthday',
+                    title: '年龄'
+                },
+                {
+                    field: 'city',
+                    title: '所属城市'
+                },
+                {
+                    field: 'email',
+                    title: '邮箱'
+                },
+                 {
+                     field: 'ethnic',
+                     title: '名族'
+                 },
+
+                 {
+                     field: 'health',
+                     title: '健康状态'
+                 },
+                 {
+                     field: 'nowResidence',
+                     title: '现居住地'
+                 },
+                 {
+                     field: 'education',
+                     title: '教育背景'
+                 },
+                 {
+                     field: 'nationality',
+                     title: '国籍'
+                 },
+                 {
+                     field: 'idNumber',
+                     title: '身份证号码'
+                 },
+                 {
+                     field: 'information',
+                     title: '基本情况'
+                 },
+                 {
+                     field: 'description',
+                     title: '特长描述'
+                 },
+
+                 {
+                     field: 'createId',
+                     title: '创建者id'
+                 },
+                 {
+                     field: 'updateId',
+                     title: '更新者id'
+                 },
+                {
+                    field: 'remark',
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.empId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.empId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }*/
+            ]};
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.SalaryStructureMapper">
+    <resultMap type="com.ruoyi.base.domain.SalaryStructure" id="SalaryStructureResult">
+        <id property="id" column="id"/>
+            <result property="oldId" column="old_id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="comprehensive" column="comprehensive"/>
+        <result property="basic" column="basic"/>
+        <result property="overtimePay" column="overtime_pay"/>
+        <result property="allowance" column="allowance"/>
+        <result property="otherSubsidies" column="other_subsidies"/>
+        <result property="performanceBonus" column="performance_bonus"/>
+        <result property="basicActual" column="basic_actual"/>
+        <result property="overtimePayActual" column="overtime_pay_actual"/>
+        <result property="allowanceActual" column="allowance_actual"/>
+        <result property="performanceBonusActual" column="performance_bonus_actual"/>
+        <result property="otherSubsidiesActual" column="other_subsidies_actual"/>
+        <result property="amortization" column="amortization"/>
+        <result property="attendanceBonus" column="attendance_bonus"/>
+        <result property="nightAllowance" column="night_allowance"/>
+        <result property="overtimeActual" column="overtime_actual"/>
+        <result property="deductionForUtilities" column="deduction_for_utilities"/>
+        <result property="deductionForOther" column="deduction_for_other"/>
+        <result property="socialSecurity" column="social_security"/>
+        <result property="accumulationFund" column="accumulation_fund"/>
+        <result property="tallage" column="tallage"/>
+            <result property="isHistory" column="is_history"/>
+            <result property="salaryContent" column="salary_content"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="auditStatus" column="audit_status"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="adjustDate" column="adjust_date"/>
+            <result property="monthDate" column="month_date"/>
+            <result property="ancestors" column="ancestors"/>
+            <result property="payGrade" column="pay_grade"/>
+
+            <result property="applyUser" column="apply_user"/>
+            <result property="applyUserName" column="apply_user_name"/>
+            <result property="applyTime" column="apply_time"/>
+
+            <result property="laballot" column="laballot"/>
+            <result property="pretaxIncome" column="pretax_income"/>
+            <result property="netPayroll" column="net_payroll"/>
+            <result property="isValid" column="is_valid"/>
+            <result property="postName" column="post_name"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.old_id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.comprehensive,
+            entity.basic,
+            entity.overtime_pay,
+            entity.allowance,
+            entity.other_subsidies,
+            entity.performance_bonus,
+            entity.basic_actual,
+            entity.overtime_pay_actual,
+            entity.allowance_actual,
+            entity.performance_bonus_actual,
+            entity.other_subsidies_actual,
+            entity.amortization,
+            entity.attendance_bonus,
+            entity.night_allowance,
+            entity.overtime_actual,
+            entity.deduction_for_utilities,
+            entity.deduction_for_other,
+            entity.social_security,
+            entity.accumulation_fund,
+            entity.tallage,
+            entity.is_history,
+            entity.salary_content,
+            entity.instance_id,
+            entity.audit_status,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.adjust_date,
+            entity.month_date,
+            entity.ancestors,
+            entity.pay_grade,
+
+            entity.apply_user,
+            entity.apply_user_name,
+            entity.apply_time,
+
+            entity.laballot,
+            entity.pretax_income,
+            entity.net_payroll,
+            entity.is_valid,
+
+            entity.update_time
+        </sql>
+
+    <sql id="whereSql">
+        <if test="oldId != null "> and entity.old_id = #{oldId}</if>
+        <if test="empId != null "> and entity.emp_id = #{empId}</if>
+        <if test="comprehensive != null "> and entity.comprehensive = #{comprehensive}</if>
+        <if test="basic != null "> and entity.basic = #{basic}</if>
+        <if test="overtimePay != null "> and entity.overtime_pay = #{overtimePay}</if>
+        <if test="allowance != null "> and entity.allowance = #{allowance}</if>
+        <if test="otherSubsidies != null "> and entity.other_subsidies = #{otherSubsidies}</if>
+        <if test="performanceBonus != null "> and entity.performance_bonus = #{performanceBonus}</if>
+        <if test="basicActual != null "> and entity.basic_actual = #{basicActual}</if>
+        <if test="overtimePayActual != null "> and entity.overtime_pay_actual = #{overtimePayActual}</if>
+        <if test="allowanceActual != null "> and entity.allowance_actual = #{allowanceActual}</if>
+        <if test="performanceBonusActual != null "> and entity.performance_bonus_actual = #{performanceBonusActual}</if>
+        <if test="otherSubsidiesActual != null "> and entity.other_subsidies_actual = #{otherSubsidiesActual}</if>
+        <if test="amortization != null "> and entity.amortization = #{amortization}</if>
+        <if test="attendanceBonus != null "> and entity.attendance_bonus = #{attendanceBonus}</if>
+        <if test="nightAllowance != null "> and entity.night_allowance = #{nightAllowance}</if>
+        <if test="overtimeActual != null "> and entity.overtime_actual = #{overtimeActual}</if>
+        <if test="deductionForUtilities != null "> and entity.deduction_for_utilities = #{deductionForUtilities}</if>
+        <if test="deductionForOther != null "> and entity.deduction_for_other = #{deductionForOther}</if>
+        <if test="socialSecurity != null "> and entity.socialSecurity = #{socialSecurity}</if>
+        <if test="accumulationFund != null "> and entity.accumulationFund = #{accumulationFund}</if>
+        <if test="tallage != null "> and entity.tallage = #{tallage}</if>
+        <if test="isHistory != null "> and entity.is_history = #{isHistory}</if>
+        <if test="salaryContent != null  and salaryContent != ''"> and entity.salary_content = #{salaryContent}</if>
+        <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+        <if test="auditStatus != null "> and entity.audit_status = #{auditStatus}</if>
+        <if test="createId != null "> and entity.create_id = #{createId}</if>
+        <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+        <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+        <if test="isValid != null "> and entity.is_valid = #{isValid} </if>
+        <if test="empName != null  and empName != ''"> and entity.emp_name LIKE concat('%',#{empName},'%') </if>
+
+        <if test="monthDate != null "> and entity.month_date BETWEEN #{beginOfMonth} AND #{endOfMonth} </if>
+
+        <if test="deptId != null "> and ( emp.dept_id = #{deptId} or emp.dept_id IN (
+            SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+            WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0') )</if>
+        <if test="postId != null "> and emp.post_id = #{postId}</if>
+
+    </sql>
+
+    <select id="selectSalaryStructureList" parameterType="com.ruoyi.base.domain.SalaryStructure" resultMap="SalaryStructureResult">
+        select <include refid="baseColumns"/>,e.post_name from t_salary_structure entity
+        left join t_hr_emp emp on entity.emp_id = emp.emp_id
+        LEFT JOIN sys_dept d ON emp.dept_id = d.dept_id
+        LEFT JOIN sys_post e ON emp.post_id = e.post_id
+        where  entity.del_flag = '0'
+        AND emp.del_flag = 0
+        AND d.del_flag = 0
+        <include refid="whereSql"/>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+      order by entity.create_time desc
+    </select>
+
+    <select id="selectEmpSalaryStructureList" resultType="com.ruoyi.base.domain.SalaryStructure">
+        select
+            entity.id,
+            entity.adjust_date as adjustDate,
+            entity.pay_grade as payGrade,
+            entity.comprehensive,
+            entity.basic,
+            entity.performance_bonus as performanceBonus,
+            entity.overtime_pay as overtimePay,
+            entity.allowance,
+            entity.other_subsidies as otherSubsidies,
+            entity.remark,
+            emp.emp_id as empId,
+            emp.emp_name as empName,
+            emp.non_manager_date as nonManagerDate,
+            e.post_name as postName,
+            f.count
+        from t_salary_structure entity
+        JOIN (
+            SELECT
+                a.id,a.emp_name ,MAX(a.create_time) AS create_time,COUNT(a.emp_id) AS count
+            FROM t_salary_structure a
+            WHERE a.del_flag = 0
+            GROUP BY a.emp_id ) f
+        ON entity.create_time = f.create_time
+        left join t_hr_emp emp on entity.emp_id = emp.emp_id
+        LEFT JOIN sys_dept d ON emp.dept_id = d.dept_id
+        LEFT JOIN sys_post e ON emp.post_id = e.post_id
+        where  entity.del_flag = '0'
+        AND emp.del_flag = 0
+        AND d.del_flag = 0
+        <if test="salaryStructure.empName != null  and salaryStructure.empName != ''"> and entity.emp_name LIKE concat('%',#{salaryStructure.empName},'%') </if>
+        <if test="salaryStructure.deptId != null "> and ( emp.dept_id = #{salaryStructure.deptId} or emp.dept_id IN (
+            SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+            WHERE dept_id = #{salaryStructure.deptId} and STATUS = '0' and del_flag = '0'),#{salaryStructure.deptId}),'%') and STATUS = '0' and del_flag = '0') )</if>
+        <if test="salaryStructure.postId != null "> and emp.post_id = #{salaryStructure.postId}</if>
+        <if test="startNonManagerDate != null and startNonManagerDate != '' and endNonManagerDate != null and endNonManagerDate != ''"> and emp.non_manager_date BETWEEN #{startNonManagerDate} AND #{endNonManagerDate} </if>
+        <if test="startAdjustDate != null and startAdjustDate != '' and endAdjustDate != null and endAdjustDate != ''"> and entity.adjust_date BETWEEN #{startAdjustDate} AND #{endAdjustDate} </if>
+        <!-- 数据范围过滤 -->
+        ${salaryStructure.params.dataScope}
+      order by entity.create_time desc
+    </select>
+
+    <select id="selectSalaryStructureListNew" parameterType="com.ruoyi.base.domain.SalaryStructure" resultMap="SalaryStructureResult">
+        select <include refid="baseColumns"/> from t_salary_structure entity
+        where  entity.del_flag = '0'
+        <include refid="whereSql"/>
+        order by entity.create_time desc
+    </select>
+
+    <select id="selectSalaryStructureListEx" parameterType="com.ruoyi.base.domain.SalaryStructure" resultMap="SalaryStructureResult">
+        select <include refid="baseColumns"/> from t_salary_structure entity
+        left join t_hr_emp emp on entity.emp_id = emp.emp_id
+        LEFT JOIN sys_dept d ON emp.dept_id = d.dept_id
+        where  entity.del_flag = '0'
+        AND emp.del_flag = 0
+        AND d.del_flag = 0
+        <include refid="whereSql"/>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by entity.create_time asc
+    </select>
+    <select id="selectOneBySalaryStructure" resultType="com.ruoyi.base.domain.SalaryStructure" resultMap="SalaryStructureResult">
+        select <include refid="baseColumns"/> from t_salary_structure entity
+        left join t_hr_emp emp on entity.emp_id = emp.emp_id
+        where 1 = 1
+        <include refid="whereSql"/>
+        order by entity.adjust_date asc,entity.create_time desc limit 1
+    </select>
+    <select id="selectSalaryStructureListInfo" parameterType="com.ruoyi.base.domain.SalaryStructure" resultMap="SalaryStructureResult">
+        select <include refid="baseColumns"/> from t_salary_structure entity
+        left join t_hr_emp emp on entity.emp_id = emp.emp_id
+        LEFT JOIN sys_dept d ON emp.dept_id = d.dept_id
+        where  entity.del_flag = '0'
+        AND emp.del_flag = 0
+        AND d.del_flag = 0
+        and entity.is_valid = 1
+        <include refid="whereSql"/>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by entity.create_time desc
+    </select>
+
+    <update id="deleteSalaryStructureById" parameterType="Long">
+        update  t_salary_structure set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteSalaryStructureByIds" parameterType="String">
+        update  t_salary_structure set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

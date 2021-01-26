@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrAttendanceGroupMapper">
+    <resultMap type="com.ruoyi.base.domain.HrAttendanceGroup" id="HrAttendanceGroupResult">
+        <id property="id" column="id"/>
+            <result property="type" column="type"/>
+            <result property="name" column="name"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="monday" column="monday"/>
+            <result property="defaultClass" column="default_class"/>
+            <result property="monClassId" column="mon_class_id"/>
+            <result property="monClassName" column="mon_class_name"/>
+            <result property="tuesday" column="tuesday"/>
+            <result property="tueClassId" column="tue_class_id"/>
+            <result property="tueClassName" column="tue_class_name"/>
+            <result property="wednesday" column="wednesday"/>
+            <result property="wedClassId" column="wed_class_id"/>
+            <result property="wedClassName" column="wed_class_name"/>
+            <result property="thursday" column="thursday"/>
+            <result property="thuClassId" column="thu_class_id"/>
+            <result property="thuClassName" column="thu_class_name"/>
+            <result property="friday" column="friday"/>
+            <result property="friClassId" column="fri_class_id"/>
+            <result property="friClassName" column="fri_class_name"/>
+            <result property="saturday" column="saturday"/>
+            <result property="satClassId" column="sat_class_id"/>
+            <result property="satClassName" column="sat_class_name"/>
+            <result property="sunday" column="sunday"/>
+            <result property="sunClassId" column="sun_class_id"/>
+            <result property="sunClassName" column="sun_class_name"/>
+            <result property="mustDate" column="must_date"/>
+            <result property="mustDateClass" column="must_date_class"/>
+            <result property="needNotDate" column="need_not_date"/>
+            <result property="scheduClassId" column="schedu_class_id"/>
+            <result property="scheduClassName" column="schedu_class_name"/>
+            <result property="address" column="address"/>
+            <result property="longitude" column="longitude"/>
+            <result property="latitude" column="latitude"/>
+            <result property="scope" column="scope"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.type,
+            entity.name,
+            entity.emp_id,
+            entity.emp_name,
+            entity.default_class,
+            entity.monday,
+            entity.mon_class_id,
+            entity.mon_class_name,
+            entity.tuesday,
+            entity.tue_class_id,
+            entity.tue_class_name,
+            entity.wednesday,
+            entity.wed_class_id,
+            entity.wed_class_name,
+            entity.thursday,
+            entity.thu_class_id,
+            entity.thu_class_name,
+            entity.friday,
+            entity.fri_class_id,
+            entity.fri_class_name,
+            entity.saturday,
+            entity.sat_class_id,
+            entity.sat_class_name,
+            entity.sunday,
+            entity.sun_class_id,
+            entity.sun_class_name,
+            entity.schedu_class_id,
+            entity.schedu_class_name,
+            entity.must_date,
+            entity.must_date_class,
+            entity.need_not_date,
+            entity.address,
+            entity.longitude,
+            entity.latitude,
+            entity.scope,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectHrAttendanceGroupList" parameterType="com.ruoyi.base.domain.HrAttendanceGroup" resultMap="HrAttendanceGroupResult">
+        select <include refid="baseColumns"/> from t_hr_attendance_group entity
+        where  entity.del_flag = '0'
+        <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+        <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+        <if test="empId != null  and empId != ''"> and entity.emp_id = #{empId}</if>
+        <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+        <if test="defaultClass != null  and defaultClass != ''"> and entity.default_class = #{defaultClass}</if>
+        <if test="monday != null  and monday != ''"> and entity.monday = #{monday}</if>
+        <if test="monClassId != null  and monClassId != ''"> and entity.mon_class_id = #{monClassId}</if>
+        <if test="monClassName != null  and monClassName != ''"> and entity.mon_class_name like concat('%', #{monClassName}, '%')</if>
+        <if test="tuesday != null  and tuesday != ''"> and entity.tuesday = #{tuesday}</if>
+        <if test="tueClassId != null  and tueClassId != ''"> and entity.tue_class_id = #{tueClassId}</if>
+        <if test="tueClassName != null  and tueClassName != ''"> and entity.tue_class_name like concat('%', #{tueClassName}, '%')</if>
+        <if test="wednesday != null  and wednesday != ''"> and entity.wednesday = #{wednesday}</if>
+        <if test="wedClassId != null  and wedClassId != ''"> and entity.wed_class_id = #{wedClassId}</if>
+        <if test="wedClassName != null  and wedClassName != ''"> and entity.wed_class_name like concat('%', #{wedClassName}, '%')</if>
+        <if test="thursday != null  and thursday != ''"> and entity.thursday = #{thursday}</if>
+        <if test="thuClassId != null  and thuClassId != ''"> and entity.thu_class_id = #{thuClassId}</if>
+        <if test="thuClassName != null  and thuClassName != ''"> and entity.thu_class_name like concat('%', #{thuClassName}, '%')</if>
+        <if test="friday != null  and friday != ''"> and entity.friday = #{friday}</if>
+        <if test="friClassId != null  and friClassId != ''"> and entity.fri_class_id = #{friClassId}</if>
+        <if test="friClassName != null  and friClassName != ''"> and entity.fri_class_name like concat('%', #{friClassName}, '%')</if>
+        <if test="saturday != null  and saturday != ''"> and entity.saturday = #{saturday}</if>
+        <if test="satClassId != null  and satClassId != ''"> and entity.sat_class_id = #{satClassId}</if>
+        <if test="satClassName != null  and satClassName != ''"> and entity.sat_class_name like concat('%', #{satClassName}, '%')</if>
+        <if test="sunday != null  and sunday != ''"> and entity.sunday = #{sunday}</if>
+        <if test="sunClassId != null  and sunClassId != ''"> and entity.sun_class_id = #{sunClassId}</if>
+        <if test="sunClassName != null  and sunClassName != ''"> and entity.sun_class_name like concat('%', #{sunClassName}, '%')</if>
+        <if test="scheduClassId != null  and scheduClassId != ''"> and entity.schedu_class_id = #{scheduClassId}</if>
+        <if test="scheduClassName != null  and scheduClassName != ''"> and entity.schedu_class_name like concat('%', #{scheduClassName}, '%')</if>
+        <if test="mustDate != null  and mustDate != ''"> and entity.must_date = #{mustDate}</if>
+        <if test="mustDateClass != null  and mustDateClass != ''"> and entity.must_date_class = #{mustDateClass}</if>
+        <if test="needNotDate != null  and needNotDate != ''"> and entity.need_not_date = #{needNotDate}</if>
+        <if test="address != null  and address != ''"> and entity.address = #{address}</if>
+        <if test="longitude != null  and longitude != ''"> and entity.longitude = #{longitude}</if>
+        <if test="latitude != null  and latitude != ''"> and entity.latitude = #{latitude}</if>
+        <if test="scope != null  and scope != ''"> and entity.scope = #{scope}</if>
+        <if test="createId != null "> and entity.create_id = #{createId}</if>
+        <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+        <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteHrAttendanceGroupById" parameterType="Long">
+        update  t_hr_attendance_group set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrAttendanceGroupByIds" parameterType="String">
+        update  t_hr_attendance_group set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectGroupAndClass" resultType="hashmap">
+        SELECT
+            a.id as group_id,
+            a.name as group_name,
+            a.type,
+            a.must_date,
+            a.need_not_date,
+            a.address,
+            a.longitude,
+            a.latitude,
+            a.scope,
+            b.id as class_id,
+            b.name as class_name,
+            b.work_time,
+            b.closing_time,
+            b.rest_start_time,
+            b.rest_end_time,
+            b.hours,
+            b.elasticity_flag
+        FROM
+            t_hr_attendance_group a
+            LEFT JOIN t_hr_attendance_class b ON
+            <if test="week == 2">a.mon_class_id = b.id</if>
+            <if test="week == 3">a.tue_class_id = b.id</if>
+            <if test="week == 4">a.wed_class_id = b.id</if>
+            <if test="week == 5">a.thu_class_id = b.id</if>
+            <if test="week == 6">a.fri_class_id = b.id</if>
+            <if test="week == 7">a.sat_class_id = b.id</if>
+            <if test="week == 1">a.sun_class_id = b.id</if>
+        WHERE
+            1 = 1
+            AND find_in_set( #{userId}, a.emp_id )
+            AND a.del_flag = 0
+            AND b.del_flag = 0
+    </select>
+
+    <select id="selectScheduGroupAndClass" resultType="hashmap" flushCache="true">
+        SELECT
+            a.id AS group_id,
+            a.NAME AS group_name,
+            a.type,
+            a.must_date,
+            a.need_not_date,
+            a.address,
+            a.longitude,
+            a.latitude,
+            a.scope,
+            b.id AS class_id,
+            b.NAME AS class_name,
+            b.work_time,
+            b.closing_time,
+            b.rest_start_time,
+            b.rest_end_time,
+            b.hours,
+            b.elasticity_flag
+        FROM
+        t_hr_attendance_group_son c
+        LEFT JOIN t_hr_attendance_group a ON c.parent_id = a.id
+        LEFT JOIN t_hr_attendance_class b ON
+        <if test="dayNum == 1">c.class_id_1 = b.id</if>
+        <if test="dayNum == 2">c.class_id_2 = b.id</if>
+        <if test="dayNum == 3">c.class_id_3 = b.id</if>
+        <if test="dayNum == 4">c.class_id_4 = b.id</if>
+        <if test="dayNum == 5">c.class_id_5 = b.id</if>
+        <if test="dayNum == 6">c.class_id_6 = b.id</if>
+        <if test="dayNum == 7">c.class_id_7 = b.id</if>
+        <if test="dayNum == 8">c.class_id_8 = b.id</if>
+        <if test="dayNum == 9">c.class_id_9 = b.id</if>
+        <if test="dayNum == 10">c.class_id_10 = b.id</if>
+        <if test="dayNum == 11">c.class_id_11 = b.id</if>
+        <if test="dayNum == 12">c.class_id_12 = b.id</if>
+        <if test="dayNum == 13">c.class_id_13 = b.id</if>
+        <if test="dayNum == 14">c.class_id_14 = b.id</if>
+        <if test="dayNum == 15">c.class_id_15 = b.id</if>
+        <if test="dayNum == 16">c.class_id_16 = b.id</if>
+        <if test="dayNum == 17">c.class_id_17 = b.id</if>
+        <if test="dayNum == 18">c.class_id_18 = b.id</if>
+        <if test="dayNum == 19">c.class_id_19 = b.id</if>
+        <if test="dayNum == 20">c.class_id_20 = b.id</if>
+        <if test="dayNum == 21">c.class_id_21 = b.id</if>
+        <if test="dayNum == 22">c.class_id_22 = b.id</if>
+        <if test="dayNum == 23">c.class_id_23 = b.id</if>
+        <if test="dayNum == 24">c.class_id_24 = b.id</if>
+        <if test="dayNum == 25">c.class_id_25 = b.id</if>
+        <if test="dayNum == 26">c.class_id_26 = b.id</if>
+        <if test="dayNum == 27">c.class_id_27 = b.id</if>
+        <if test="dayNum == 28">c.class_id_28 = b.id</if>
+        <if test="dayNum == 29">c.class_id_29 = b.id</if>
+        <if test="dayNum == 30">c.class_id_30 = b.id</if>
+        <if test="dayNum == 31">c.class_id_31 = b.id</if>
+        WHERE
+            1 = 1
+        AND c.emp_id = #{userId}
+        AND c.parent_id = #{groupId}
+        AND c.schedu_date = #{scheduDate}
+        AND a.del_flag = 0
+        AND b.del_flag = 0
+        AND c.del_flag = 0
+    </select>
+
+    <select id="selectAllEmpId" resultType="String" parameterType="Long">
+            SELECT
+                emp_id
+            FROM
+                t_hr_attendance_group a
+            WHERE
+                1 = 1
+                AND a.del_flag = 0
+        <if test="groupId != null">AND a.id != #{groupId}</if>
+    </select>
+
+    <select id="selectEmpNameByEmpId" resultType="String" parameterType="Long">
+            SELECT
+                emp_name
+            FROM
+                t_hr_attendance_group a
+            WHERE
+                1 = 1
+                AND a.del_flag = 0
+                AND a.emp_id = #{id}
+    </select>
+
+    <select id="selectDayOfWorkHours" resultType="DOUBLE">
+        SELECT
+            IFNULL(MAX(b.hours),0) as hours
+        FROM
+            t_hr_attendance_group a
+        LEFT JOIN t_hr_attendance_class b ON
+            <if test="week == 2">a.mon_class_id = b.id</if>
+            <if test="week == 3">a.tue_class_id = b.id</if>
+            <if test="week == 4">a.wed_class_id = b.id</if>
+            <if test="week == 5">a.thu_class_id = b.id</if>
+            <if test="week == 6">a.fri_class_id = b.id</if>
+            <if test="week == 7">a.sat_class_id = b.id</if>
+            <if test="week == 1">a.sun_class_id = b.id</if>
+        WHERE
+            1 = 1
+            AND find_in_set( #{userId}, a.emp_id )
+            AND a.del_flag = 0
+            AND b.del_flag = 0
+    </select>
+
+    <select id="selectDayIsNeedNotDate" resultType="integer">
+        SELECT
+            count(*)
+        FROM
+            t_hr_attendance_group a
+        WHERE
+            1 = 1
+            AND a.del_flag = 0
+            AND FIND_IN_SET(#{empId},a.emp_id)
+            AND FIND_IN_SET(#{day},a.need_not_date);
+    </select>
+
+    <select id="selectDayIsMustDate" resultType="String">
+        SELECT
+            a.must_date
+        FROM
+            t_hr_attendance_group a
+        WHERE
+            1 = 1
+            AND a.del_flag = 0
+            AND FIND_IN_SET(#{empId},a.emp_id)
+            AND a.must_date LIKE CONCAT('%', #{day}, '%');
+    </select>
+
+    <select id="selectDayIsClass" resultType="integer">
+        SELECT
+            count(*)
+        FROM
+            t_hr_attendance_group a
+        WHERE
+        1 = 1
+            AND find_in_set( #{empId}, a.emp_id )
+            AND a.del_flag = 0
+            <if test="week == 2">AND a.mon_class_id != ""</if>
+            <if test="week == 3">AND a.tue_class_id != ""</if>
+            <if test="week == 4">AND a.wed_class_id != ""</if>
+            <if test="week == 5">AND a.thu_class_id != ""</if>
+            <if test="week == 6">AND a.fri_class_id != ""</if>
+            <if test="week == 7">AND a.sat_class_id != ""</if>
+            <if test="week == 1">AND a.sun_class_id != ""</if>
+
+    </select>
+
+    <select id="selectGroupByEmpId"  resultMap="HrAttendanceGroupResult">
+        select * from t_hr_attendance_group a where find_in_set( #{empId}, a.emp_id )
+            AND a.del_flag = 0
+    </select>
+
+    <select id="selectGroupByClassId"  resultMap="HrAttendanceGroupResult">
+        SELECT * FROM t_hr_attendance_group a
+            WHERE 1=1
+            AND a.del_flag = 0
+            AND(
+            a.mon_class_id like CONCAT('%', #{classId}, '%')
+            OR a.tue_class_id like CONCAT('%', #{classId}, '%')
+            OR a.wed_class_id like CONCAT('%', #{classId}, '%')
+            OR a.thu_class_id like CONCAT('%', #{classId}, '%')
+            OR a.fri_class_id like CONCAT('%', #{classId}, '%')
+            OR a.sat_class_id like CONCAT('%', #{classId}, '%')
+            OR a.sun_class_id like CONCAT('%', #{classId}, '%')
+            OR a.schedu_class_id like CONCAT('%', #{classId}, '%')
+            )
+    </select>
+
+    <select id="selectIsExistGroup"  resultType="int">
+        select count(1) from t_hr_attendance_group where find_in_set( #{empId}, emp_id )
+            AND del_flag = 0
+    </select>
+
+    <select id="selectGruopByEmpIdFromApi" resultType="hashmap">
+        SELECT
+            a.id as group_id,
+            a.name as group_name,
+            a.type,
+            a.must_date,
+            a.need_not_date,
+            a.address,
+            a.longitude,
+            a.latitude,
+            a.scope
+        FROM
+            t_hr_attendance_group a
+        WHERE
+        1 = 1
+            AND find_in_set( #{userId}, a.emp_id )
+            AND a.del_flag = 0
+    </select>
+
+</mapper>

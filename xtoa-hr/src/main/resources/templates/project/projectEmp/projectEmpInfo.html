@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('项目迭代任务成员列表')" />
+    <style>
+        .input-group label.error {
+            z-index: 99;
+            right: 65px;
+        }
+    </style>
+
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+           <!-- th:if="${addFlag}"-->
+            <div  class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" >
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="projectEmpTableInfo"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('project:projectEmp:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('project:projectEmp:remove')}]];
+        var typeDatas = [[${@dict.getType('sys_project_type')}]];
+        var addFlag = [[${addFlag}]] == false ? "hidden" : "";
+        var prefix = ctx + "project/projectEmp";
+
+
+        var parems = "";
+        parems = parems+"projectId=" + [[${projectId}]];
+        parems = parems+"&type=" + [[${type}]];
+        var projectPlanId = [[${projectPlanId}]];
+        parems = parems+"&projectPlanId="+ (projectPlanId == null ? "" : projectPlanId);
+        $(function() {
+            var options = {
+                id: "projectEmpTableInfo",
+                url: prefix + "/projectEmpTableInfo?"+parems,
+                createUrl: prefix + "/add?"+parems,
+                removeUrl: prefix + "/remove",
+                modalName: "成员",
+                columns: [
+                {
+                    field: 'id', 
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'projectId', 
+                    title: '项目id',
+                    visible: false
+                },
+                {
+                    field: 'projectName',
+                    title: '项目名称'
+                },
+                // {
+                //     field: 'projectPlanId',
+                //     title: '迭代id',
+                //     visible: false
+                // },
+    /*                {
+                        field: 'projectPlanName',
+                        title: '迭代名称'
+                    },*/
+                // {
+                //     field: 'projectPlanTaskId',
+                //     title: '任务id',
+                //     visible: false
+                // },
+                //     {
+                //         field: 'projectPlanTaskName',
+                //         title: '任务名称'
+                //     },
+                {
+                    field: 'empId', 
+                    title: '成员id',
+                    visible: false
+                },
+                    {
+                        field: 'empName',
+                        title: '成员名称'
+                    },
+                {
+                    field: 'type', 
+                    title: '类型',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(typeDatas, value);
+                    }
+                },
+                {
+                    field: 'createId', 
+                    title: '创建者id',
+                    visible: false
+                },
+                {
+                    field: 'updateId', 
+                    title: '更新者id',
+                    visible: false
+                },
+                {
+                    field: 'remark', 
+                    title: '备注',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

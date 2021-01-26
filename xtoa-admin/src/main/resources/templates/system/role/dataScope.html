@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('角色数据权限')" />
+	<th:block th:include="include :: ztree-css" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-role-edit" th:object="${role}">
+			<input id="roleId" name="roleId" type="hidden" th:field="*{roleId}"/>
+			<input id="menuId" name="menuId" type="hidden"/>
+			<input id="deptIds" name="deptIds" type="hidden"/>
+			<input id="perms" name="perms" type="hidden"/>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">角色名称：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="roleName" id="roleName" th:field="*{roleName}" readonly="true"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">角色简称：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="roleKey" id="roleKey" th:field="*{roleKey}" readonly="true">
+				</div>
+			</div>
+			<!--<div class="form-group">
+				<label class="col-sm-3 control-label">数据范围：</label>
+				<div class="col-sm-8">
+					<select id="dataScope" name="dataScope" class="form-control m-b">
+						<option value="1" th:field="*{dataScope}">全部数据权限</option>
+						<option value="2" th:field="*{dataScope}">自定数据权限</option>
+						<option value="3" th:field="*{dataScope}">本部门数据权限</option>
+						<option value="4" th:field="*{dataScope}">本部门及以下数据权限</option>
+						<option value="5" th:field="*{dataScope}">仅本人数据权限</option>
+					</select>
+					<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 特殊情况下，设置为“自定数据权限”</span>
+				</div>
+			</div>-->
+			<div class="form-group" id="authDataScope" th:style="'display:' + @{(*{dataScope=='2'} ? 'block' : 'none')} + ''">
+				<label class="col-sm-3 control-label">数据权限</label>
+				<div class="col-sm-8">
+					<div id="deptTrees" class="ztree"></div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table"></table>
+			</div>
+		</div>
+	</div>
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: ztree-js" />
+	<script type="text/javascript">
+		var prefix = ctx + "system/menu";
+		var roleId = $("#roleId").val();
+	    $(function() {
+			var options = {
+				url: prefix + "/roleMenuData?roleId="+ roleId,
+				modalName: "菜单",
+				showSearch: false,
+				showRefresh: false,
+				showToggle: false,
+				showColumns: false,
+				columns: [{
+					checkbox: false
+				},
+					{
+						field: 'menuId',
+						title: '菜单ID'
+					},
+					{
+						field: 'menuName',
+						title: '菜单名称'
+					},
+					{
+						field: 'perms',
+						title: '权限标识'
+					},
+					{
+						title: '操作',
+						align: 'center',
+						formatter: function(value, row, index) {
+							var actions = [];
+							actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="grant(\'' + roleId + '\',\'' + row.menuId + '\',\'' + row.perms + '\')"><i class="fa fa-edit"></i>分配权限</a> ');
+							return actions.join('');
+						}
+					}]
+			};
+			$.table.init(options);
+	    });
+
+		function submitHandler() {
+	        if ($.validate.form()) {
+				$.modal.close();
+	        	// edit();
+	        }
+	    }
+
+		/* 打开数据权限表单页 */
+		function grant(roleId,menuId,perms) {
+			var url = ctx + 'system/dept/roleMenuDataScope/' + roleId + '/' + menuId+ '/' + perms;
+			$.modal.open("分配数据权限", url);
+		}
+
+		$("#dataScope").change(function(event){
+        	var dataScope = $(event.target).val();
+        	dataScopeVisible(dataScope);
+        });
+		
+		function dataScopeVisible(dataScope) {
+			if (dataScope == 2) {
+	    		$("#authDataScope").show();
+	    	} else {
+	    		$._tree.checkAllNodes(false);
+	    		$("#authDataScope").hide();
+	    	}
+		}
+
+
+		function append(menuId,perms,deptIds) {
+			var roleId = $("input[name='roleId']").val();
+			$.ajax({
+				cache : true,
+				type : "POST",
+				url : ctx + "system/roleMenuDept/add",
+				data : {
+					"roleId": roleId,
+					"menuId": menuId,
+					"perms": perms,
+					"deptIds": deptIds
+				},
+				async : false,
+				error : function(request) {
+					$.modal.alertError("系统错误");
+				},
+				success : function(data) {
+					// $.operate.successCallback(data);
+				}
+			});
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('offer流程列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+
+                          <!--  <li>
+                                <label>offer接收人邮箱：</label>
+                                <input type="text" name="toOffEmail"/>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="hr:hrOff:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+               <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="hr:hrOff:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:hrOff:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:hrOff:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table class="my-bootstrap-table" id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:hrOff:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:hrOff:remove')}]];
+
+        var recruitDeptAllDatas = [[${@deptService.getDeptAll()}]];
+        var recruitPostAllDatas = [[${@postService.getPostAll()}]];
+        var currentUser = [[${currentUser}]];
+
+        var datas = [[${@dict.getType('auditStatus')}]];
+        var citys = [[${@dict.getType('citys')}]];
+        var prefix = ctx + "hr/hrOff";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                detailUrl: prefix + "/edit/{id}?isDetail=1",
+                modalName: "offer流程",
+                columns: [
+                {
+                    field: 'id', 
+                    title: 'off ID',
+                    visible: false
+                },
+                {
+                    field: 'toOffName', 
+                    title: '姓名'
+                },
+                {
+                    field: 'toOffEmail', 
+                    title: 'offer接收人邮箱'
+                },
+                    {
+                        field: 'phonenumber',
+                        title: '手机号码'
+                    },
+                {
+                    field: 'adjunct', 
+                    title: 'offer附件',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success " href="javascript:void(0)" onclick="preview(\'' + value + '\')">下载</a>');
+                        return actions.join('');
+                    }
+
+                },
+                {
+                    field: 'resumeAdjunct',
+                    title: '简历附件',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success " href="javascript:void(0)" onclick="preview(\'' + value + '\')">下载</a>');
+                        return actions.join('');
+                    }
+                },
+
+                {
+                    field: 'deptId', 
+                    title: '部门',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDeptLabel(recruitDeptAllDatas, value);
+                    }
+                },
+                {
+                    field: 'postId', 
+                    title: '岗位',
+                    formatter: function(value, row, index) {
+
+                        return $.table.selectPostLabel(recruitPostAllDatas, value);
+                    }
+                },
+
+                {
+                    field: 'instanceId', 
+                    title: '流程实例id',
+                    visible: false
+                },
+                {
+                    field: 'auditStatus', 
+                    title: '审核状态',
+                    visible: false
+                },
+                {
+                    field: 'createId', 
+                    title: '创建者id',
+                    visible: false
+                },
+                {
+                    field: 'updateId', 
+                    title: '更新者id',
+                    visible: false
+                },{
+                        field: 'city',
+                        title: '入职城市',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(citys, value);
+                        }
+                    },
+                    {
+                        field: 'nonManagerDate',
+                        title: '入职日期'
+                    },
+
+                    {
+                        field: 'probationDate',
+                        title: '试用期限'
+                    },
+
+
+                    {
+                        field: 'salaryLevel',
+                        title: '薪酬级别审批'
+                    },
+                    {
+                        field: 'salaryStandard',
+                        title: '薪酬标准审批'
+                    },
+                    {
+                        field: 'salaryAdjunct',
+                        title: '员工入职薪资告知单附件地址',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success " href="javascript:void(0)" onclick="preview(\'' + value + '\')">下载</a>');
+                            return actions.join('');
+                        }
+                    },
+                    {
+                        field: 'recruiterName',
+                        title: '招聘员姓名'
+                    },
+
+
+                    {
+                        field: 'applyUser',
+                        title: '申请人',
+                        visible: false
+                    },
+                    {
+                        field: 'applyTime',
+                        title: '申请时间'
+                    },
+                    {
+                        field: 'applyUserName',
+                        title: '发起人姓名',
+                        visible: false
+                    },
+                {
+                    field: 'remark', 
+                    title: '备注',
+                    visible: false
+                },
+                    {
+                        field: 'todoUserName',
+                        title: '当前处理人'
+                    },
+                    {
+                        field : 'auditStatus',
+                        title : '审核状态',
+                        align : 'center',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(datas, value);
+                        }
+                    },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                       if (row.instanceId){
+                            actions.push('<a class="btn btn-primary btn-xs " href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\',1000)"><i class="fa fa-eye"></i> 表单数据</a> ');
+                            actions.push('<a class="btn btn-warning btn-xs " href="javascript:void(0)" onclick="$.operate.showHistoryDialog(\'' + row.instanceId + '\')"><i class="fa fa-list"></i> 审批历史</a> ');
+                            actions.push('<a class="btn btn-info btn-xs " href="javascript:void(0)" onclick="$.operate.showProcessImgDialog(\'' + row.instanceId + '\')"><i class="fa fa-image"></i> 进度查看</a> ');
+                            if (row.delFlag == 0 && row.auditStatus == 1){
+                                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.repeal(\'' + row.instanceId + '\',\'' + prefix + '/repeal'  + '\')"><i class="fa fa-remove"></i>撤回</a>');
+                            }
+                        }else {
+                           actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editForm(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                           actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="removeForm(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-remove"></i>删除</a>');
+                           actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="submitApply(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-user"></i> 提交申请</a> ');
+                        }
+
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function preview(url) {
+            window.location.href = ctx + "common/download/resource?resource=" + url;
+        }
+
+        function submitApply(id, createBy) {
+            debugger
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人提交申请！");
+                return;
+            }
+            $.modal.confirm("确认要提交申请吗?", function() {
+                var url = prefix + "/submitApply";
+                var data = { "id": id };
+                $.operate.submit(url, "post", "json", data);
+            });
+        }
+
+
+        function editForm(id, createBy) {
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人编辑表单！");
+                return;
+            }
+            $.operate.edit(id);
+        }
+
+        function removeForm(id, createBy) {
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人删除表单！");
+                return;
+            }
+            $.operate.remove(id);
+        }
+
+    </script>
+</body>
+</html>

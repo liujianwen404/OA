@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增测试流程单')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-process-add">
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}">
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}" th:selected="${dept.getDeptId() == hrEmp?.deptId}" th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}">
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}" th:selected="${post.getPostId() == hrEmp?.postId}" th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">标题：</label>
+                <div class="col-sm-8">
+                    <input name="title" class="form-control" type="text" required>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/test"
+        $("#form-process-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $("select[name=deptId]").attr("disabled",false);
+                $("select[name=postId]").attr("disabled",false);
+                $.operate.save(prefix + "/add", $('#form-process-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

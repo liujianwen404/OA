@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrEmpExperiencesMapper">
+    <resultMap type="com.ruoyi.base.domain.HrEmpExperiences" id="HrEmpExperiencesResult">
+        <id property="id" column="id"/>
+            <result property="parentId" column="parent_id"/>
+            <result property="name" column="name"/>
+            <result property="type" column="type"/>
+            <result property="entryDate" column="entry_date"/>
+            <result property="quitDate" column="quit_date"/>
+            <result property="company" column="company"/>
+            <result property="position" column="position"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.parent_id,
+            entity.name,
+            entity.type,
+            entity.entry_date,
+            entity.quit_date,
+            entity.company,
+            entity.position,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.remark,
+            entity.del_flag
+        </sql>
+
+    <select id="selectHrEmpExperiencesList" parameterType="com.ruoyi.base.domain.HrEmpExperiences" resultMap="HrEmpExperiencesResult">
+        select <include refid="baseColumns"/> from t_hr_emp_experiences entity
+        where  entity.del_flag = '0'
+            <if test="parentId != null "> and entity.parent_id = #{parentId}</if>
+                <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+                <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+                <if test="entryDate != null "> and entity.entry_date = #{entryDate}</if>
+                <if test="quitDate != null "> and entity.quit_date = #{quitDate}</if>
+                <if test="company != null  and company != ''"> and entity.company = #{company}</if>
+                <if test="position != null  and position != ''"> and entity.position = #{position}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+        order by entity.quit_date desc
+    </select>
+
+
+    <update id="deleteHrEmpExperiencesById" parameterType="Long">
+        update  t_hr_emp_experiences set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrEmpExperiencesByIds" parameterType="String">
+        update  t_hr_emp_experiences set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

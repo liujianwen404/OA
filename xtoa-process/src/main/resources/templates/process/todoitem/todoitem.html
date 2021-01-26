@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('待办事项列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>事项标题：</p>
+                                <input type="text" name="itemName"/>
+                            </li>
+                            <input type="hidden" name="isStarUserName"/>
+                            <input type="hidden" name="isFrom"/>
+                            <input type="hidden" name="module"/>
+                            <!--  <li>
+                                 <p>模块名称：</p>
+
+
+                             </li>
+                             <li>
+                                 <p>任务 ID：</p>
+                                 <input type="text" name="taskId"/>
+                             </li>
+                             <li>
+                                 <p>任务名称：</p>
+                                 <input type="text" name="taskName"/>
+                             </li>
+                            <li>
+                                 <p>待办人 ID：</p>
+                                 <input type="text" name="todoUserId"/>
+                             </li>
+                             <li>
+                                 <p>待办人名称：</p>
+                                 <input type="text" name="todoUserName"/>
+                             </li>
+                            <li>
+                                <p>处理人 ID：</p>
+                                <input type="text" name="handleUserId"/>
+                            </li>
+                            <li>
+                                <p>处理人名称：</p>
+                                <input type="text" name="handleUserName"/>
+                            </li>
+                            <li class="select-time">
+                                <p>通知时间：</p>
+                                <input type="text" class="time-input" id="todoItemStartTime" placeholder="开始时间" name="params[todoItemStartTime]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="todoItemEndTime" placeholder="结束时间" name="params[todoItemEndTime]"/>
+                            </li>
+                            <li class="select-time">
+                                <p>处理时间：</p>
+                                <input type="text" class="time-input" id="handleStartTime" placeholder="开始时间" name="params[handleStartTime]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="handleEndTime" placeholder="结束时间" name="params[handleEndTime]"/>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <!--<div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="process:todoitem:export">
+                    <i class="fa fa-download"></i> 导出
+                 </a>
+            </div>-->
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var removeFlag = [[${@permission.hasPermi('process:todoitem:remove')}]];
+        var prefix = ctx + "process/todoitem";
+        var currentUser = [[${currentUser}]];
+        var module = [[${module}]];
+        var isStarUserName = [[${isStarUserName}]];
+        var isFrom = [[${isFrom}]];
+        debugger
+        if (module != null){
+            $('input[name="module"]').val(module);
+        }
+        if (isStarUserName != null){
+            $('input[name="isStarUserName"]').val(isStarUserName);
+        }
+        if (isFrom != null){
+            $('input[name="isFrom"]').val(isFrom);
+        }
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "待办事项",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'id',
+                    title : '主键 ID',
+                    visible: false
+                },
+                {
+                    field : 'itemName',
+                    title : '标题'
+                },
+                {
+                    field : 'itemContent',
+                    title : '事项内容',
+                    visible: false
+                },
+                {
+                    field : 'module',
+                    title : '模块名称',
+                    visible: false
+                },
+                {
+                    field : 'taskId',
+                    title : '任务 ID',
+                    visible: false
+                },
+                {
+                    field: 'applyUserName',
+                    title: '申请人',
+                    formatter: function(value, row, index) {
+                        return '<span>' + (value ? value : "-") + '</span>';
+                    }
+                },
+                {
+                    field : 'taskName',
+                    title : '任务名称',
+                    visible: false
+                },
+                {
+                    field : 'isView',
+                    title : '是否查看',
+                    formatter: function(value, row, index) {
+                        if (value == 0){
+                            return '否';
+                        }
+                        return '是';
+                    },
+                    visible: false
+                },
+                {
+                    field : 'isHandle',
+                    title : '是否处理',
+                    formatter: function(value, row, index) {
+                        if (value == 0){
+                            return '否';
+                        }
+                        return '是';
+                    },
+                    visible: false
+                },
+                {
+                    field : 'todoUserId',
+                    title : '待办人ID',
+                    visible: false
+                },
+
+                {
+                    field : 'handleUserId',
+                    title : '处理人ID',
+                    visible: false
+                },
+                {
+                    field : 'handleUserName',
+                    title : '处理人名称',
+                    visible: false
+                },
+
+                {
+                    field : 'todoTime',
+                    title : '通知时间'
+                },
+                {
+                    field : 'handleTime',
+                    title : '处理时间',
+                    visible: false
+                },
+                {
+                    field: 'nodeName',
+                    title: '待办任务名称',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return '<span class="badge badge-primary">' + value + '</span>';
+                    }
+                },
+                    {
+                        field : 'todoUserName',
+                        title : '当前处理人'
+                    },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if (row.todoUserId != currentUser.loginName) {
+                            actions.push('<a class="btn btn-info btn-xs" href="javascript:void(0)" ' +
+                                ' onclick="$.common.showVerifyDialogInfo(\'' + row.taskId +
+                                '\', \'' + row.module +
+                                '\', \'' + row.taskName +
+                                '\', \'' + row.nodeName +
+                                '\', \'' + row.todoUserId +
+                                '\', \'' + row.jumpUrl +
+                                '\')"><i class="fa fa-search"></i> 查看</a> ');
+                            return actions.join('');
+                        }
+                        actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" ' +
+                            ' onclick="showVerifyDialog(\'' + row.taskId +
+                            '\', \'' + row.module +
+                            '\', \'' + row.taskName +
+                            '\', \'' + row.nodeName +
+                            '\', \'' + row.todoUserId +
+                            '\', \'' + row.jumpUrl +
+                            '\')"><i class="fa fa-edit"></i> 办理</a> ')
+                        actions.push('<a class="btn btn-warning btn-xs" href="javascript:void(0)" ' +
+                            ' onclick="forward(\'' + row.taskId +
+                            '\', \'' + row.module +
+                            '\', \'' + row.taskName +
+                            '\', \'' + row.nodeName +
+                            '\', \'' + row.todoUserId +
+                            '\', \'' + row.jumpUrl +
+                            '\')"><i class="fa fa-edit"></i> 转发</a> ');
+                        return actions.join('');
+                    }
+                }]
+            };
+            debugger
+            $.table.init(options);
+        });
+
+        function showVerifyDialog(taskId, module, pageName, nodeName, todoUserId,jumpUrl) {
+            debugger
+            if (todoUserId !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非待办人办理待办事项！");
+                return;
+            }
+            var url = prefix + "/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+
+            //入职流程
+            if (module == "user_defined01_non_manager"){
+                url = "/hr/manager/showVerifyDialog/" + taskId + "?module=" + module + "&activitiId=" + pageName;
+            }else if (module == "interpolate"){
+                //内推流程
+                url = "/hr/interpolate/showVerifyDialog/" + taskId + "?module=" + module + "&activitiId=" + pageName;
+                $.modal.open(nodeName, url, 1500);
+                return;
+            }else if (module == "user_defined01_transfer"){
+                //内推流程
+                url = "/hr/jobTransfer/showVerifyDialog/" + taskId + "?module=" + module + "&activitiId=" + pageName;
+                $.modal.open(nodeName, url, 1500);
+                return;
+            }else if (module == "user_defined01_leave"){
+                //请假流程
+                url = "/hr/leave/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "user_defined01_quit"){
+                //离职流程
+                url = "/hr/quit/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "user_defined01_regular"){
+                //转正流程
+                url = "/hr/regular/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "hiringNeeds"){
+                //招聘需求
+                url = "/hr/recruitNeed/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "user_defined01_overTime"){
+                //加班需求
+                url = "/hr/overtime/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "contract"){
+                //合同
+                url = "/hr/contract/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "user_defined01_salary"){
+                //薪资结构
+                url = "/hr/salaryStructure/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url,1000);
+                return;
+            }else if (module == "user_defined01_business_trip"){
+                //出差
+                url = "/hr/businessTrip/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "user_defined01_fillClock"){
+                //补卡
+                url = "/hr/clock/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "user_defined01_goout"){
+                //外出
+                url = "/hr/goout/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "user_defined01_offer"){
+                //offer流程
+                url = "/hr/hrOff/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "finance_payment"){
+                //财务付款流程
+                url = "/hr/payment/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }else if (module == "test"){
+                //测试流程
+                url = "/hr/test/showVerifyDialog/" + taskId + "?module=" + module + "&formPageName=" + pageName;
+                $.modal.open(nodeName, url);
+                return;
+            }
+
+            $.modal.open(nodeName, url);
+        }
+
+        /**
+         * 转发
+         * @param taskId
+         * @param module
+         * @param pageName
+         * @param nodeName
+         * @param todoUserId
+         * @param jumpUrl
+         */
+        function forward(taskId, module, pageName, nodeName, todoUserId,jumpUrl){
+            $.modal.open("转发", prefix + "/forward?taskId="+taskId+"&todoUserId="+todoUserId,'800', '600');
+        }
+
+    </script>
+</body>
+</html>

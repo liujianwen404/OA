@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('项目迭代列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label">所属项目：</label>
+                                        <div class="col-sm-8">
+                                            <select id="projectId" name="projectId" class="form-control" >
+                                                <option value="">全部</option>
+                                                <option th:each="projectSelectList:${projectSelectList}" th:value="${projectSelectList.id}" th:text="${projectSelectList.name}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                            </li>
+                            <li>
+                                <label>负责人：</label>
+                                <input type="text" name="empName"/>
+                            </li>
+
+                            <li>
+                                <label>状态：</label>
+                                <select name="status" th:with="type=${@dict.getType('sys_project_status')}">
+                                   <option value="">全部</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="project:projectPlan:add">
+                    <i class="fa fa-plus"></i> 添加迭代
+                </a>
+             <!--   <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="project:projectPlan:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="project:projectPlan:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>-->
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="project:projectPlan:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('project:projectPlan:edit')}]];
+        // var removeFlag = [[${@permission.hasPermi('project:projectPlan:remove')}]];
+        var statusDatas = [[${@dict.getType('sys_project_status')}]];
+        var prefix = ctx + "project/projectPlan";
+
+        $(function() {
+            var options = {
+                url: prefix + "/getProjectPlanList",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                // removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "项目迭代",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id', 
+                    title: '迭代id',
+                    visible: false
+                },
+                {
+                    field: 'projectId',
+                    title: '项目id',
+                    visible: false
+                },
+
+                {
+                    field: 'name', 
+                    title: '迭代名称'
+                },
+                {
+                    field: 'contentDescribe',
+                    title: '描述'
+                },
+                {
+                    field: 'projectName',
+                    title: '所属项目'
+                },
+                {
+                    field: 'empId',
+                    title: '迭代负责人id',
+                    visible: false
+                },
+                {
+                    field: 'empName',
+                    title: '迭代负责人'
+                },
+            /*    {
+                    field: 'startTime', 
+                    title: '开始时间'
+                },
+                {
+                    field: 'endTime', 
+                    title: '结束时间'
+                },*/
+                {
+                    field: 'iterationsTime',
+                    title: '迭代周期'
+                },
+                {
+                    field: 'status', 
+                    title: '状态',
+                    formatter: function(value, row, index) {
+                       return $.table.selectDictLabel(statusDatas, value);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

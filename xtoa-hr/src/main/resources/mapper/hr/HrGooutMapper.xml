@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrGooutMapper">
+    <resultMap type="com.ruoyi.base.domain.HrGoout" id="HrGooutResult">
+        <id property="id" column="id"/>
+            <result property="type" column="type"/>
+            <result property="title" column="title"/>
+            <result property="reason" column="reason"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+            <result property="totalTimes" column="total_times"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+            <result property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="applyUser" column="apply_user"/>
+            <result property="applyTime" column="apply_time"/>
+            <result property="applyUserNum" column="apply_user_num"/>
+            <result property="applyUserName" column="apply_user_name"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="auditStatus" column="audit_status"/>
+            <result property="remark" column="remark"/>
+            <result property="empId" column="emp_id"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.type,
+            entity.title,
+            entity.reason,
+            entity.start_time,
+            entity.end_time,
+            entity.total_times,
+            entity.instance_id,
+            entity.dept_id,
+            entity.dept_name,
+            entity.post_id,
+            entity.post_name,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.apply_user,
+            entity.apply_time,
+            entity.apply_user_num,
+            entity.apply_user_name,
+            entity.del_flag,
+            entity.audit_status,
+            entity.remark,
+            entity.emp_id
+        </sql>
+
+    <select id="selectHrGooutList" parameterType="com.ruoyi.base.domain.HrGoout" resultMap="HrGooutResult">
+        select <include refid="baseColumns"/> from t_hr_goout entity
+        where  entity.del_flag = '0'
+                <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+                <if test="title != null  and title != ''"> and entity.title like concat('%', #{title}, '%')</if>
+                <if test="reason != null  and reason != ''"> and entity.reason = #{reason}</if>
+                <if test="startTime != null "> and date_format(entity.start_time,'%Y-%m-%d') = DATE_FORMAT(#{startTime}, '%Y-%m-%d') </if>
+                <if test="endTime != null "> and date_format(entity.end_time,'%Y-%m-%d') = DATE_FORMAT(#{endTime}, '%Y-%m-%d')</if>
+                <if test="totalTimes != null "> and entity.total_times = #{totalTimes}</if>
+                <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+                <if test="deptId != null ">
+                    and ( entity.dept_id = #{deptId} or entity.dept_id
+                    IN (SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                    WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0'))</if>
+                <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+                <if test="applyUser != null  and applyUser != ''"> and entity.apply_user = #{applyUser}</if>
+                <if test="applyTime != null "> and date_format(entity.apply_time,'%Y-%m-%d') = DATE_FORMAT(#{applyTime}, '%Y-%m-%d') </if>
+                <if test="applyUserNum != null  and applyUserNum != ''"> and entity.apply_user_num = #{applyUserNum}</if>
+                <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+                <if test="auditStatus != null  and auditStatus != ''"> and entity.audit_status = #{auditStatus}</if>
+                <if test="empId != null  and empId != ''"> and entity.emp_id = #{empId}</if>
+                <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+    <select id="selectGooutManageList" parameterType="com.ruoyi.base.domain.HrGoout" resultMap="HrGooutResult">
+        select <include refid="baseColumns"/> from t_hr_goout entity
+            LEFT JOIN t_hr_emp e ON entity.emp_id = e.emp_id
+            LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        where  entity.del_flag = '0'
+                <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+                <if test="title != null  and title != ''"> and entity.title like concat('%', #{title}, '%')</if>
+                <if test="reason != null  and reason != ''"> and entity.reason = #{reason}</if>
+                <if test="startTime != null "> and date_format(entity.start_time,'%Y-%m-%d') = DATE_FORMAT(#{startTime}, '%Y-%m-%d') </if>
+                <if test="endTime != null "> and date_format(entity.end_time,'%Y-%m-%d') = DATE_FORMAT(#{endTime}, '%Y-%m-%d')</if>
+                <if test="totalTimes != null "> and entity.total_times = #{totalTimes}</if>
+                <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+                <if test="deptId != null ">
+                    and ( entity.dept_id = #{deptId} or entity.dept_id
+                    IN (SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                    WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0'))</if>
+                <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+                <if test="applyUser != null  and applyUser != ''"> and entity.apply_user = #{applyUser}</if>
+                <if test="applyTime != null "> and date_format(entity.apply_time,'%Y-%m-%d') = DATE_FORMAT(#{applyTime}, '%Y-%m-%d') </if>
+                <if test="applyUserNum != null  and applyUserNum != ''"> and entity.apply_user_num = #{applyUserNum}</if>
+                <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+                <if test="auditStatus != null  and auditStatus != ''"> and entity.audit_status = #{auditStatus}</if>
+                <if test="empId != null  and empId != ''"> and entity.emp_id = #{empId}</if>
+                <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+
+    <update id="deleteHrGooutById" parameterType="Long">
+        update  t_hr_goout set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrGooutByIds" parameterType="String">
+        update  t_hr_goout set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

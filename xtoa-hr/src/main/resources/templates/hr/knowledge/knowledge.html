@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('信息列表')" />
+    <link th:href="@{/ajax/libs/layui/css/layui.css}" rel="stylesheet"/>
+    <style>
+        .itemBrowse {
+            width: 110px;
+            height: 70px;
+            float: left;
+            margin-left: 20px;
+
+            margin-top: 30px;
+        }
+        .countRank div span {
+            margin-left: 50px;
+            font-size: 15px;
+        }
+        .countRank div {
+            margin-top: 10px;
+        }
+         .layui-tab-title .layui-this:after{
+            position: absolute;
+            left: 0;
+            top: 0;
+            content: '';
+            width: 100%;
+            height: 70px;
+            border-width: 1px;
+            border-style: solid;
+            border-bottom-color: #fff;
+            border-radius: 2px 2px 0 0;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="gray-bg container_box">
+
+    <div class="col-sm-3">
+        <h1>信息中心</h1>
+        <div>
+            <img th:if="${random == 1}"  src="/img/xtoa/man-1-02.png">
+            <img th:if="${random == 0}"  src="/img/xtoa/man2-1_画板 1.png">
+        </div>
+        <div class="">
+            <div class="countRank">
+                <h3>最近浏览</h3>
+                <div>
+                    <span>信息库 &nbsp;</span><span id="count">8888</span>
+                </div>
+                <div>
+                    <span>我的文档</span><span id="myCount">8888</span>
+                </div>
+                <h3>贡献排名</h3>
+                <div>
+                    <span>部门排名</span><span id="deptCount">8888</span>
+                </div>
+                <div id="headCountDiv">
+                    <span>分部排名</span><span id="headCount">8888</span>
+                </div>
+                <div>
+                    <span>总部排名</span><span id="dCount">8888</span>
+                </div>
+            </div>
+
+            <a class="btn btn-success" style="margin-top: 15px;margin-left: 150px" onclick="$.operate.addTableId(null,'bootstrap-tableMy',1200)" shiro:hasPermission="hr:knowledge:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+        </div>
+        <div class="" style="margin-top: 50px">
+
+            <div class=""  id="infoBrowse">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-sm-9">
+        <div class="layui-tab">
+            <ul class="layui-tab-title" style="height: 70px">
+                <li class="layui-this"><h1>最近浏览 &nbsp;&nbsp;</h1></li>
+                <li><h1>&nbsp;&nbsp;我的</h1></li>
+                <li><h1>&nbsp;&nbsp;收藏</h1></li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show"><div class="container-div">
+                    <div class="row">
+                        <div class="col-sm-12 select-table table-striped">
+                            <table id="bootstrap-tableBrowse"></table>
+                        </div>
+                    </div>
+                </div></div>
+                <div class="layui-tab-item">
+                    <div th:include="hr/knowledge/knowledgeInfo :: knowledgeInfo"></div>
+                </div>
+                <div class="layui-tab-item"><div th:include="hr/enshrine/enshrine"></div></div>
+
+            </div>
+        </div>
+    </div>
+
+    <th:block th:include="include :: footer" />
+    <script th:src="@{/ajax/libs/layui/layui.all.js}"></script>
+    <script th:inline="javascript">
+        //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+        layui.use('element', function(){
+            var element = layui.element;
+
+            //…
+        })
+
+        /*var editFlag = [[${@permission.hasPermi('hr:knowledge:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:knowledge:remove')}]];*/
+        var typeDatas = [[${@dict.getType('sys_sknowledge_type')}]];
+        var prefix = ctx + "hr/knowledge";
+
+        $(function() {
+
+            var optionsBrowse = {
+                id: "bootstrap-tableBrowse",
+                formId: "formIdBrowse",
+                toolbar: 'toolbarBrowse',
+                url: prefix + "/listBrowse",
+                removeUrl: prefix + "/removeBrowse",
+                modalName: "信息",
+                pageSize: 12,
+                pageList: [12, 25, 50],
+                onLoadSuccess: function(data) {
+                    debugger
+                    var actions = [];
+                    data.rows.forEach(function (item, index) {
+                        if (index < 12){
+                            actions.push('<div class="itemBrowse"  onclick="look(\'' + item.id + '\',\'isLook\')">' +
+                                '<div style="width: 100%;height: 100%">' +
+                                '<img src="'+item.cover+'" width="100%" height="100%" >' +
+                                '</div>' +
+                                '<span>'+ item.titel +'</span>' +
+                                '</div>');
+                        }
+                    });
+
+
+                    $("#infoBrowse").html(actions.join(''));
+                },
+                columns: [
+                    {
+                        field: 'id',
+                        title: '信息id',
+                        visible: false
+                    },
+                    {
+                        field: 'type',
+                        title: '类型',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(typeDatas, value);
+                        }
+                    },
+                    {
+                        field: 'titel',
+                        title: '标题',
+                        visible: false
+                    },
+                    {
+                        field: 'cover',
+                        title: '封面',
+                        formatter: function(value, row, index) {
+
+                            return $.table.imageView(value);
+                        }
+                    },
+                    {
+                        field: 'content',
+                        title: '内容',
+                        visible: false
+                    },
+                    {
+                        field: 'status',
+                        title: '状态',
+                        formatter: function(value, row, index) {
+                            if (value == '0'){
+                                return '正常';
+                            }
+                            return '关闭';
+                        }
+                    },
+
+                    {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success btn-xs " href="javascript:void(0)" onclick="look(\'' + row.id + '\',\'isLook\')"><i class="fa fa-edit"></i>阅读</a> ');
+                            actions.push('<a class="btn btn-success btn-xs " href="javascript:void(0)" onclick="enshrine(\'' + row.id + '\')"><i class="fa fa-edit"></i>收藏</a> ');
+                            actions.push('<a class="btn btn-danger btn-xs " href="javascript:void(0)" onclick="$.operate.removeByTableId(\'' + row.id + '\',\''+'bootstrap-tableBrowse'+'\')"><i class="fa fa-remove"></i>删除</a>');
+                            return actions.join('');
+                        }
+                    }]
+            };
+            $.table.init(optionsBrowse);
+
+        });
+
+        function enshrine(id) {
+            $.ajax({
+                url : prefix + "/enshrine",    //后台controller中的请求路径
+                type : 'POST',
+                data: {'id': id},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    if(data.code == 0){
+                        //刷新收藏
+                        $.table.refresh("bootstrap-tableEnshrine");
+                       $.modal.msgSuccess("操作成功");
+                    }
+                },
+                error : function() {
+                    $.modal.alertError('操作出错');
+                }
+            });
+        }
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('字典树选择')" />
+	<th:block th:include="include :: ztree-css" />
+</head>
+<style>
+	body{height:auto;font-family: "Microsoft YaHei";}
+	button{font-family: "SimSun","Helvetica Neue",Helvetica,Arial;}
+</style>
+<body class="hold-transition box box-main">
+	<input id="id"   type="hidden" />
+	<input id="title" type="hidden" />
+	<input id="name" type="hidden" />
+
+
+	<div class="wrapper"><div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
+		<label id="btnShow" title="显示搜索" style="display:none;">︾</label>
+		<label id="btnHide" title="隐藏搜索">︽</label>
+	</div>
+	<div class="treeSearchInput" id="search">
+		<label for="keyword">关键字：</label><input type="text" class="empty" id="keyword" maxlength="50">
+		<button class="btn" id="btn" onclick="$.tree.searchNode()"> 搜索 </button>
+	</div>
+	<div id="tree" class="ztree treeselect"></div>
+	</div>
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: ztree-js" />
+	<script th:inline="javascript">
+		$(function() {
+
+            if ([[${id}]]){
+                var url = ctx + "hr/area/treeData?id="+[[${id}]];
+            } else {
+                var url = ctx + "hr/area/treeData";
+            }
+			var options = {
+		        url: url,
+				expandLevel: 0,
+                onCheck : zOnClick,
+                beforeCheck : function(treeId, treeNode) {
+                },
+                check : {
+                    enable: true,
+                    chkStyle: "radio"
+				},
+                data: {
+                    key: {
+                        title: "title"         // 节点数据保存节点提示信息的属性名称
+                    },
+                    simpleData: {
+
+                        enable: true, //设置是否启用简单数据格式（zTree支持标准数据格式跟简单数据格式，上面例子中是标准数据格式）
+
+                        idKey: "id", //设置启用简单数据格式时id对应的属性名称
+
+                        pidKey: "pId" //设置启用简单数据格式时parentId对应的属性名称,ztree根据id及pid层级关系构建树结构
+
+                    }
+                }
+		    };
+			$.tree.init(options);
+		});
+		
+		function zOnClick(event, treeId, treeNode) {
+
+		    $("#id").val(treeNode.id);
+		    $("#title").val(treeNode.title);
+		    $("#name").val(treeNode.name);
+		}
+	</script>
+</body>
+</html>

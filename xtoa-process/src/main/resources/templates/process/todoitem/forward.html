@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('转发')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: bootstrap-select-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-forward-add">
+            
+            <div class="form-group">
+                <label class="col-sm-3 control-label labelReqerd is-required">转办人：</label>
+                <div class="col-sm-8">
+                    <div class='input-group'>
+                        <input class='form-control' type='hidden' name='empId' id='empId' required>
+                        <input class='form-control' type='hidden' name='userName' id='userName' required>
+                        <input class='form-control' type='text' name='empName' id='empName' readonly="readonly" required>
+                        <span class='input-group-addon input-sm' onclick='selectEmpTree("", this)'>
+                            <i class='fa fa-search'>选择</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label labelReqerd is-required">转办意见：</label>
+                <div class="col-sm-8">
+                    <input class='form-control' type='text' name='forwardComment' id='forwardComment'>
+                    <input class='form-control' type='text' name='taskId' id='taskId' th:value="${taskId}">
+                    <input class='form-control' type='text' name='todoUserId' id='todoUserId' th:value="${todoUserId}">
+                </div>
+            </div>
+            
+        </form>
+    </div>
+
+    
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: bootstrap-select-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "process/todoitem"
+        $("#form-forward-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/addForward", $('#form-forward-add').serialize());
+            }
+        }
+
+        // 选择字典处理函数
+        function selectEmpTree(columnId, obj) {
+            var url = prefix + "/tree";
+            var options = {
+                title: '选择流程抄送人员',
+                width: "380",
+                url: url,
+                callBack: empSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function empSubmit(index){
+            debugger
+            var body = layer.getChildFrame('body', index);
+            var userId = body.find('#userId').val();
+            var empName = body.find('#empNames').val();
+            var userName = body.find('#userName').val();
+            layer.close(index);
+            $("#empId").val(userId);
+            $("#empName").val(empName);
+            $("#userName").val(userName);
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrWorkPlanMapper">
+    <resultMap type="com.ruoyi.base.domain.HrWorkPlan" id="HrWorkPlanResult">
+        <id property="id" column="id"/>
+            <result property="content" column="content"/>
+            <result property="summary" column="summary"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+            <result property="completionTime" column="completion_time"/>
+            <result property="isRemind" column="is_remind"/>
+            <result property="attachment" column="attachment"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+            <result property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="jobId" column="job_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.content,
+            entity.summary,
+            entity.start_time,
+            entity.end_time,
+            entity.completion_time,
+            entity.is_remind,
+            entity.attachment,
+            entity.emp_id,
+            entity.emp_name,
+            entity.dept_id,
+            entity.dept_name,
+            entity.post_id,
+            entity.post_name,
+            entity.create_id,
+            entity.job_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectHrWorkPlanList" parameterType="com.ruoyi.base.domain.HrWorkPlan" resultMap="HrWorkPlanResult">
+        select <include refid="baseColumns"/> from t_hr_work_plan entity
+        where  entity.del_flag = '0'
+            <if test="content != null  and content != ''"> and entity.content = #{content}</if>
+                <if test="summary != null  and summary != ''"> and entity.summary = #{summary}</if>
+                <if test="startTime != null "> and entity.start_time = #{startTime}</if>
+                <if test="endTime != null "> and entity.end_time = #{endTime}</if>
+                <if test="completionTime != null "> and entity.completion_time = #{completionTime}</if>
+                <if test="isRemind != null  and isRemind != ''"> and entity.is_remind = #{isRemind}</if>
+                <if test="attachment != null  and attachment != ''"> and entity.attachment = #{attachment}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+                <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+                <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="jobId != null "> and entity.job_id = #{jobId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteHrWorkPlanById" parameterType="Long">
+        update  t_hr_work_plan set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrWorkPlanByIds" parameterType="String">
+        update  t_hr_work_plan set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

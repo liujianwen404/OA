@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('转正申请列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <!--<li>
+                                <label>标题：</label>
+                                <input type="text" name="title"/>
+                            </li>-->
+
+                            <li>
+                                <label>申请人：</label>
+                                <input type="text" name="applyUserName"/>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="hr:regular:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+
+     <div class="container-div" id="hiddenDiv" hidden="hidden">
+         <div class="row">
+             <form class="form-horizontal m" id="form-toolRepeal">
+                 <div class="btn-group-sm" id="toolRepeal" >
+                     <div class="form-group">
+                         <input name="instanceId" id="instanceId" class="form-control" type="hidden">
+                         <label class="col-sm-3 control-label is-required">撤回理由：</label>
+                         <div class="col-sm-8">
+                             <input name="message" class="form-control" type="text" required>
+                         </div>
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+
+    <th:block th:include="include :: footer" />
+     <th:block th:include="include :: select2-js" />
+
+     <script th:inline="javascript">
+         var editFlag = [[${@permission.hasPermi('hr:regular:edit')}]];
+         var removeFlag = [[${@permission.hasPermi('hr:regular:remove')}]];
+         var prefix = ctx + "hr/regular";
+         var datas = [[${@dict.getType('auditStatus')}]];
+         var currentUser = [[${currentUser}]];
+
+         function repeal(instanceId){
+             var url = prefix + "/repeal";
+             $('#instanceId').val(instanceId);
+             layer.open({
+                 type: 1,
+                 area: ['600px', '300px'],
+                 fix: false,
+                 //不固定
+                 maxmin: true,
+                 shade: 0.3,
+                 title: "撤销申请",
+                 content: $('#hiddenDiv'),
+                 btn: ['确定', '关闭'],
+                 // 弹层外区域关闭
+                 shadeClose: false,
+                 yes: function(index) {
+                     if ($.validate.form('form-toolRepeal')) {
+                         $.operate.save(url, $('#form-toolRepeal').serialize());
+                     }
+                 }
+             });
+
+         }
+
+         $(function() {
+             var options = {
+                 url: prefix + "/list",
+                 createUrl: prefix + "/add",
+                 updateUrl: prefix + "/edit/{id}",
+                 removeUrl: prefix + "/remove",
+                 exportUrl: prefix + "/export",
+                 detailUrl: prefix + "/edit/{id}",
+                 sortName: "createTime",
+                 sortOrder: "desc",
+                 modalName: "转正申请业务",
+                 columns: [{
+                     checkbox: false
+                 },
+                     {
+                         field : 'id',
+                         title : '主键ID',
+                         visible: false
+                     },
+                     {
+                         field : 'nonManagerDate',
+                         title : '入职时间'
+                     },
+                     {
+                         field : 'trial',
+                         title : '试用期限'
+                     },
+                     {
+                         field : 'sumUp',
+                         title : '试用期内对工作的总结',
+                     },
+                     {
+                         field : 'suggest',
+                         title : '对公司的意见和建议'
+                     },
+                     {
+                         field : 'title',
+                         title : '标题',
+                         visible: false
+                     },
+                     {
+                         field : 'reason',
+                         title : '原因',
+                         visible: false
+                     },
+                     {
+                         field : 'instanceId',
+                         title : '流程实例ID',
+                         visible: false
+                     },
+                     {
+                         field: 'createBy',
+                         title: '创建人ID',
+                         visible: false
+                     },
+                     {
+                         field: 'createUserName',
+                         title: '创建人',
+                         visible: false
+                     },
+                     {
+                         field: 'applyUser',
+                         title: '申请人ID',
+                         visible: false
+                     },
+                     {
+                         field: 'applyUserName',
+                         title: '<span>申请人</span>',
+                         formatter: function(value, row, index) {
+                             return '<span>' + (value ? value : "-") + '</span>';
+                         }
+                     },
+                     {
+                         field: 'applyTime',
+                         title: '申请时间'
+                     },
+                     {
+                         field: 'taskId',
+                         title: '当前任务ID',
+                         visible: false
+                     },
+                     {
+                         field: 'taskName',
+                         title: '当前任务名称',
+                         align: 'center',
+                         formatter: function(value, row, index) {
+                             return '<span class="badge badge-primary">' + value + '</span>';
+                         }
+                     },
+                     {
+                         field: 'todoUserName',
+                         title: '当前处理人'
+                     },
+                     {
+                         field : 'auditStatus',
+                         title : '审核状态',
+                         align : 'center',
+                         formatter: function(value, row, index) {
+                             return $.table.selectDictLabel(datas, value);
+                         }
+                     },
+                     {
+                         title: '操作',
+                         align: 'center',
+                         formatter: function(value, row, index) {
+                             var actions = [];
+                             console.log(row.instanceId);
+                             if (row.instanceId) {
+                                 actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-eye"></i> 表单数据</a> ');
+                                 actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showHistoryDialog(\'' + row.instanceId + '\')"><i class="fa fa-list"></i> 审批历史</a> ');
+                                 actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showProcessImgDialog(\'' + row.instanceId + '\')"><i class="fa fa-image"></i> 进度查看</a> ');
+                                 if (row.delFlag == 0 && (row.auditStatus == 0 || row.auditStatus == 1)){
+                                     actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="repeal(\'' + row.instanceId + '\')"><i class="fa fa-remove"></i>撤回</a>');
+                                 }
+                             } else {
+                                 actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="submitApply(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-user"></i> 提交申请</a> ');
+                                 actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editForm(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-edit"></i> 编辑</a> ');
+                                 actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="removeForm(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-remove"></i> 删除</a>');
+                             }
+                             return actions.join('');
+                         }
+                     }]
+             };
+             $.table.init(options);
+         });
+
+         function submitApply(id, createBy) {
+             if (createBy !== currentUser.loginName) {
+                 $.modal.alertWarning("不允许非创建人提交申请！");
+                 return;
+             }
+             $.modal.confirm("确认要提交申请吗?", function() {
+                 var url = prefix + "/submitApply";
+                 var data = { "id": id };
+                 $.operate.submit(url, "post", "json", data);
+             });
+         }
+
+         function editForm(id, createBy) {
+             if (createBy !== currentUser.loginName) {
+                 $.modal.alertWarning("不允许非创建人编辑表单！");
+                 return;
+             }
+             $.operate.edit(id);
+         }
+
+         function removeForm(id, createBy) {
+             if (createBy !== currentUser.loginName) {
+                 $.modal.alertWarning("不允许非创建人删除表单！");
+                 return;
+             }
+             $.operate.remove(id);
+         }
+
+         /* 查看审批历史 */
+         function showHistoryDialog(instanceId) {
+             var url = ctx + 'process/general/historyList/' + instanceId;
+             $.modal.open("查看审批历史", url);
+         }
+
+         function showProcessImgDialog(instanceId) {
+             var url = ctx + 'process/general/processImg/' + instanceId;
+             $.modal.open("查看流程图 (标红表示已结束或活动中的流程)", url);
+         }
+     </script>
+</body>
+</html>

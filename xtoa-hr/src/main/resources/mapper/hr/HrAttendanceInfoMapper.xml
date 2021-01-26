@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrAttendanceInfoMapper">
+    <resultMap type="com.ruoyi.base.domain.HrAttendanceInfo" id="HrAttendanceInfoResult">
+        <id property="id" column="id"/>
+            <result property="dingUserId" column="ding_user_id"/>
+            <result property="groupId" column="group_id"/>
+            <result property="planId" column="plan_id"/>
+            <result property="classId" column="class_id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="workDate" column="work_date"/>
+            <result property="baseCheckTime" column="base_check_time"/>
+            <result property="planCheckTime" column="plan_check_time"/>
+            <result property="userCheckTime" column="user_check_time"/>
+            <result property="checkType" column="check_type"/>
+            <result property="sourceType" column="source_type"/>
+            <result property="timeResult" column="time_result"/>
+            <result property="resultMinutes" column="result_minutes"/>
+            <result property="locationResult" column="location_result"/>
+            <result property="locationMethod" column="location_method"/>
+            <result property="approveId" column="approve_id"/>
+            <result property="procInstId" column="proc_inst_id"/>
+            <result property="isLegal" column="is_legal"/>
+            <result property="deviceId" column="device_id"/>
+            <result property="userAddress" column="user_address"/>
+            <result property="userLongitude" column="user_longitude"/>
+            <result property="userLatitude" column="user_latitude"/>
+            <result property="userAccuracy" column="user_accuracy"/>
+            <result property="baseAddress" column="base_address"/>
+            <result property="baseLongitude" column="base_longitude"/>
+            <result property="baseLatitude" column="base_latitude"/>
+            <result property="baseAccuracy" column="base_accuracy"/>
+            <result property="imgUrl" column="img_url"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+            <result property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.ding_user_id,
+            entity.group_id,
+            entity.plan_id,
+            entity.class_id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.work_date,
+            entity.base_check_time,
+            entity.plan_check_time,
+            entity.user_check_time,
+            entity.check_type,
+            entity.source_type,
+            entity.time_result,
+            entity.result_minutes,
+            entity.location_result,
+            entity.location_method,
+            entity.approve_id,
+            entity.proc_inst_id,
+            entity.is_legal,
+            entity.device_id,
+            entity.user_address,
+            entity.user_longitude,
+            entity.user_latitude,
+            entity.user_accuracy,
+            entity.base_address,
+            entity.base_longitude,
+            entity.base_latitude,
+            entity.base_accuracy,
+            entity.img_url,
+            entity.dept_id,
+            entity.dept_name,
+            entity.post_id,
+            entity.post_name,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectHrAttendanceInfoList" parameterType="com.ruoyi.base.domain.HrAttendanceInfo" resultMap="HrAttendanceInfoResult">
+        select <include refid="baseColumns"/> from t_hr_attendance_info entity
+        where  entity.del_flag = '0'
+            <if test="dingUserId != null  and dingUserId != ''"> and entity.ding_user_id = #{dingUserId}</if>
+                <if test="groupId != null "> and entity.group_id = #{groupId}</if>
+                <if test="planId != null "> and entity.plan_id = #{planId}</if>
+                <if test="classId != null "> and entity.class_id = #{classId}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+                <if test="workDate != null  and workDate != ''"> and entity.work_date = #{workDate}</if>
+                <if test="baseCheckTime != null "> and entity.base_check_time = #{baseCheckTime}</if>
+                <if test="planCheckTime != null "> and entity.plan_check_time = #{planCheckTime}</if>
+                <if test="userCheckTime != null "> and entity.user_check_time = #{userCheckTime}</if>
+                <if test="checkType != null  and checkType != ''"> and entity.check_type = #{checkType}</if>
+                <if test="sourceType != null  and sourceType != ''"> and entity.source_type = #{sourceType}</if>
+                <if test="timeResult != null  and timeResult != ''"> and entity.time_result = #{timeResult}</if>
+                <if test="resultMinutes != null  and resultMinutes != ''"> and entity.result_minutes = #{resultMinutes}</if>
+                <if test="locationResult != null  and locationResult != ''"> and entity.location_result = #{locationResult}</if>
+                <if test="locationMethod != null  and locationMethod != ''"> and entity.location_method = #{locationMethod}</if>
+                <if test="approveId != null  and approveId != ''"> and entity.approve_id = #{approveId}</if>
+                <if test="procInstId != null  and procInstId != ''"> and entity.proc_inst_id = #{procInstId}</if>
+                <if test="isLegal != null  and isLegal != ''"> and entity.is_legal = #{isLegal}</if>
+                <if test="deviceId != null  and deviceId != ''"> and entity.device_id = #{deviceId}</if>
+                <if test="userAddress != null  and userAddress != ''"> and entity.user_address = #{userAddress}</if>
+                <if test="userLongitude != null  and userLongitude != ''"> and entity.user_longitude = #{userLongitude}</if>
+                <if test="userLatitude != null  and userLatitude != ''"> and entity.user_latitude = #{userLatitude}</if>
+                <if test="userAccuracy != null  and userAccuracy != ''"> and entity.user_accuracy = #{userAccuracy}</if>
+                <if test="baseAddress != null  and baseAddress != ''"> and entity.base_address = #{baseAddress}</if>
+                <if test="baseLongitude != null  and baseLongitude != ''"> and entity.base_longitude = #{baseLongitude}</if>
+                <if test="baseLatitude != null  and baseLatitude != ''"> and entity.base_latitude = #{baseLatitude}</if>
+                <if test="baseAccuracy != null  and baseAccuracy != ''"> and entity.base_accuracy = #{baseAccuracy}</if>
+                <if test="imgUrl != null  and imgUrl != ''"> and entity.img_url = #{imgUrl}</if>
+                <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+                <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteHrAttendanceInfoById" parameterType="Long">
+        update  t_hr_attendance_info set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrAttendanceInfoByIds" parameterType="String">
+        update  t_hr_attendance_info set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="getClockIn" resultType="hashmap">
+        SELECT
+            a.user_address,
+            a.user_check_time,
+            a.check_type,
+            a.time_result,
+            a.location_result,
+            a.remark
+        FROM
+            t_hr_attendance_info a
+        WHERE
+            a.emp_id = #{userId}
+            AND a.work_date = #{date}
+            AND a.del_flag = 0
+    </select>
+
+    <update id="delClockIn">
+        update  t_hr_attendance_info a set a.del_flag =  '1'
+        WHERE
+            a.emp_id = #{userId}
+            AND a.work_date = #{today}
+            AND a.check_type = 'OffDuty'
+            AND a.del_flag = 0
+    </update>
+
+    <select id="selectDelClockIn" resultMap="HrAttendanceInfoResult">
+        select id from  t_hr_attendance_info a
+        WHERE
+            a.emp_id = #{userId}
+            AND a.work_date = #{today}
+            AND a.check_type = 'OffDuty'
+            AND a.del_flag = 0
+    </select>
+
+    <select id="selectHrAttendanceInfoAllList" parameterType="com.ruoyi.base.domain.HrAttendanceInfo" resultMap="HrAttendanceInfoResult">
+        SELECT
+            a.emp_id,
+            a.emp_name,
+            a.class_id,
+            a.group_id,
+            a.dept_id,
+            a.post_id,
+            a.work_date,
+            a.base_check_time,
+            a.plan_check_time,
+            a.user_check_time,
+            a.check_type,
+            a.source_type,
+            a.time_result,
+            a.result_minutes,
+            a.location_result,
+            a.user_address,
+            a.img_url,
+            a.remark
+        FROM
+            t_hr_attendance_info a
+            LEFT JOIN t_hr_emp e ON a.emp_id = e.emp_id
+            LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        WHERE
+            1 = 1
+            AND a.del_flag = 0
+            AND e.del_flag = 0
+            AND d.del_flag = 0
+            <if test="empId != null "> and a.emp_id = #{empId}</if>
+            <if test="empName != null  and empName != ''"> and a.emp_name like concat('%', #{empName}, '%')</if>
+            <if test="workDate != null  and workDate != ''"> and a.work_date = #{workDate}</if>
+            <if test="deptId != null "> and ( a.dept_id = #{deptId} or a.dept_id
+                IN (SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0'))</if>
+            <if test="deptName != null  and deptName != ''"> and a.dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="postId != null "> and a.post_id = #{postId}</if>
+            <if test="postName != null  and postName != ''"> and a.post_name like concat('%', #{postName}, '%')</if>
+            <if test="timeResult != null  and timeResult != ''"> and a.time_result = #{timeResult}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+    </select>
+
+    <select id="selectActualAttendanceDay" resultType="hashmap">
+        SELECT DISTINCT
+            a.work_date,
+            b.hours
+        FROM
+            t_hr_attendance_info a
+            LEFT JOIN t_hr_attendance_class b ON a.class_id = b.id
+        WHERE
+            1 = 1
+            AND a.del_flag = 0
+            AND a.emp_id = #{empId}
+	        AND YEAR(a.work_date) = #{year}
+	        AND MONTH(a.work_date) = #{month}
+    </select>
+
+    <select id="selectLateOrEarly" resultType="integer">
+        SELECT COUNT(1)
+        FROM
+            t_hr_attendance_info a
+        WHERE
+            1 = 1
+            AND a.del_flag = 0
+            AND a.emp_id = #{empId}
+            AND YEAR(a.work_date) = #{year}
+            AND MONTH ( a.work_date ) = #{month}
+            AND a.time_result IN ('AbsenteeismLate','AbsenteeismEarly')
+    </select>
+
+    <select id="selectAbsentListByDay" resultType="String">
+        SELECT check_type
+        FROM
+            t_hr_attendance_info a
+        WHERE
+            1 = 1
+            AND a.del_flag = 0
+            AND a.emp_id = #{empId}
+            AND a.user_check_time LIKE concat('%', #{day}, '%')
+            AND a.time_result IN ('AbsenteeismLateOneDay','AbsenteeismEarlyOneDay')
+    </select>
+
+</mapper>

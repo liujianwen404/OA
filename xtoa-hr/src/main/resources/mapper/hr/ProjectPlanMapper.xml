@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.ProjectPlanMapper">
+    <resultMap type="com.ruoyi.base.domain.ProjectPlan" id="ProjectPlanResult">
+        <id property="id" column="id"/>
+            <result property="projectId" column="project_id"/>
+            <result property="name" column="name"/>
+            <result property="contentDescribe" column="content_describe"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_id"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+            <result property="status" column="status"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+            entity.id,
+            entity.project_id,
+            entity.name,
+            entity.content_describe,
+            entity.emp_id,
+            hr.emp_name,
+            entity.start_time,
+            entity.end_time,
+            entity.status,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectProjectPlanList" parameterType="com.ruoyi.base.domain.ProjectPlan" resultMap="ProjectPlanResult">
+        SELECT <include refid="baseColumns"/> FROM t_project_plan entity
+        LEFT JOIN t_hr_emp hr ON entity.emp_id =hr.emp_id
+        <where>
+            entity.del_flag = '0'
+            <if test="projectId != null "> AND entity.project_id = #{projectId}</if>
+            <if test="status != null "> AND entity.status = #{status}</if>
+            <if test="empId != null "> AND entity.id IN ( SELECT project_plan_id FROM t_project_emp WHERE emp_id = #{empId} )</if>
+
+        </where>
+
+
+    </select>
+
+    <select id="getProjectPlanList" parameterType="com.ruoyi.base.domain.DTO.ProjectPlanDTO" resultType="com.ruoyi.base.domain.VO.ProjectPlanVO">
+        SELECT
+        entity.id,
+        entity.project_id projectId,
+        tp.`name` projectName,
+        entity.NAME,
+        entity.content_describe contentDescribe,
+        entity.emp_id empId,
+        hr.emp_name empName,
+        entity.start_time startTime,
+        entity.end_time endTime,
+        entity.STATUS,
+        entity.create_time createTime
+        FROM
+        t_project_plan entity
+        LEFT JOIN t_hr_emp hr ON entity.emp_id = hr.emp_id
+        LEFT JOIN t_project tp ON entity.project_id = tp.id
+        <where>
+            entity.del_flag = '0'
+
+            <if test="projectId != null "> AND entity.project_id = #{projectId}</if>
+            <if test="status != null "> AND entity.status = #{status}</if>
+            <if test="empName != null  and empName != ''"> AND hr.emp_name LIKE concat('%', #{empName}, '%')</if>
+        </where>
+        ORDER BY entity.create_time DESC
+
+    </select>
+
+
+
+    <select id="selectProjectPlanListOld" parameterType="com.ruoyi.base.domain.ProjectPlan" resultMap="ProjectPlanResult">
+        select <include refid="baseColumns"/> from t_project_plan entity
+        where  entity.del_flag = '0'
+        <if test="projectId != null "> and entity.project_id = #{projectId}</if>
+        <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+        <if test="contentDescribe != null  and contentDescribe != ''"> and entity.content_describe = #{contentDescribe}</if>
+        <if test="empId != null "> and entity.emp_id = #{empId}</if>
+        <if test="startTime != null "> and entity.start_time = #{startTime}</if>
+        <if test="endTime != null "> and entity.end_time = #{endTime}</if>
+        <if test="status != null "> and entity.status = #{status}</if>
+        <if test="createId != null "> and entity.create_id = #{createId}</if>
+        <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+
+    </select>
+
+    <select id="selectProjectPlanEmps" resultType="Long">
+        select distinct emp_id from t_project_plan where project_id = #{projectId} and del_flag = '0' and status = 0
+    </select>
+
+    <update id="deleteProjectPlanById" parameterType="Long">
+        update  t_project_plan set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteProjectPlanByIds" parameterType="String">
+        update  t_project_plan set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

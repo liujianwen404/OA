@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增财务付款流程')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: bootstrap-fileinput-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-payment-add">
+            <div class="form-group"  style="display: none" >
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}" th:selected="${dept.getDeptId() == hrEmp?.deptId}" th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" style="display: none" >
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}" th:selected="${post.getPostId() == hrEmp?.postId}" th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <input name="title" id="title" class="form-control" type="text" style="display: none;" required>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>付款事由：</label>
+                <div class="col-sm-8">
+                    <textarea name="reason" class="form-control" maxlength="200" required></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>公司类型：</label>
+                <div class="col-sm-8">
+                    <select name="companyType" class="form-control m-b" th:with="companyType=${@dict.getType('paymentCompanyType')}">
+                        <option th:each="dict : ${companyType}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>付款类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b" th:with="type=${@dict.getType('paymentType')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>付款总额：</label>
+                <div class="col-sm-8">
+                    <input name="amount" class="form-control" type="number" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>付款方式：</label>
+                <div class="col-sm-8">
+                    <select name="mode" class="form-control m-b" th:with="type=${@dict.getType('paymentMode')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>支付日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="paymentDate" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>支付对象：</label>
+                <div class="col-sm-8">
+                    <input name="object" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>开户行：</label>
+                <div class="col-sm-8">
+                    <input name="bank" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>银行账户：</label>
+                <div class="col-sm-8">
+                    <input name="account" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-8">
+                    <a class="btn btn-info" onclick="openUpload()">
+                        <i class="fa fa-upload"></i> 上传附件
+                    </a>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">附件：</label>
+                <div id="fileInsert" class="col-sm-8">
+                    <!-- 这里是文件插入位置 -->
+                </div>
+                <input id="attachment" name="attachment" class="form-control" type="hidden">
+                <input id="path" name="path" class="form-control" type="hidden">
+            </div>
+
+        </form>
+    </div>
+
+    <!-- 上传区域 -->
+    <div class="container-div" id="uploadDiv" style="display: none;" >
+        <div class="row">
+            <form class="form-horizontal m" id="form-toolRepeal">
+                <div class="ibox-content">
+                    <div class="form-group">
+                        <label class="font-noraml">文件上传</label>
+                        <div class="file-loading">
+                            <input id="fileinput" name="files" class="file" type="file" multiple data-min-file-count="1" data-theme="fas">
+                            <input type="hidden" id="month">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: bootstrap-fileinput-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/payment"
+        $("#form-payment-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $('input[name="title"]').val('[[${hrEmp?.empName}]]采购付款申请');
+                $("select[name=deptId]").attr("disabled",false);
+                $("select[name=postId]").attr("disabled",false);
+                $.operate.save(prefix + "/add", $('#form-payment-add').serialize());
+            }
+        }
+
+        $("input[name='paymentDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        function openUpload(){
+            var _btn = ['<i class="fa fa-close"></i> 关闭'];
+            layer.open({
+                type: 1,
+                area: ['700px', '600px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: "上传文件",
+                content: $('#uploadDiv'),
+                btn: _btn,
+                closeBtn: 1,
+                // 弹层外区域关闭
+                shadeClose: false,
+                cancel: function(){
+                    return true;
+                }
+            });
+
+        }
+
+        var uploadUrl = prefix + "/upload";
+        $("#fileinput").fileinput({
+            theme: 'explorer-fas',
+            uploadAsync: false, //关闭异步上传，改为同步上传，异步情况下多文件上传会请求后台接口多次。
+            uploadUrl: uploadUrl,
+            overwriteInitial: false,    //不允许覆盖初始的预览，所以添加文件时不会覆盖
+            initialPreviewAsData: true, // 确定你是否仅发送预览数据，而不是原始标记
+            // allowedFileExtensions: ["xlsx", "xls"],  //允许的文件后缀
+            dropZoneTitle:'拖拽文件到这里 &hellip;<br>',
+            msgPlaceholder: '上传文件...',
+            layoutTemplates: {
+                actionUpload: '', //去除上传预览缩略图中的上传图片
+                actionZoom:'',   //去除上传预览缩略图中的查看详情预览的缩略图标
+                actionDownload:'' ,//去除上传预览缩略图中的下载图标
+                /*actionDelete:'', //去除上传预览的缩略图中的删除图标*/
+            },
+        }).on('filebatchuploadsuccess', function(event,data,previewId,index) {//同步上传回调
+            if(data.response.code == 0){
+                let file = data.response.data;
+                let name = ",";
+                let path = ",";
+                console.log(file);
+                for(let i=0;i<file.length;i++){
+                    name += file[i].name + ",";
+                    path += file[i].path + ",";
+                    let divHtml = document.createElement('div');
+                    let aHtml = document.createElement('a');
+                    let delHtml = document.createElement('a');
+                    aHtml.innerHTML = file[i].name;
+                    delHtml.innerHTML = '删除';
+                    $(aHtml).attr('href',file[i].path);
+                    $(aHtml).attr('style','color:blue');
+                    $(aHtml).attr('download',file[i].name);
+                    $(delHtml).attr('onclick','delFile(this,"'+file[i].name+'","'+file[i].path+'")');
+                    $(delHtml).attr('style','color:red');
+                    $(divHtml).append(aHtml).append("&nbsp;&nbsp;").append(delHtml).append("<br/>");
+                    $("#fileInsert").append(divHtml);
+                }
+                let newName = $("#attachment").val()+name;
+                let newPath = $("#path").val()+path;
+                let nameArray = newName.split(",");
+                let pathArray = newPath.split(",");
+                let newNameArray = $.common.trimSpace(nameArray);
+                let newPathArray = $.common.trimSpace(pathArray);
+                $("#attachment").val(newNameArray);
+                $("#path").val(newPathArray);
+            }else if(data.response.code == 500){
+                $.modal.alertError(data.response.msg);
+            }else {
+                $.modal.alertWarning(data.response.msg);
+            }
+        });
+
+        function delFile(obj,name,path) {
+            let attachments = $("#attachment").val();
+            let paths = $("#path").val();
+            console.log(name)
+            console.log(path)
+            let newNames = attachments.replace(name,'');
+            let newPahts = paths.replace(path,'');
+            $(obj).parent().remove();
+            console.log(newNames)
+            console.log(newPahts)
+            let nameArray = newNames.split(",");
+            let pathArray = newPahts.split(",");
+            let newNameArray = $.common.trimSpace(nameArray);
+            let newPathArray = $.common.trimSpace(pathArray);
+            $("#attachment").val(newNameArray);
+            $("#path").val(newPathArray);
+        }
+
+    </script>
+</body>
+</html>

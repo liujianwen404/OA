@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrOffMapper">
+    <resultMap type="com.ruoyi.base.domain.HrOff" id="HrOffResult">
+        <id property="id" column="id"/>
+            <result property="toOffName" column="to_off_name"/>
+            <result property="toOffEmail" column="to_off_email"/>
+            <result property="phonenumber" column="phonenumber"/>
+            <result property="adjunct" column="adjunct"/>
+            <result property="isSend" column="is_send"/>
+            <result property="isRevert" column="is_revert"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="postId" column="post_id"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="auditStatus" column="audit_status"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+        <result property="city" column="city"/>
+        <result property="nonManagerDate" column="non_manager_date"/>
+        <result property="resumeAdjunct" column="resume_adjunct"/>
+
+        <result property="probationDate" column="probation_date"/>
+
+        <result property="salaryLevel" column="salary_level"/>
+        <result property="salaryStandard" column="salary_standard"/>
+        <result property="salaryAdjunct" column="salary_adjunct"/>
+        <result property="recruiterName" column="recruiter_name"/>
+
+        <result property="applyUser" column="apply_user"/>
+        <result property="applyTime" column="apply_time"/>
+        <result property="applyUserName" column="apply_user_name"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.to_off_name,
+            entity.to_off_email,
+            entity.phonenumber,
+            entity.adjunct,
+            entity.is_send,
+            entity.is_revert,
+            entity.dept_id,
+            entity.post_id,
+            entity.instance_id,
+            entity.audit_status,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time,
+            entity.city,
+            entity.non_manager_date,
+            entity.resume_adjunct,
+
+            entity.probation_date,
+
+            entity.salary_level,
+            entity.salary_standard,
+            entity.salary_adjunct,
+            entity.recruiter_name,
+
+            entity.apply_user,
+            entity.apply_time,
+            entity.apply_user_name
+        </sql>
+
+    <sql id="whereSql">
+        <if test="toOffName != null  and toOffName != ''"> and entity.to_off_name like concat('%', #{toOffName}, '%')</if>
+        <if test="toOffEmail != null  and toOffEmail != ''"> and entity.to_off_email = #{toOffEmail}</if>
+        <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+        <if test="city != null  and city != ''"> and entity.city = #{city}</if>
+        <if test="nonManagerDate != null "> and entity.non_manager_date = #{nonManagerDate}</if>
+        <if test="resumeAdjunct != null  and resumeAdjunct != ''"> and entity.resume_adjunct = #{resumeAdjunct}</if>
+
+        <if test="probationDate != null  and probationDate != ''"> and entity.probation_date = #{probationDate}</if>
+
+        <if test="applyUser != null  and applyUser != ''"> and entity.apply_user = #{applyUser}</if>
+        <if test="applyTime != null "> and entity.apply_time = #{applyTime}</if>
+        <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+        <if test="createBy != null  and createBy != ''"> and entity.create_by = #{createBy}</if>
+        <if test="createId != null  and createId != ''"> and entity.create_id = #{createId}</if>
+
+
+        <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+            and date_format(entity.apply_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+        </if>
+        <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+            and date_format(entity.apply_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+        </if>
+
+        <if test="auditStatus != null "> and entity.audit_status = #{auditStatus} </if>
+        <if test="deptId != null ">
+            and ( entity.dept_id = #{deptId} or entity.dept_id
+            IN (SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+            WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0'))</if>
+        <if test="postId != null "> and entity.post_id = #{postId}</if>
+
+
+
+    </sql>
+
+    <select id="selectHrOffList" parameterType="com.ruoyi.base.domain.HrOff" resultMap="HrOffResult">
+        select <include refid="baseColumns"/> from t_hr_off entity
+        where  entity.del_flag = '0'
+            <include refid="whereSql"/>
+        order by update_time desc
+    </select>
+    <select id="selectHrOffListManage" parameterType="com.ruoyi.base.domain.HrOff" resultMap="HrOffResult">
+        select <include refid="baseColumns"/> from t_hr_off entity
+        LEFT JOIN sys_dept d ON entity.dept_id = d.dept_id
+        where  entity.del_flag = '0'
+        <include refid="whereSql"/>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by update_time desc
+    </select>
+
+
+    <update id="deleteHrOffById" parameterType="Long">
+        update  t_hr_off set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrOffByIds" parameterType="String">
+        update  t_hr_off set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

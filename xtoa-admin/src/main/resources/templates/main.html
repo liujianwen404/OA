@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--360浏览器优先以webkit内核解析-->
+    <title>鲜恬介绍</title>
+
+    <th:block th:include="include :: header('鲜恬主页')" />
+   <!-- <link rel="shortcut icon" href="favicon.ico">
+    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link href="../static/css/main/animate.min.css" th:href="@{/css/main/animate.min.css}" rel="stylesheet"/>
+    <link th:href="@{/ruoyi/css/ry-ui.css}" rel="stylesheet"/>-->
+    <link href="../static/css/main/style.min862f.css" th:href="@{/css/main/style.min862f.css}" rel="stylesheet"/>
+    <link th:href="@{/ajax/libs/layui/css/layui.css}" rel="stylesheet"/>
+    <style>
+        #th1 th{
+            font-size: 15px;
+            text-align:center;
+            vertical-align: middle !important;
+        }
+        h2 {
+            font-weight:bold;
+        }
+        h3 {
+            font-weight:bold;
+        }
+        .img1 {
+            width: 100px;
+            height: 100px;
+            margin-left: 10px
+        }
+
+        .carousel-caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 15px;
+            background: #333333;
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .countForEmp {
+            margin-left: -1px
+        }
+    </style>
+</head>
+
+<body class="white-bg">
+
+    <!--<div id="hrIndex" style="display: none">
+        <div class="col-sm-12">
+            <div class="col-sm-6">
+                <div>
+                    <br/>
+                    <h2>信息中心
+                        &lt;!&ndash;<a class="btn btn-success btn-xs " onclick="createMyMenuItem('/hr/knowledge/knowledgeInfo?isFrom=main','信息中心')" href="javascript:void(0)">
+                            <i class="fa fa-edit"></i>更多
+                        </a>&ndash;&gt;
+                    </h2>
+                    <br/>
+                </div>
+                <div class="layui-carousel" id="hrIndexCarousel">
+                    <div id="hrIndexCarouselItem" carousel-item>
+                        <div>条目1</div>
+                        <div>条目2</div>
+                        <div>条目3</div>
+                        <div>条目4</div>
+                        <div>条目5</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="row  border-bottom dashboard-header" >
+                    <h3>数据统计</h3>
+                    &lt;!&ndash;试用期&ndash;&gt;
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="col-sm-12 select-table table-bordered" >
+                                <table id="hrRegularSelect" class="table table-condensed" >
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    &lt;!&ndash;入职&ndash;&gt;
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="col-sm-12 select-table table-bordered" >
+                                <table id="nonManagerSelect" class="table table-condensed" >
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    &lt;!&ndash;离职&ndash;&gt;
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="col-sm-12 select-table table-bordered" >
+                                <table id="hrQuitSelect" class="table table-condensed" >
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row  border-bottom white-bg dashboard-header">
+            <h3>流程中心</h3>
+            <div class="col-sm-2">
+                <div style="width: 300px;height: 50px">
+                    <img src="/img/xtoa/加班申请@2x.png" style="width: 50px;height: 50px"></img>
+                    <span class="nonManagerCount" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_non_manager','待办事项')">入职待办</span>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div style="width: 300px;height: 50px">
+                    <img src="/img/xtoa/值班申请@2x.png" style="width: 50px;height: 50px"></img>
+                    <span class="regularCount" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_regular','待办事项')">员工转正待办</span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div style="width: 300px;height: 50px">
+                    <img src="/img/xtoa/请假申请@2x.png" style="width: 50px;height: 50px"></img>
+                    <span class="leaveCount" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_leave','待办事项')">员工请假待办</span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div style="width: 300px;height: 50px">
+                    <img src="/img/xtoa/出差申请@2x.png" style="width: 50px;height: 50px"></img>
+                    <span class="transferCount" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_transfer','待办事项')">员工调动待办</span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div style="width: 300px;height: 50px">
+                    <img src="/img/xtoa/外出申请@2x.png" style="width: 50px;height: 50px"></img>
+                    <span class="quitCount" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_quit','待办事项')">离职申请待办</span>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row  border-bottom white-bg dashboard-header" >
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <h3>邮箱提醒（未读5）</h3>
+                    <div  class="table-responsive" style="height: 200px" >
+                        <table class="table table-condensed" style="font-size: 18px">
+                            <tr>
+                                <td><img src="/img/profile.jpg" style="width: 50px;height: 50px"></td>
+                                <td>通知！如何免费试用体验OA办公软件V1.0</td>
+                                <td>2020-04-29</td>
+                            </tr>
+                            <tr>
+                                <td><img src="/img/profile.jpg" style="width: 50px;height: 50px"></td>
+                                <td>通知！如何免费试用体验OA办公软件V1.0</td>
+                                <td>2020-04-29</td>
+                            </tr>
+                            <tr>
+                                <td><img src="/img/profile.jpg" style="width: 50px;height: 50px"></img></td>
+                                <td>通知！如何免费试用体验OA办公软件V1.0</td>
+                                <td>2020-04-29</td>
+                            </tr>
+                            <tr>
+                                <td><img src="/img/profile.jpg" style="width: 50px;height: 50px"></img></td>
+                                <td>通知！如何免费试用体验OA办公软件V1.0</td>
+                                <td>2020-04-29</td>
+                            </tr>
+                            <tr>
+                                <td><img src="/img/profile.jpg" style="width: 50px;height: 50px"></img></td>
+                                <td>通知！如何免费试用体验OA办公软件V1.0</td>
+                                <td>2020-04-29</td>
+                            </tr>
+                            <tr>
+                                <td><img src="/img/profile.jpg" style="width: 50px;height: 50px"></img></td>
+                                <td>通知！如何免费试用体验OA办公软件V1.0</td>
+                                <td>2020-04-29</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <table class="table table-condensed">
+                        <tr>
+                            <th>个人考勤</th>
+                        </tr>
+                        <tr>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                        </tr>
+                        <tr>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                        </tr>
+                        <tr>
+                            <th>本月统计</th>
+                        </tr>
+                        <tr>
+                            <td>迟到</td>
+                            <td>2</td>
+                            <td>早退</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>未登记</td>
+                            <td>1</td>
+                            <td>请假</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>外出</td>
+                            <td>1</td>
+                            <td>出差</td>
+                            <td>5</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="empIndex" class="white-bg" style="display: none" >
+        <div class="col-sm-7">
+            <div>
+                <br/>
+                <h2>信息中心
+                    &lt;!&ndash;<a class="btn btn-success btn-xs " onclick="createMyMenuItem('/hr/knowledge/knowledgeInfo?isFrom=main','信息中心')" href="javascript:void(0)">
+                        <i class="fa fa-edit"></i>更多
+                    </a>&ndash;&gt;
+                </h2>
+                <br/>
+            </div>
+            <div class="col-sm-12">
+
+                <div class="form-group">
+                   &lt;!&ndash; <div class="col-sm-12 select-table table-bordered" >
+                        <img src="/img/xtoa/xt.png" style="width: 100%">
+                    </div>&ndash;&gt;
+                    <div class="layui-carousel" id="empIndexCarousel">
+                        <div id="empIndexCarouselItem" carousel-item>
+                            <div>条目1</div>
+                            <div>条目2</div>
+                            <div>条目3</div>
+                            <div>条目4</div>
+                            <div>条目5</div>
+                        </div>
+                    </div>
+                </div>
+                &lt;!&ndash;<div class="layui-carousel" id="test1">
+                    <div carousel-item>
+                        <div><img src="/img/xtoa/xt.png" style="width: 100%"></div>
+                        <div><img src="/img/xtoa/xt.png" style="width: 100%"></div>
+                    </div>
+                </div>&ndash;&gt;
+            </div>
+            <div class="col-sm-12">
+                <div style="margin-top: 50px">
+                    <h3>流程中心</h3>
+                    <div class="col-sm-2 countForEmp">
+                        <div style="width: 300px;height: 50px"  onclick="createMyMenuItem('/process/todoitem?isStarUserName=1','待办事项')">
+                            <img src="/img/xtoa/办理中@2x.png" style="width: 50px;height: 50px">
+                            <span id="countForEmp1"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 countForEmp">
+                        <div style="width: 300px;height: 50px"  onclick="createMyMenuItem('/process/todoitem','待办事项')">
+                            <img src="/img/xtoa/办理中@2x.png" style="width: 50px;height: 50px">
+                            <span id="countForEmp5"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 countForEmp" >
+                        <div style="width: 300px;height: 50px"  onclick="createMyMenuItem('/process/todoitem/doneitemView?status=1&isStarUserName=1','已办事项')">
+                            <img src="/img/xtoa/已完成@2x.png" style="width: 50px;height: 50px">
+                            <span id="countForEmp2"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 countForEmp" >
+                        <div style="width: 300px;height: 50px"  onclick="createMyMenuItem('/process/todoitem/doneitemView?status=2&isStarUserName=1','拒绝')">
+                            <img src="/img/xtoa/拒绝@2x.png" style="width: 50px;height: 50px">
+                            <span id="countForEmp3"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 countForEmp " >
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem/doneitemView?status=3&isStarUserName=1','取消')">
+                            <img src="/img/xtoa/取消@2x.png" style="width: 50px;height: 50px">
+                            <span id="countForEmp4"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 countForEmp" >
+                        &lt;!&ndash;todo&ndash;&gt;
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem?isFrom=main','抄送事项')">
+                            <img src="/img/xtoa/取消@2x.png" style="width: 50px;height: 50px">
+                            <span id="countForEmp6"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-sm-12" style="margin-top: 50px">
+                <h3>公告</h3>
+                <div style="height: 200px" >
+
+                    <div class="col-sm-12 select-table table-striped">
+                        <table id="notice-bootstrap-table"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <table class="table table-condensed">
+                        <tr>
+                            <th>个人考勤</th>
+                        </tr>
+                        <tr>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                        </tr>
+                        <tr>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                            <td>000000</td>
+                            <td>说明情况</td>
+                        </tr>
+                        <tr>
+                            <th>本月统计</th>
+                        </tr>
+                        <tr>
+                            <td>迟到</td>
+                            <td>2</td>
+                            <td>早退</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>未登记</td>
+                            <td>1</td>
+                            <td>请假</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>外出</td>
+                            <td>1</td>
+                            <td>出差</td>
+                            <td>5</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-12" >
+                <div class="form-group" >
+                    <h3>邮箱提醒（开发中，敬请期待）</h3>
+                    <div  class="table-responsive" style="height: 250px" >
+                        <table class="table table-condensed" style="font-size: 15px">
+                            <tr>
+                                <td>&lt;!&ndash;<img src="/img/profile.jpg" style="width: 40px;height: 40px">&ndash;&gt;</td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <h3>快捷入口</h3>
+                <div class="col-sm-12" style="height: 100px"  >
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" >
+                            <img src="/img/xtoa/加班申请@2x.png" class="img1"><br/>
+                            <span >加班申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/hr/leave','请假申请')">
+                            <img src="/img/xtoa/请假申请@2x.png" class="img1"><br/>
+                            <span>请假申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" >
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/外出申请@2x.png" class="img1"><br/>
+                            <span >外出申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" >
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/出差申请@2x.png" class="img1"><br/>
+                            <span >出差申请</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12" style="height: 100px" >
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/employee/emp','入职申请')">
+                            <img src="/img/xtoa/费用报销@2x.png" class="img1"><br/>
+                            <span  >入职申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/hr/jobTransfer','调动申请')">
+                            <img src="/img/xtoa/调薪申请@2x.png" class="img1"><br/>
+                            <span>调动申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/hr/regular','转正申请')">
+                            <img src="/img/xtoa/值班申请@2x.png" class="img1"><br/>
+                            <span >转正申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/hr/recruit/findAllInfo','招聘看板')">
+                            <img src="/img/xtoa/我的考勤@2x.png" class="img1"><br/>
+                            <span >招聘看板</span>
+                        </div>
+                    </div>
+                </div>
+                &lt;!&ndash;<div class="col-sm-12" style="height: 100px" >
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/费用报销@2x.png" class="img1"><br/>
+                            <span >费用报销</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/调薪申请@2x.png" class="img1"><br/>
+                            <span>调薪申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/值班申请@2x.png" class="img1"><br/>
+                            <span >值班申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/我的考勤@2x.png" class="img1"><br/>
+                            <span >我的考勤</span>
+                        </div>
+                    </div>
+                </div>&ndash;&gt;
+            </div>
+        </div>
+    </div>
+
+    <div id="adminIndex" style="display: none" >
+        <div class="col-sm-12" >
+            <div class="col-sm-12">
+                <div class="row  border-bottom white-bg dashboard-header">
+                    <h3>流程中心</h3>
+                    <div class="col-sm-2">
+                        &lt;!&ndash;<div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem','待办事项')">&ndash;&gt;
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_non_manager&isFrom=main','待办事项')">
+                            <img src="/img/xtoa/入职代办@2x.png" style="width: 50px;height: 50px">
+                            <span class="nonManagerCount">入职待办</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_regular&isFrom=main','待办事项')">
+                            <img src="/img/xtoa/员工转正代办@2x.png" style="width: 50px;height: 50px">
+                            <span class="regularCount">员工转正待办</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_leave&isFrom=main','待办事项')">
+                            <img src="/img/xtoa/请假申请@2x.png" style="width: 50px;height: 50px">
+                            <span class="leaveCount">员工请假待办</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_transfer&isFrom=main','待办事项')">
+                            <img src="/img/xtoa/员工转正代办@2x.png" style="width: 50px;height: 50px">
+                            <span class="transferCount">员工调动待办</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/process/todoitem?module=user_defined01_quit&isFrom=main','待办事项')">
+                            <img src="/img/xtoa/离职代办@2x.png" style="width: 50px;height: 50px">
+                            <span class="quitCount">离职申请待办</span>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12" style="margin-top: 50px">
+            <div class="col-sm-6 white-bg"  >
+                <div class="form-group" >
+                    <h3>邮箱提醒</h3>
+                    <div  class="table-responsive" style="height: 250px" >
+                        <table class="table table-condensed" style="font-size: 15px">
+                            <tr>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>通知！开发中，敬请期待</td>
+                                <td>2020-06-29</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5 white-bg" style="margin-left: 60px">
+                <h3 style="margin-bottom: 30px;">快捷入口</h3>
+                <div class="col-sm-12" style="height: 100px"  >
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" >
+                            <img src="/img/xtoa/加班申请@2x.png" class="img1"><br/>
+                            <span >加班申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="createMyMenuItem('/hr/leave','请假申请')">
+                            <img src="/img/xtoa/请假申请@2x.png" class="img1"><br/>
+                            <span >请假申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" >
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/外出申请@2x.png" class="img1"><br/>
+                            <span >外出申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" >
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/出差申请@2x.png" class="img1"><br/>
+                            <span >出差申请</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12" style="height: 100px" >
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/费用报销@2x.png" class="img1"><br/>
+                            <span >费用报销</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/调薪申请@2x.png" class="img1"><br/>
+                            <span>调薪申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/值班申请@2x.png" class="img1"><br/>
+                            <span >值班申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px">
+                            <img src="/img/xtoa/我的考勤@2x.png" class="img1"><br/>
+                            <span >我的考勤</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12" style="height: 100px" >
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/hr/manager','入职申请')">
+                            <img src="/img/xtoa/入职代办@2x.png" class="img1"><br/>
+                            <span  >入职申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/hr/jobTransfer','调动申请')">
+                            <img src="/img/xtoa/调动申请@2x.png" class="img1"><br/>
+                            <span>调动申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/hr/regular','转正申请')">
+                            <img src="/img/xtoa/转正申请@2x.png" class="img1"><br/>
+                            <span >转正申请</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px" onclick="openPage('/hr/recruit/findAllInfo','招聘看板')">
+                            <img src="/img/xtoa/招聘看板@2x.png" class="img1"><br/>
+                            <span >招聘看板</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>-->
+
+    <div id="main_web">
+        <section class="section-content">
+            <div class="row">
+                <div class="col-sm-3 pr5">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title ibox-title-gray dashboard-header gray-bg">
+                            <h5>个人资料</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="text-center">
+                                <p><img class="img-circle img-lg" th:src="(${user.avatar} == '') ? @{/img/profile.jpg} : @{${user.avatar}}"></p>
+                                <p><a href="javascript:avatar()">修改头像</a></p>
+                            </div>
+                            <ul class="list-group list-group-striped">
+                                <li class="list-group-item"><i class="fa fa-user"></i>
+                                    <b class="font-noraml">登录名称：</b>
+                                    <p class="pull-right">[[${user.loginName}]]</p>
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-phone"></i>
+                                    <b  class="font-noraml">手机号码：</b>
+                                    <p class="pull-right">[[${user.phonenumber}]]</p>
+                                </li>
+                                <li class="list-group-item" th:if="${user.dept?.deptName != null}"><i class="fa fa-group"></i>
+                                    <b  class="font-noraml">所属部门：</b>
+                                    <p class="pull-right" >[[${user.dept?.deptName}]] / [[${#strings.defaultString(postGroup,'无岗位')}]]</p>
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-envelope-o"></i>
+                                    <b  class="font-noraml">邮箱地址：</b>
+                                    <p class="pull-right" >[[${user.email}]]</p>
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-calendar"></i>
+                                    <b  class="font-noraml">创建时间：</b>
+                                    <p class="pull-right" >[[${#dates.format(user.createTime, 'yyyy-MM-dd')}]]</p>
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-calendar"></i>
+                                    <b  class="font-noraml">社保账号：</b>
+                                    <p class="pull-right" >[[${emp?.socialSecurity}]]</p>
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-calendar"></i>
+                                    <b  class="font-noraml">公积金账号：</b>
+                                    <p class="pull-right" >[[${emp?.providentFund}]]</p>
+                                </li>
+                                <li style="margin-top: 3%">
+                                    <p class="pull-right" ><a href="/system/user/profile" style="color: #1a7bb9 ">个人账户设置</a></p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-9 about">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title ibox-title-gray dashboard-header">
+                            <h5>公司系统登录网址</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="nav-tabs-custom">
+                                <div>
+                                    <div class="tab-content">
+                                        <div style="height: 50px ">
+                                            <i class="fa fa-globe"></i>
+                                            <a target="_blank" href="https://www.121.com">快马鲜生官网</a>
+                                        </div>
+                                        <div style="height: 50px ">
+                                            <i class="fa fa-globe"></i>
+                                            <a target="_blank" href="http://it.xiantian365.com:7500">CRM大数据系统</a><br/><br/>
+                                        </div>
+                                        <div style="height: 50px">
+                                            <div style="display: inline">
+                                                <i class="fa fa-globe"></i>
+                                                <a target="_blank" href="http://kefu.xiantian365.com">客服系统</a><br/><br/>
+                                            </div>
+                                            <div style="display: inline">
+                                                <div style="display: inline;margin-left: 25% " onclick="showImg('prcode1')">
+                                                    <img src="/img/xtoa/快马鲜生官微3.png" style="cursor:pointer " id="prcode1" class="img1">
+                                                </div>
+                                                <div style="display: inline;margin-left: 15%  " onclick="showImg('prcode2')">
+                                                    <img src="/img/xtoa/快马鲜生APP1.png" style="cursor:pointer " id="prcode2" class="img1">
+                                                </div>
+                                                <div style="display: inline;margin-left: 15%  " onclick="showImg('prcode3')">
+                                                    <img src="/img/xtoa/快马到家小程序2.png" style="cursor:pointer " id="prcode3" class="img1">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="height: 50px">
+                                            <i class="fa fa-globe"></i>
+                                            <a target="_blank" href="http://wms-admin.xiantian365.com">WMS管理端</a><br/><br/>
+                                        </div>
+                                        <div style="height: 50px ">
+                                            <i class="fa fa-globe"></i>
+                                            <a target="_blank" href="http://admin.xiantian365.com/admin">快马送菜管理A端</a><br/><br/>
+                                        </div>
+                                        <div style="height: 50px ">
+                                            <i class="fa fa-globe"></i>
+                                            <a target="_blank" href="http://admin.xiantian365.com/business">快马送菜管理B端</a><br/><br/>
+                                        </div>
+                                        <div style="height: 50px ">
+                                            <i class="fa fa-globe"></i>
+                                            <a target="_blank" href="http://dj-admin.xiantian365.com/admin">快马到家管理A端</a><br/><br/>
+                                        </div>
+                                        <div style="height: 50px ">
+                                            <i class="fa fa-globe"></i>
+                                            <a target="_blank" href="http://dj-admin.xiantian365.com/business">快马到家管理B端</a><br/><br/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="col-sm-12" style="height: 100px"  >
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px;margin-top: 100px" >
+                            <a href="https://www.dingtalk.com" target="_blank"><img src="/img/xtoa/icon@3x(2).png" class="img1"></a>
+                            <span> <a href="https://www.dingtalk.com" target="_blank">钉钉管理后台</a></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div style="width: 300px;height: 50px;margin-top: 100px">
+                            <a href="http://hrss.sz.gov.cn" target="_blank"><img src="/img/xtoa/icon@3x(1).png" class="img1"></a>
+                            <span><a href="http://hrss.sz.gov.cn" target="_blank">社保查询链接</a></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" >
+                        <div style="width: 300px;height: 50px;margin-top: 100px">
+                            <a href="http://gjj.sz.gov.cn" target="_blank"><img src="/img/xtoa/icon@3x(3).png" class="img1"></a>
+                            <span ><a href="http://gjj.sz.gov.cn" target="_blank">住房公积金查询</a></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" >
+                        <div style="width: 300px;height: 50px;margin-top: 100px">
+                            <a href="http://www.cmbchina.com" target="_blank"><img src="/img/xtoa/icon-l@3x.png" class="img1"></a>
+                            <span ><a href="http://www.cmbchina.com" target="_blank">招商银行开户行查询</a></span>
+                        </div>
+                    </div>
+                </div>
+        </section>
+    </div>
+
+    <div id="main_mobile" style="display: none" >
+        <div class="col-sm-12">
+            
+            <img src="/img/xtoa/logo@3x.png">
+            
+        </div>
+        <div class="col-sm-12">
+
+            <h3>鲜恬OA系统</h3>
+
+        </div>
+    </div>
+    <!--<script th:src="@{/js/jquery.min.js}"></script>-->
+    <!--<script th:src="@{/js/bootstrap.min.js}"></script>-->
+    <!--<script th:src="@{/ajax/libs/layer/layer.min.js}"></script>-->
+    <!--<script th:src="@{/ruoyi/js/common.js?v=4.2.0}"></script>-->
+    <!--<script th:src="@{/ruoyi/js/ry-ui.js?v=4.2.0}"></script>-->
+
+    <th:block th:include="include :: footer" />
+    <script th:src="@{/ajax/libs/layui/layui.all.js}"></script>
+    <script type="text/javascript">
+
+        /*用户管理-头像*/
+        function avatar() {
+            var url = ctx + 'system/user/profile/avatar';
+            $.modal.open("修改头像", url);
+        }
+
+        function showImg(prcodeId) {
+            if (prcodeId == "prcode1") {
+                $.table.imageViewCode("/img/xtoa/快马鲜生官微3.png");
+            }
+            if (prcodeId == "prcode2") {
+                $.table.imageViewCode("/img/xtoa/快马鲜生APP1.png");
+            }
+            if (prcodeId == "prcode3") {
+                $.table.imageViewCode("/img/xtoa/快马到家小程序2.png");
+            }
+
+        }
+
+        function browserRedirect() {
+            var sUserAgent = navigator.userAgent.toLowerCase();
+            var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+            var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+            var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+            var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+            var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+            var bIsAndroid = sUserAgent.match(/android/i) == "android";
+            var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+            var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+            if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+                //跳转移动端页面
+                // window.location.href="http://f.jcngame.com/fanfan20171208/mobile/index.html";
+                return true;
+            } else {
+                //跳转pc端页面
+                // window.location.href="http://f.jcngame.com/fanfan20171208//fanmai/index.html";
+                return false;
+            }
+        }
+
+        $('#pay-qrcode').click(function(){
+	        var html=$(this).html();
+	        parent.layer.open({
+	            title: false,
+	            type: 1,
+	            closeBtn:false,
+	            shadeClose:false,
+	            area: ['600px', 'auto'],
+	            content: html
+	        });
+	    });
+        var isHr = [[${@permission.isHr()}]];
+        $(function() {
+
+            if (browserRedirect()){
+                //手机端
+                document.getElementById("main_mobile").style.display="block";
+                return;
+            }
+            //web端
+
+
+            /*if (isHr == 1){
+                //hr首页
+                initCarousel('hrIndexCarousel','hrIndexCarouselItem');
+                loadParkdata();    //执行此函数，从后台获取数据，拼接成option标签，添加到select的里面
+                loadhrQuit();
+                loadRegular();
+                loadProcess();//查询代办数量
+                document.getElementById("hrIndex").style.display="block";
+            }else if (isHr == 2) {
+                //员工首页
+                loadProcessforEmp();
+                notice();
+                document.getElementById("empIndex").style.display="block";
+                initCarousel('empIndexCarousel','empIndexCarouselItem');
+            }else {
+                loadProcess();
+                document.getElementById("adminIndex").style.display="block";
+            }*/
+        });
+
+        //轮播图
+        function initCarousel(id,item) {
+
+            $.ajax({
+                url : "/hr/knowledge/list",    //后台controller中的请求路径
+                type : 'POST',
+                data: {'pageSize': 5,'pageNum': 1,'isFrom': 'main'},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+
+
+                    var parknames =[];
+                    for(var i=0,len=data.rows.length;i<len;i++){
+                        var knowledge = data.rows[i];
+                        // parknames.push('<tr style="height: 25px"><td>'+regular.title+'</td><td>'+date+'</td></tr>');
+                        parknames.push('<div style="width: 100%;height: 100%">' +
+                            '<div style="width: 100%;height: 100%" onclick="lookCarousel('+knowledge.id+')">' +
+                            '<img src="'+knowledge.cover+'" width="100%" height="100%" >' +
+                            '<div class="carousel-caption">' +
+                            '<h1>'+knowledge.titel+'</h1>' +
+                            '</div>' +
+                            '</div>' +
+                            '</div>');
+                    }
+                    if (parknames.length < 1){
+                        parknames.push("<div><img src=\"/img/xtoa/xt.png\" style=\"width: 100%\"></div>\n" +
+                            "                        <div><img src=\"/img/xtoa/xt.png\" style=\"width: 100%\"></div>")
+                    }
+                    $("#"+item).html(parknames.join(""));
+                    layui.use('carousel', function(){
+                        var carousel = layui.carousel;
+                        //建造实例
+                        carousel.render({
+                            elem: '#'+id
+                            ,width: '100%' //设置容器宽度
+                            ,arrow: 'always' //始终显示箭头
+                            ,indicator: 'none'
+                            //,anim: 'updown' //切换动画方式
+                        });
+                    });
+
+                },
+                error : function() {
+                    alert('查询轮播图出错');
+                }
+            });
+
+        }
+
+        var oldVisitUrl = "/hr/knowledge/selectOne";
+        var newVisitUrl = "/hr/knowledge/getAndAddVisitRecord";
+        function lookCarousel(id) {
+            $.ajax({
+                url : oldVisitUrl,    //后台controller中的请求路径
+                type : 'POST',
+                data: {'id': id,'isLook': 'isLook'},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    if(data.code == 0){
+                        layer.open({
+                            title: false,
+                            type: 1,
+                            closeBtn: true,
+                            shadeClose: true,
+                            area: ['600px', '650px'],
+                            content: "<div><h1 style='text-align: center'>标题："+data.data.titel+"</h1><br/><div style='margin: 15px 5px'>"+data.data.content+"</div></div>"
+                        });
+                    }else {
+
+                        layer.confirm(data.content, {
+                            icon: 3,
+                            title: "系统提示",
+                            btn: ['确认'],
+                            hadeClose: false,
+                            end: function() {
+                                window.location.reload(true);
+                            }
+                        }, function (index) {
+                            window.location.reload(true);
+                        });
+
+                        /*$.modal.confirm(data.content, function() {
+                            window.location.reload(true);
+                        });*/
+                        /*$.modal.alertWarning(data.content);
+                        window.location.reload(true);*/
+                    }
+                },
+                error : function() {
+                    alert('查询数据出错');
+                }
+            });
+        }
+
+        //hr加载流程
+        function loadProcess() {
+            $.ajax({
+                url : "/process/todoitem/listCount",    //后台controller中的请求路径
+                type : 'POST',
+                data: {},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    if(data.code == 0){
+                        $('.nonManagerCount').html("入职待办(" + data.data.user_defined01_non_manager + ")");
+                        $('.regularCount').html("员工转正待办(" + data.data.regularProcess + ")");
+                        $('.leaveCount').html("员工请假待办(" + data.data.leave + ")");
+                        $('.transferCount').html("员工调动待办(" + data.data.transfer + ")");
+                        $('.quitCount').html("离职申请待办(" + data.data.quitProcess + ")");
+                    }
+                },
+                error : function() {
+                    alert('查询待办出错');
+                }
+            });
+        }
+        //员工加载流程
+        function loadProcessforEmp() {
+            $.ajax({
+                url : "/process/todoitem/listCountForEmp",    //后台controller中的请求路径
+                type : 'POST',
+                data: {},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+
+                    if(data.code == 0){
+                        $('#countForEmp1').html("办理中(" + data.data.count1 + ")");
+                        $('#countForEmp2').html("已完成(" + data.data.count2 + ")");
+                        $('#countForEmp3').html("拒绝(" + data.data.count3 + ")");
+                        $('#countForEmp4').html("取消(" + data.data.count4 + ")");
+                        $('#countForEmp5').html("待办(" + data.data.count5 + ")");
+                        $('#countForEmp6').html("抄送事项(" + data.data.count6 + ")");
+                    }
+                },
+                error : function() {
+                    alert('查询待办出错');
+                }
+            });
+        }
+        //hr加载试用期hrRegularSelect
+        function loadRegular(){
+            // debugger
+            $.ajax({
+                url : "/hr/regular/list",    //后台controller中的请求路径
+                type : 'POST',
+                data: {'pageSize': 5,'pageNum': 1},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    if(data.code == 0){
+                        var parknames =[];
+                        parknames.push('<tr style="height: 25px;background-color: #8dc6d3"><th>试用到期</th><th><a onclick="successCallback('+'\'/hr/regular\''+','+'\'转正\''+')" >更多</a></th></tr>');
+                        for(var i=0,len=data.rows.length;i<len;i++){
+                            var regular = data.rows[i];
+                            var date = regular.regularTime;
+                            date = date.substring(0,10);
+                            parknames.push('<tr style="height: 25px"><td>'+regular.title+'</td><td>'+date+'</td></tr>');
+
+                        }
+                        $("#hrRegularSelect").html(parknames.join(' '));    //根据parkID(根据你自己的ID写)填充到select标签中
+                    }
+                },
+                error : function() {
+                    alert('查询试用到期出错');
+                }
+            });
+        }
+        //hr加载最近入职
+        function loadParkdata(){
+            // debugger
+            $.ajax({
+                url : "/hr/manager/list",    //后台controller中的请求路径
+                type : 'POST',
+                data: {'pageSize': 5,'pageNum': 1,'auditStatus': 2},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    if(data.code == 0){
+                        var parknames =[];
+                        parknames.push('<tr style="height: 25px;background-color: #8dc6d3"><th>最近入职</th><th><a onclick="successCallback('+'\'/hr/manager\''+','+'\'入职\''+')" >更多</a></th></tr>');
+                        for(var i=0,len=data.rows.length;i<len;i++){
+                            var managerdata = data.rows[i];
+                            var date = managerdata.nonManagerDate;
+                            date = date.substring(0,10);
+                            parknames.push('<tr style="height: 25px"><td>'+managerdata.nonManager+'</td><td>'+date+'</td></tr>');
+
+                        }
+                        $("#nonManagerSelect").html(parknames.join(' '));    //根据parkID(根据你自己的ID写)填充到select标签中
+                    }
+                },
+                error : function() {
+                    alert('查询最近入职出错');
+                }
+            });
+        }
+        //hr加载最近离职hrQuitSelect
+        function loadhrQuit(){
+            $.ajax({
+                url : "/hr/quit/list",    //后台controller中的请求路径
+                type : 'POST',
+                data: {'pageSize': 5,'pageNum': 1},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    if(data.code == 0){
+                        var parknames =[];
+                        parknames.push('<tr style="height: 25px;background-color: #8dc6d3"><th>最近离职</th><th><a onclick="successCallback('+'\'/hr/quit\''+','+'\'离职\''+')" >更多</a></th></tr>');
+                        for(var i=0,len=data.rows.length;i<len;i++){
+                            var hrQuit = data.rows[i];
+                            var date = hrQuit.quitTime;
+                            date = date.substring(0,10);
+                            parknames.push('<tr style="height: 25px"><td>'+hrQuit.title+'</td><td>'+date+'</td></tr>');
+
+                        }
+                        $("#hrQuitSelect").html(parknames.join(' '));    //根据parkID(根据你自己的ID写)填充到select标签中
+                    }
+                },
+                error : function() {
+                    alert('查询最近离职出错');
+                }
+            });
+        }
+        //公告加载
+        function notice() {
+            var options = {
+                id: 'notice-bootstrap-table',
+                url:  "/system/notice" + "/list?isFrom=main",
+                modalName: "公告",
+                showSearch: false,
+                showRefresh: false,
+                showColumns: false,
+                showToggle: false,
+                pageSize: 5,
+                columns: [
+                    {
+                        field : 'noticeTitle',
+                        title : '公告标题'
+                    },
+                    {
+                        field: 'createBy',
+                        title: '日期',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            return value.substr(0,10);
+                        }
+                    },
+                    {
+                        field : 'createBy',
+                        title : '发布人'
+                    },
+                    {
+                        title: '操作',
+                        align: 'center',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success btn-xs " href="javascript:void(0)" onclick="look(\'' + row.noticeId + '\')"><i class="fa fa-edit"></i>阅读</a> ');
+                            return actions.join('');
+                        }
+                    }
+                   ]
+            };
+            $.table.init(options);
+        }
+        //预览公告
+        function look(noticeId) {
+            $.ajax({
+                url : "/system/notice/selectOne",    //后台controller中的请求路径
+                type : 'POST',
+                data: {'noticeId': noticeId},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    if(data.code == 0){
+                        layer.open({
+                            title: false,
+                            type: 1,
+                            closeBtn: true,
+                            shadeClose: true,
+                            area: ['600px', '650px'],
+                            content: "<div><h1 style='text-align: center'>标题："+data.data.noticeTitle+"</h1><br/><div style='margin: 15px 5px'>"+data.data.noticeContent+"</div></div>"
+                        });
+                    }
+                },
+                error : function() {
+                    alert('查询数据出错');
+                }
+            });
+        }
+
+        //通用的打开新页面
+        function openPage(url,name) {
+            $.modal.openMain(name, url,($(window).width() - 50),($(window).height() - 50));
+        }
+
+        //通用的打开新页面
+        function successCallback(url,name) {
+            createMyMenuItem(url, name);
+        }
+        function createMyMenuItem(dataUrl, menuName) {
+            $.modal.openMain(menuName, dataUrl,($(window).width() - 50),($(window).height() - 50));
+        }
+
+    </script>
+</body>
+</html>

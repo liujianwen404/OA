@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysRoleMenuDeptMapper">
+    <resultMap type="com.ruoyi.system.domain.SysRoleMenuDept" id="SysRoleMenuDeptResult">
+        <id property="roleId" column="role_id"/>
+        <result property="menuId" column="menu_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="perms" column="perms"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.role_id,
+            entity.menu_id,
+            entity.dept_id,
+            entity.perms
+        </sql>
+
+    <select id="selectSysRoleMenuDeptList" parameterType="com.ruoyi.system.domain.SysRoleMenuDept" resultMap="SysRoleMenuDeptResult">
+        select <include refid="baseColumns"/> from sys_role_menu_dept entity
+        where  entity.del_flag = '0'
+            <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+            <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+    <delete id="deleteSysRoleMenuDeptById" parameterType="Long">
+		delete from sys_role_menu_dept where role_id=#{roleId} and menu_id=#{menuId}
+	</delete>
+
+    <update id="deleteSysRoleMenuDeptByIds" parameterType="String">
+        update  sys_role_menu_dept set del_flag =  '1' where role_id in
+        <foreach item="roleId" collection="array" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </update>
+
+    <insert id="batchRoleMenuDept">
+        insert into sys_role_menu_dept(role_id, menu_id ,dept_id ,perms) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.roleId},#{item.menuId},#{item.deptId},#{item.perms})
+        </foreach>
+    </insert>
+
+</mapper>

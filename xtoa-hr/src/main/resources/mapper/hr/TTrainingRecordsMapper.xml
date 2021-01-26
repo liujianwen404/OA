@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.TTrainingRecordsMapper">
+    <resultMap type="com.ruoyi.base.domain.TTrainingRecords" id="TTrainingRecordsResult">
+        <id property="id" column="id"/>
+            <result property="empNum" column="emp_num"/>
+            <result property="empName" column="emp_name"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="postId" column="post_id"/>
+             <result property="deptName" column="deptName"/>
+            <result property="postName" column="postName"/>
+            <result property="trainingTime" column="training_time"/>
+            <result property="trainingStartTime" column="training_start_time"/>
+            <result property="trainingEndTime" column="training_end_time"/>
+            <result property="trainingSite" column="training_site"/>
+            <result property="trainingScore" column="training_score"/>
+            <result property="trainingType" column="training_type"/>
+            <result property="trainingContent" column="training_content"/>
+            <result property="examFlag" column="exam_flag"/>
+            <result property="passFlag" column="pass_flag"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.emp_num,
+            entity.emp_name,
+            entity.dept_id deptName,
+            entity.post_id postName,
+            entity.training_time,
+            entity.training_start_time,
+            entity.training_end_time,
+            entity.training_site,
+            entity.training_type,
+            entity.training_content,
+            entity.exam_flag,
+            entity.pass_flag,
+            entity.create_id,
+            entity.update_id,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time,
+            entity.create_by,
+            entity.update_by,
+            entity.remark
+        </sql>
+
+    <select id="selectTTrainingRecordsList" parameterType="com.ruoyi.base.domain.TTrainingRecords" resultMap="TTrainingRecordsResult">
+        SELECT entity.id,
+        entity.emp_num,
+        entity.emp_name,
+        entity.dept_id,
+        d.dept_name deptName,
+        entity.post_id,
+        p.post_name postName,
+        entity.training_time,
+        entity.training_start_time,
+        entity.training_end_time,
+        entity.training_site,
+        entity.training_type,
+        entity.training_content,
+        entity.training_score,
+        entity.exam_flag,
+        entity.pass_flag,
+        entity.create_id,
+        entity.update_id,
+        entity.del_flag,
+        entity.create_time,
+        entity.update_time,
+        entity.create_by,
+        entity.update_by,
+        entity.remark FROM t_training_records entity
+        LEFT JOIN sys_dept d ON entity.dept_id=d.dept_id LEFT JOIN sys_post p ON entity.post_id=p.post_id
+        where  entity.del_flag = '0'
+            <if test="empNum != null  and empNum != ''"> and entity.emp_num = #{empNum}</if>
+                <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+                <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="startLongTime != null and endLongTime != null"> and entity.training_time <![CDATA[>=]]> #{startLongTime} and entity.training_time <![CDATA[<=]]> #{endLongTime}  </if>
+                <if test="startLongTime != null and endLongTime == null"> and entity.training_time <![CDATA[>=]]> #{startLongTime} </if>
+                <if test="startLongTime == null and endLongTime != null"> and entity.training_time <![CDATA[<=]]> #{endLongTime} </if>
+                <if test="trainingStartTime != null and trainingEndTime != null"> and entity.training_start_time <![CDATA[>=]]> #{trainingStartTime} and entity.training_end_time <![CDATA[<=]]> #{trainingEndTime}</if>
+                <if test="trainingStartTime == null and trainingEndTime != null"> and entity.training_end_time <![CDATA[<=]]> #{trainingEndTime}</if>
+                <if test="trainingStartTime != null and trainingEndTime == null"> and entity.training_start_time <![CDATA[>=]]> #{trainingStartTime}</if>
+                <if test="trainingSite != null  and trainingSite != ''"> and entity.training_site = #{trainingSite}</if>
+                <if test="trainingType != null "> and entity.training_type = #{trainingType}</if>
+                <if test="trainingContent != null  and trainingContent != ''"> and entity.training_content = #{trainingContent}</if>
+                <if test="examFlag != null "> and entity.exam_flag = #{examFlag}</if>
+                <if test="passFlag != null "> and entity.pass_flag = #{passFlag}</if>
+                <if test="startScore != null and endScore != null"> and entity.training_score <![CDATA[>=]]> #{startScore} and entity.training_score <![CDATA[<=]]> #{endScore}  </if>
+                <if test="startScore == null and endScore != null"> and  entity.training_score <![CDATA[<=]]> #{endScore}  </if>
+                <if test="startScore != null and endScore == null"> and entity.training_score <![CDATA[>=]]> #{startScore}  </if>
+                <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+    </select>
+
+
+    <update id="deleteTTrainingRecordsById" parameterType="Long">
+        update  t_training_records set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteTTrainingRecordsByIds" parameterType="String">
+        update  t_training_records set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

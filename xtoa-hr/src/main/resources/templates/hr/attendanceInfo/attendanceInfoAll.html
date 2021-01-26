@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('所有员工考勤记录列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <div th:include="include/deptSearch::deptSearch"></div>
+                            <li>
+                                <label>状态：</label>
+                                <select name="timeResult" th:with="type=${@dict.getType('timeResult')}">
+                                    <option value="">所有</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>员工姓名：</label>
+                                <input type="text" name="empName"/>
+                            </li>
+                            <li class="select-time">
+                                <label>工作日：</label>
+                                <input type="text" class="time-input" name="workDate" readonly/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                        <ul style="display: none">
+                            <li>
+                                <label>所属部门：</label>
+                                <select id="deptName" name="deptName" th:with="deptAll=${@deptService.getDeptAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>岗位：</label>
+                                <select id="postId" name="postId" th:with="postAll=${@postService.getPostAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:attendanceInfo:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:attendanceInfo:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:attendanceInfo:remove')}]];
+        var prefix = ctx + "hr/attendanceInfo";
+
+        var checkType = [[${@dict.getType('checkType')}]];
+        var sourceType = [[${@dict.getType('sourceType')}]];
+        var timeResult = [[${@dict.getType('timeResult')}]];
+        var locationResult = [[${@dict.getType('locationResult')}]];
+
+        var deptIdMap = {};
+        $('#deptName option').each(function(i, n){
+            deptIdMap[$(n).val()] = $(n).text();
+        });
+
+        var postIdsMap = {};
+        $('#jobTransferPostId option').each(function(i, n){
+            postIdsMap[$(n).val()] = $(n).text();
+        });
+
+        $(function() {
+            var options = {
+                url: prefix + "/attendanceInfoAllList",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                sortName: "empId,workDate",
+                sortOrder: "desc",
+                modalName: "所有员工考勤记录",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id', 
+                    title: '主键ID',
+                    visible: false
+                },
+                {
+                    field: 'dingUserId', 
+                    title: '钉钉用户ID',
+                    visible: false
+                },
+                {
+                    field: 'groupId', 
+                    title: '考勤组ID',
+                    visible: false
+                },
+                {
+                    field: 'planId', 
+                    title: '排班ID',
+                    visible: false
+                },
+                {
+                    field: 'classId', 
+                    title: '考勤班次id',
+                    visible: false
+                },
+                {
+                    field: 'empId', 
+                    title: '员工ID',
+                    visible: false
+                },
+                {
+                    field: 'empName', 
+                    title: '员工姓名',
+                    align: "center",
+                },
+                {
+                    field: 'deptId',
+                    title: '部门',
+                    align: "center",
+                    formatter: function(val, row, index){return deptIdMap[val];}
+                },
+                {
+                    field: 'postId',
+                    title: '岗位',
+                    visible: false
+                },
+                {
+                    field: 'workDate', 
+                    title: '工作日'
+                },
+                {
+                    field: 'baseCheckTime',
+                    title: '基准时间',
+                    visible: false
+                },
+                {
+                    field: 'planCheckTime',
+                    title: '排班打卡时间',
+                    align: "center"
+                },
+                {
+                    field: 'userCheckTime', 
+                    title: '实际打卡时间',
+                    align: "center",
+                    formatter: function(value, row, index) {
+
+                        if ("APPROVE" == row.sourceType && row.timeResult == "Normal"){
+                            return '-'
+                        }
+
+                        return value;
+                    }
+                },
+                {
+                    field: 'checkType', 
+                    title: '考勤类型',
+                    align: "center",
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(checkType, value);
+                    }
+                },
+                {
+                    field: 'sourceType', 
+                    title: '数据来源',
+                    align: "center",
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(sourceType, value);
+                    }
+                },
+                {
+                    field: 'timeResult', 
+                    title: '状态',
+                    align: "center",
+                    formatter: function(value, row, index) {
+
+                        if ("APPROVE" == row.sourceType && value == "Normal"){
+                            return '<span class="badge badge-success" >已补卡</span>'
+                        }
+
+                        return $.table.selectDictLabel(timeResult, value);
+                    }
+                },
+                {
+                    field: 'resultMinutes',
+                    title: '迟到早退时长(分钟)',
+                    align: "center"
+                },
+                {
+                    field: 'locationResult', 
+                    title: '位置结果',
+                    align: "center",
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(locationResult, value);
+                    }
+                },
+                {
+                    field: 'locationMethod', 
+                    title: '定位方法',
+                    visible: false
+                },
+                {
+                    field: 'approveId', 
+                    title: '关联的审批表单id',
+                    visible: false
+                },
+                {
+                    field: 'procInstId', 
+                    title: '关联的审批实例id',
+                    visible: false
+                },
+                {
+                    field: 'isLegal', 
+                    title: '是否合法',
+                    visible: false
+                },
+                {
+                    field: 'deviceId', 
+                    title: '设备id',
+                    visible: false
+                },
+                {
+                    field: 'userAddress', 
+                    title: '用户打卡地址',
+                    align: "center",
+                },
+                {
+                    field: 'userLongitude', 
+                    title: '用户打卡经度',
+                    visible: false
+                },
+                {
+                    field: 'userLatitude', 
+                    title: '用户打卡纬度',
+                    visible: false
+                },
+                {
+                    field: 'userAccuracy', 
+                    title: '用户打卡定位精度',
+                    visible: false
+                },
+                {
+                    field: 'baseAddress', 
+                    title: '基准地址',
+                    visible: false
+                },
+                {
+                    field: 'baseLongitude', 
+                    title: '基准经度',
+                    visible: false
+                },
+                {
+                    field: 'baseLatitude', 
+                    title: '基准纬度',
+                    visible: false
+                },
+                {
+                    field: 'baseAccuracy', 
+                    title: '基准定位精度',
+                    visible: false
+                },
+                {
+                    field: 'createId', 
+                    title: '创建者ID',
+                    visible: false
+                },
+                {
+                    field: 'updateId', 
+                    title: '更新者ID',
+                    visible: false
+                },
+                {
+                    field: 'imgUrl',
+                    title: '图片',
+                    formatter: function(value, row, index) {
+                        // 图片预览（注意：如存储在本地直接获取数据库路径，如有配置context-path需要使用ctx+路径）
+                        // 如：/profile/upload/2019/08/08/3b7a839aced67397bac694d77611ce72.png
+                        // if(index % 2 == 0){
+                        //     return $.table.imageView('http://demo.ruoyi.vip/img/profile.jpg');
+                        // }else {
+                        //     return $.table.imageView('http://demo.ruoyi.vip/ruoyi.png');
+                        // }
+                        // if(value == null){
+                        //     return $.table.imageView(value);
+                        // }
+                        // return $.table.imageView(value.split(";")[1],800,500);
+                        if(value=="undefined" || value == null){
+                            return "-";
+                        }
+                        return $.table.imageView(value.split(",")[0],800,600);
+                    }
+                },
+                {
+                    field: 'remark', 
+                    title: '备注',
+                    align: "center",
+                    formatter:function (value) {
+                        if(value=="undefined" || value == null){
+                            return "-";
+                        }
+                        return value;
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

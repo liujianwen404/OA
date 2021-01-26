@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改出差申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-trip-edit" th:object="${hrBusinessTrip}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}" th:selected="${dept.getDeptId() == hrEmp?.deptId}" th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:selected="${post.getPostId() == hrEmp?.postId}" th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请人：</label>
+                <div class="col-sm-8">
+                    <input name="applyUser" th:field="*{applyUserName}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="applyTime" th:value="${#dates.format(hrBusinessTrip.applyTime, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">出差事由：</label>
+                <div class="col-sm-8">
+                    <textarea name="reason" class="form-control">[[*{reason}]]</textarea>
+                </div>
+            </div>
+
+            <div id="body">
+                <div th:each="hrBusinessTripSon,stat: ${hrBusinessTripSons}" class="cy-list-content" th:id="'body['+${stat.count}+']'">
+                    <input name="count" th:value="${stat.size}" class="form-control" type="hidden">
+                    <input name="oldSize" th:value="${stat.size}" class="form-control" type="hidden">
+                    <input th:attr="name='hrBusinessTripSon'+${stat.count}" th:value="${hrBusinessTripSon.id}" type="hidden">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">行程(<span th:text="${stat.count}"></span>)</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">交通工具：</label>
+                        <div class="col-sm-8">
+                            <select th:attr="name='vehicle'+${stat.count}" class="form-control m-b" th:with="type=${@dict.getType('vehicle')}">
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:selected="${dict.dictValue == hrBusinessTripSon.vehicle}"  th:value="${dict.dictValue}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">单程往返：</label>
+                        <div class="col-sm-8">
+                            <select th:attr="name='journey'+${stat.count}" class="form-control m-b" th:with="type=${@dict.getType('journey')}">
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:selected="${dict.dictValue == hrBusinessTripSon.journey}"  th:value="${dict.dictValue}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">出发城市：</label>
+                        <div class="col-sm-8">
+                            <input th:attr="name='departCity'+${stat.count}" class="form-control" type="text" th:value="${hrBusinessTripSon.departCity}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">目的城市：</label>
+                        <div class="col-sm-8">
+                            <input th:attr="name='destinationCity'+${stat.count}" class="form-control" type="text" th:value="${hrBusinessTripSon.destinationCity}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">开始时间：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input th:id="'startTime'+${stat.count}" th:attr="name='startTime'+${stat.count},class='form-control calcTotalSecondInput'+${stat.count}" th:value="${#dates.format(hrBusinessTripSon.startTime, 'yyyy-MM-dd HH:mm')}" readonly="readonly" placeholder="yyyy-MM-dd HH:mm:ss" type="text" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">结束时间：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input th:id="'endTime'+${stat.count}" th:attr="name='endTime'+${stat.count},class='form-control calcTotalSecondInput'+${stat.count}" th:value="${#dates.format(hrBusinessTripSon.endTime, 'yyyy-MM-dd HH:mm')}" placeholder="yyyy-MM-dd HH:mm:ss" readonly="readonly" type="text" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">时长，单位小时：</label>
+                        <div class="col-sm-8">
+                            <input th:id="'totalTimes'+${stat.count}" th:attr="name='totalTimes'+${stat.count}" class="form-control" type="text" th:value="${hrBusinessTripSon.totalTimes}" readonly>
+                        </div>
+                    </div>
+                    <a class="btn btn-danger" style="margin-left:600px" th:attr="onclick='formDel(&quot;body['+${stat.count}+']&quot;,'+${stat.count}+')'"><i class="fa fa-remove">删除</i></a>
+                    <th:block th:include="include :: datetimepicker-css" />
+                    <th:block th:include="include :: footer" />
+                    <th:block th:include="include :: datetimepicker-js" />
+                    <script type="text/javascript">
+                        $(`#startTime[[${stat.count}]]`).datetimepicker({
+                            format: "yyyy-mm-dd hh:ii",
+                            minView: 0,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+                            autoclose: true,
+                            startDate: new Date()
+                        });
+
+                        $("#endTime[[${stat.count}]]").datetimepicker({
+                            format: "yyyy-mm-dd hh:ii",
+                            minView: 0,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+                            autoclose: true,
+                            startDate: new Date()
+                        });
+
+                        // 监听开始和结束日期填写，动态生成请假时长
+                        $('.calcTotalSecondInput[[${stat.count}]]').change(function () {
+                            var count=$(".cy-list-content").size();
+                            $.ajax({
+                                type: 'POST',
+                                url: ctx + "hr/leave/leaveTime",
+                                data: {
+                                    startTime:  $("#startTime[[${stat.count}]]").val(),
+                                    endTime: $("#endTime[[${stat.count}]]").val()
+                                },
+                                dataType: 'json',
+                                success: function (result) {
+                                    if (result.msg == "success") {
+                                        $("#totalTimes[[${stat.count}]]").val(result.data["hours"]);
+                                        console.log("totalTimes[[${stat.count}]]: " + $("#totalTimes[[${stat.count}]]").val());
+                                        var totalHours = 0;
+                                        var totalHoursN;
+                                        for(var i=1;i<=count;i++){
+                                            totalHoursN = $('input[name=totalTimes'+i+']').val();
+                                            totalHours = parseFloat(totalHours) + parseFloat(totalHoursN);
+                                            console.log("totalHours:" + totalHours);
+                                        }
+                                        // var countDay = Math.ceil(totalHours/7.5);
+                                        $('input[name="days"]').val(totalHours);
+                                    } else {
+                                        $("#totalTimes[[${stat.count}]]").val(0);
+                                    }
+                                },
+                                error: function (error) {
+                                    $.modal.alertWarning("系统错误，请联系管理员");
+                                }
+
+                            });
+                        });
+
+                        function formDel(id,num) {
+
+                            var hrBusinessTripSonId = $('input[name=hrBusinessTripSon' + num + ']').val();
+                            if(hrBusinessTripSonId != null && hrBusinessTripSonId != ''){
+                                $.ajax({
+                                    type: 'POST',
+                                    url: ctx + "hr/businessTripSon/removeOld",
+                                    data: {
+                                        id:  hrBusinessTripSonId
+                                    },
+                                    dataType: 'json',
+                                    success: function (result) {
+                                        console.log(result)
+                                        if (result.code == 0) {
+                                            //删除行程代码块
+                                            document.getElementById(""+id+"").remove();
+
+                                            //重新计算行程数量并赋值
+                                            $($(".cy-list-content").toArray()).each(function (index,item) {
+                                                var n = index + 1;
+                                                $(item).attr("id","body["+n+"]");
+                                                $(item).find("div").first("div").find("label").html("行程("+n+")");
+                                                $(item).find("div").last("div").find("a").attr("onclick","formDel('body["+n+"]',"+n+")");
+
+                                                $(item).children("input").eq(2).attr("name","hrBusinessTripSon"+n+"");
+                                                $(item).find("div").find("div").children("select").eq(0).attr("name","vehicle"+n+"");
+                                                $(item).find("div").find("div").children("select").eq(1).attr("name","journey"+n+"");
+                                                $(item).find("div").find("div").children("input").eq(0).attr("name","departCity"+n+"");
+                                                $(item).find("div").find("div").children("input").eq(1).attr("name","destinationCity"+n+"");
+                                                $(item).find("div").find("div").children("input").eq(2).attr("name","startTime"+n+"");
+                                                $(item).find("div").find("div").children("input").eq(3).attr("name","endTime"+n+"");
+                                                $(item).find("div").find("div").children("input").eq(4).attr("name","totalTimes"+n+"");
+                                            });
+
+                                            //更新行程数量
+                                            var count=$(".cy-list-content").size();
+                                            $("input[name = count]").val(count);
+
+                                            //删除行程后 出差总时长也要重新计算
+                                            var totalHours = 0;
+                                            var totalHoursN = 0;
+                                            for(var i=1;i<=count;i++){
+                                                totalHoursN = $('input[name=totalTimes'+i+']').val();
+                                                totalHours = parseFloat(totalHours) + parseFloat(totalHoursN);
+                                                console.log("totalHours:" + totalHours);
+                                            }
+                                            // var countDay = Math.ceil(totalHours/7.5);
+                                            $('input[name="days"]').val(totalHours);
+                                        }
+                                    },
+                                    error: function (error) {
+                                        $.modal.alertWarning("系统错误，请联系管理员");
+                                    }
+                                });
+                            }else{
+                                //删除行程代码块
+                                document.getElementById(""+id+"").remove();
+
+                                //重新计算行程数量并赋值
+                                $($(".cy-list-content").toArray()).each(function (index,item) {
+                                    var n = index + 1;
+                                    $(item).attr("id","body["+n+"]");
+                                    $(item).find("div").first("div").find("label").html("行程("+n+")");
+                                    $(item).find("div").last("div").find("a").attr("onclick","formDel('body["+n+"]',"+n+")");
+
+                                    $(item).find("div").find("div").children("select").eq(0).attr("name","vehicle"+n+"");
+                                    $(item).find("div").find("div").children("select").eq(1).attr("name","journey"+n+"");
+                                    $(item).find("div").find("div").children("input").eq(0).attr("name","departCity"+n+"");
+                                    $(item).find("div").find("div").children("input").eq(1).attr("name","destinationCity"+n+"");
+                                    $(item).find("div").find("div").children("input").eq(2).attr("name","startTime"+n+"");
+                                    $(item).find("div").find("div").children("input").eq(3).attr("name","endTime"+n+"");
+                                    $(item).find("div").find("div").children("input").eq(4).attr("name","totalTimes"+n+"");
+                                });
+
+                                //更新行程数量
+                                var count=$(".cy-list-content").size();
+                                $("input[name = count]").val(count);
+
+                                //删除行程后 出差总时长也要重新计算
+                                var totalHours = 0;
+                                var totalHoursN = 0;
+                                for(var i=1;i<=count;i++){
+                                    totalHoursN = $('input[name=totalTimes'+i+']').val();
+                                    totalHours = parseFloat(totalHours) + parseFloat(totalHoursN);
+                                    console.log("totalHours:" + totalHours);
+                                }
+                                // var countDay = Math.ceil(totalHours/7.5);
+                                $('input[name="days"]').val(totalHours);
+                            }
+
+
+                        }
+                    </script>
+                </div>
+            </div>
+
+            <input name="count" class="form-control" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label"></label>
+                <div class="col-sm-8">
+                    <a class="btn btn-primary" onclick="formAdd()">
+                        <i class="fa fa-plus"></i> 增加行程
+                    </a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">出差总时长：</label>
+                <div class="col-sm-8">
+                    <input name="days" th:field="*{days}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">出差备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control">[[*{remark}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">同行人：</label>
+                <div class="col-sm-8">
+                    <input name="partner" th:field="*{partner}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>出差类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b" required>
+                        <option value="">请选择</option>
+                        <option value="0" th:selected="*{type == '0'}">省内</option>
+                        <option value="1" th:selected="*{type == '1'}">省外</option>
+                    </select>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/businessTrip";
+        $("#form-trip-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form() && validateAdd() && validateTime()) {
+                $("select[name=deptId]").attr("disabled",false);
+                $("select[name=postId]").attr("disabled",false);
+                $.operate.save(prefix + "/edit", $('#form-trip-edit').serialize());
+            }
+        }
+
+        function validateTime(){
+            debugger
+            var n=$(".cy-list-content").length+1;
+            for(var i=1;i<=n;i++){
+                var startTime = $("input[name=startTime"+i+"]").val();
+                var endTime = $("input[name=endTime"+i+"]").val();
+                if(startTime > endTime) {
+                    $.modal.alertWarning("开始时间不得大于结束时间");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function validateAdd() {
+            var count = $("input[name=count]").val();
+            if(count == 0){
+                $.modal.alertWarning("请至少填写一段行程信息");
+                return false;
+            }
+            return true;
+        }
+
+
+        //添加表单元素
+        function formAdd() {
+            var body = document.getElementById("body");
+            //创建div盒子用于包裹
+            var n=$(".cy-list-content").length+1;
+            var oDiv = document.createElement("div");
+            oDiv.setAttribute("class","cy-list-content");
+            oDiv.setAttribute("id","body["+n+"]");
+            oDiv.innerHTML =
+                <!--行程标记-->
+                '<div class="form-group">'
+                + '<label class="col-sm-3 control-label">行程('+n+')</label>'
+                +'</div>'
+                //交通工具select
+                +'<div class="form-group">'
+                + '<label class="col-sm-3 control-label">交通工具：</label>'
+                + '<div class="col-sm-8">'
+                + '<select name="vehicle'+n+'" id="vehicle" class="form-control m-b">'
+                + '<option value="1">飞机</option>'
+                + '<option value="2">火车</option>'
+                + '<option value="3">汽车</option>'
+                + '<option value="4">其他</option>'
+                + '</select>'
+                + '</div>'
+                +'</div>'
+                //单程往返select
+                +'<div class="form-group">'
+                + '<label class="col-sm-3 control-label">单程往返：</label>'
+                + '<div class="col-sm-8">'
+                + '<select name="journey'+n+'" id="journey" class="form-control m-b">'
+                + '<option value="1">单程</option>'
+                + '<option value="2">往返</option>'
+                + '</select>'
+                + '</div>'
+                +'</div>'
+                //出发城市input
+                +'<div class="form-group">'
+                + '<label class="col-sm-3 control-label is-required">出发城市：</label>'
+                + '<div class="col-sm-8">'
+                + '<input name="departCity'+n+'" class="form-control" type="text" required>'
+                + '</div>'
+                +'</div>'
+                //目的城市input
+                +'<div class="form-group">'
+                + '<label class="col-sm-3 control-label is-required">目的城市：</label>'
+                + '<div class="col-sm-8">'
+                + '<input name="destinationCity'+n+'" class="form-control" type="text" required>'
+                + '</div>'
+                +'</div>'
+                //开始时间input选择器
+                +'<div class="form-group">'
+                + '<label class="col-sm-3 control-label is-required">开始时间：</label>'
+                + '<div class="col-sm-8">'
+                + '<div class="input-group date">'
+                + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+                + '<input name="startTime'+n+'" class="form-control calcTotalSecondInput'+n+'" readonly="readonly" placeholder="yyyy-MM-dd HH:mm:ss" type="text" required>'
+                + '</div>'
+                + '</div>'
+                +'</div>'
+                //结束时间input选择器
+                +'<div class="form-group">'
+                + '<label class="col-sm-3 control-label is-required">结束时间：</label>'
+                + '<div class="col-sm-8">'
+                + '<div class="input-group date">'
+                + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+                + '<input name="endTime'+n+'" class="form-control calcTotalSecondInput'+n+'" readonly="readonly" placeholder="yyyy-MM-dd HH:mm:ss" type="text" required>'
+                + '</div>'
+                + '</div>'
+                +'</div>'
+                //时长input
+                +'<div class="form-group">'
+                + '<label class="col-sm-3 control-label">时长，单位小时：</label>'
+                + '<div class="col-sm-8">'
+                + '<input name="totalTimes'+n+'" class="form-control" type="text" readonly>'
+                + '</div>'
+                +'</div>'
+
+                +'<div class="form-group">'
+                +'<a class = "btn btn-danger" style="margin-left:600px" onclick="formDel(&quot;body['+n+']&quot;)">'
+                +'<i class="fa fa-remove">删除</i>'
+                +'</a>'
+                +'</div>'
+            ;
+            body.appendChild(oDiv);
+
+            $("input[name=startTime"+n+"]").datetimepicker({
+                format: "yyyy-mm-dd hh:ii",
+                minView: 0,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+                autoclose: true,
+                startDate: new Date()
+            });
+
+            $("input[name=endTime"+n+"]").datetimepicker({
+                format: "yyyy-mm-dd hh:ii",
+                minView: 0,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+                autoclose: true,
+                startDate: new Date()
+            });
+
+            // 监听开始和结束日期填写，动态生成时长
+            $('.calcTotalSecondInput'+n).change(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: ctx + "hr/leave/leaveTime",
+                    data: {
+                        startTime:  $('input[name=startTime'+n+']').val(),
+                        endTime: $('input[name=endTime'+n+']').val()
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.msg == "success") {
+                            $('input[name=totalTimes'+n+']').val(result.data["hours"]);
+                            var totalHours = 0;
+                            var totalHoursN;
+                            for(var i=1;i<=n;i++){
+                                totalHoursN = $('input[name=totalTimes'+i+']').val();
+                                totalHours = parseFloat(totalHours) + parseFloat(totalHoursN);
+                            }
+                            // var countDay = Math.ceil(totalHours/7.5);
+                            $('input[name="days"]').val(totalHours);
+                        } else {
+                            $('#totalTimes'+n+'').val(0);
+                        }
+                    },
+                    error: function (error) {
+                        $.modal.alertWarning("系统错误，请联系管理员");
+                    }
+
+                });
+            });
+
+            //更新行程数量
+            var count=$(".cy-list-content").size();
+            $("input[name = count]").val(count);
+
+        }
+
+    </script>
+</body>
+</html>

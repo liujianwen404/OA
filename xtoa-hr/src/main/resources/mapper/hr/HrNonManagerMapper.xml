@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrNonManagerMapper">
+    <resultMap type="com.ruoyi.hr.domain.HrNonManager" id="HrNonManagerResult">
+        <id property="id" column="id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="nonManagerDate" column="non_manager_Date"/>
+            <result property="nonManagerPostId" column="non_manager_post_id"/>
+            <result property="nonManagerDeptId" column="non_manager_dept_id"/>
+            <result property="birthday" column="birthday"/>
+            <result property="sex" column="sex"/>
+            <result property="recruitSchools" column="recruit_schools"/>
+            <result property="recruitEducation" column="recruit_education"/>
+            <result property="recruitSkill" column="recruit_skill"/>
+            <result property="recruitJobDescription" column="recruit_job_description"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="auditStatus" column="audit_status"/>
+            <result property="deptChief" column="dept_chief"/>
+            <result property="deptManager" column="dept_manager"/>
+            <result property="deptLeader" column="dept_leader"/>
+            <result property="citys" column="citys"/>
+            <result property="isManager" column="is_manager"/>
+            <result property="attachment" column="attachment"/>
+            <result property="applyUserId" column="apply_user_id"/>
+            <result property="applyUserName" column="apply_user_name"/>
+            <result property="applyTime" column="apply_time"/>
+
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.non_manager_Date,
+            entity.non_manager_post_id,
+            entity.non_manager_dept_id,
+            entity.birthday,
+            entity.sex,
+            entity.recruit_schools,
+            entity.recruit_education,
+            entity.recruit_skill,
+            entity.recruit_job_description,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time,
+            entity.instance_id,
+            entity.status,
+            entity.audit_status,
+            entity.citys,
+            entity.is_manager,
+            entity.attachment,
+            entity.dept_leader,
+            entity.dept_manager,
+            entity.dept_chief,
+            entity.apply_user_id,
+            entity.apply_user_name,
+            entity.apply_time
+        </sql>
+
+    <sql id="whereSql">
+        <where>
+            <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%') </if>
+            <if test="nonManagerDate != null "> and entity.non_manager_Date = #{nonManagerDate}</if>
+            <if test="nonManagerPostId != null "> and entity.non_manager_post_id = #{nonManagerPostId}</if>
+            <if test="nonManagerDeptId != null "> and entity.non_manager_dept_id = #{nonManagerDeptId}</if>
+            <if test="birthday != null "> and entity.birthday = #{birthday}</if>
+            <if test="sex != null  and sex != ''"> and entity.sex = #{sex}</if>
+            <if test="recruitSchools != null  and recruitSchools != ''"> and entity.recruit_schools = #{recruitSchools}</if>
+            <if test="recruitEducation != null  and recruitEducation != ''"> and entity.recruit_education = #{recruitEducation}</if>
+            <if test="recruitSkill != null  and recruitSkill != ''"> and entity.recruit_skill = #{recruitSkill}</if>
+            <if test="recruitJobDescription != null  and recruitJobDescription != ''"> and entity.recruit_job_description = #{recruitJobDescription}</if>
+            <if test="createId != null "> and entity.create_id = #{createId}</if>
+            <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+            <if test="deptLeader != null "> and entity.dept_leader = #{deptLeader}</if>
+            <if test="deptManager != null "> and entity.dept_manager = #{deptManager}</if>
+            <if test="deptChief != null "> and entity.dept_chief = #{deptChief}</if>
+            <if test="citys != null "> and entity.citys = #{citys}</if>
+            <if test="isManager != null "> and entity.is_manager = #{isManager}</if>
+            <if test="attachment != null "> and entity.attachment = #{attachment}</if>
+            <if test="applyUserId != null "> and entity.apply_user_id = #{applyUserId}</if>
+            <if test="applyUserName != null "> and entity.apply_user_name = #{applyUserName}</if>
+            <if test="applyTime != null "> and entity.apply_time = #{applyTime}</if>
+
+
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(entity.apply_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(entity.apply_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+
+            <if test="auditStatus != null "> and entity.audit_status = #{auditStatus} </if>
+
+            <if test="postId != null "> and entity.non_manager_post_id = #{postId}</if>
+
+            and entity.del_flag = 0
+        </where>
+    </sql>
+
+    <select id="selectHrNonManagerList" parameterType="com.ruoyi.hr.domain.HrNonManager" resultMap="HrNonManagerResult">
+        select <include refid="baseColumns"/> from t_hr_non_manager entity
+        <include refid="whereSql"/>
+        order by create_time desc
+    </select>
+    <select id="selectHrNonManagerListManage" parameterType="com.ruoyi.hr.domain.HrNonManager" resultMap="HrNonManagerResult">
+        select <include refid="baseColumns"/> from t_hr_non_manager entity
+        LEFT JOIN sys_dept d ON entity.non_manager_dept_id = d.dept_id
+        <include refid="whereSql"/>
+
+        <if test="deptId != null ">
+            and ( entity.non_manager_dept_id = #{deptId} or entity.non_manager_dept_id
+            IN (SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+            WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0'))
+        </if>
+
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by create_time desc
+    </select>
+
+
+    <update id="deleteHrNonManagerById" parameterType="Long">
+        update  t_hr_non_manager set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrNonManagerByIds" parameterType="String">
+        update  t_hr_non_manager set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

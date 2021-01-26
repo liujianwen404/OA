@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增入职申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <link th:href="@{/ajax/libs/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-manager-add">
+            <div class="form-group">    
+                <label class="col-sm-2 control-label is-required">姓名：</label>
+                <div class="col-sm-4">
+                    <input name="empName" class="form-control" type="text" required>
+                </div>
+                <label class="col-sm-2 control-label is-required">入职日期：</label>
+                <div class="col-sm-4">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="nonManagerDate" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">入职部门：</label>
+                <div class="col-sm-4">
+                    <select id="nonManagerDeptId" name="nonManagerDeptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" required>
+                        <option value="">所有</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+                <label class="col-sm-2 control-label is-required">入职岗位：</label>
+                <div class="col-sm-4">
+                    <select id="nonManagerPostId" name="nonManagerPostId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" required>
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}" th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label is-required">入职城市：</label>
+                <div class="col-sm-4">
+                    <select class="form-control m-b" name="citys" th:with="type=${@dict.getType('citys')}" required>
+                        <option value="">所有</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-2 control-label">直接上级：</label>
+                <div class="col-sm-4">
+                    <input name="deptLeader" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">部门经理：</label>
+                <div class="col-sm-4">
+                    <input name="deptManager" class="form-control" type="text">
+                </div>
+                <label class="col-sm-2 control-label">部门总监：</label>
+                <div class="col-sm-4">
+                    <input name="deptChief" class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">是否主管级及以上：</label>
+                <div class="col-sm-8" style="margin-top: 5px">
+                    <div class="">
+                        否<input type="radio" name="isManager" value="0" checked required>&nbsp;&nbsp;&nbsp;&nbsp;
+                        是<input type="radio" name="isManager" value="1" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input id="attachment" name="attachment" type="hidden" >
+                <label class="col-sm-3 control-label">上传资料：</label>
+                <div class="col-sm-8">
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn layui-btn-normal" id="testList">选择文件</button>
+                        <div class="layui-upload-list">
+                            <table class="layui-table">
+                                <thead>
+                                <tr><th>文件</th>
+                                    <th>大小</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr></thead>
+                                <tbody id="demoList"></tbody>
+                            </table>
+                        </div>
+                        <button type="button" style="display:none;" class="layui-btn" id="testListAction" >开始上传</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" hidden>
+                <label class="col-sm-3 control-label">发布状态：</label>
+                <div class="col-sm-8">
+                    <div class="">
+                        保存<input type="radio" name="status" value="0" checked required>&nbsp;&nbsp;&nbsp;&nbsp;
+                        发布<input type="radio" name="status" value="1" required>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script th:src="@{/ajax/libs/layui/layui.all.js}"></script>
+    <script type="text/javascript">
+        var prefix = ctx + "hr/manager"
+        $("#form-manager-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                //上传图片
+                $("#testListAction").click();
+
+                if (!$("#demoList").html()){
+                    //没有图片直接提交表单
+                    $.operate.save(prefix + "/add", $('#form-manager-add').serialize());
+                }
+            }
+        }
+
+        function submitHandlerPush() {
+            $(" input[name='status']").each(function(){
+                if($(this).val() == 1){
+                    $(this).prop( "checked", true );
+                }
+            });
+            if ($.validate.form()) {
+                //上传图片
+                $("#testListAction").click();
+
+                if (!$("#demoList").html()){
+                    //没有图片直接提交表单
+                    $.operate.save(prefix + "/add", $('#form-manager-add').serialize());
+                }
+            }
+        }
+
+        $("input[name='nonManagerDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='birthday']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $(document).ready(function () {
+
+            layui.use('upload', function (start, end){
+                var $ = layui.jquery
+                    ,upload = layui.upload;
+
+                //多文件列表示例
+                var demoListView = $('#demoList')
+                    , uploadListIns = upload.render({
+                    elem: '#testList'
+                    , url: '/common/upload' //改成您自己的上传接口
+                    , accept: 'file'
+                    , multiple: true
+                    , auto: false
+                    , bindAction: '#testListAction'
+                    , choose: function (obj) {
+                        var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                        //读取本地文件
+                        obj.preview(function (index, file, result) {
+                            var tr = $(['<tr id="upload-' + index + '">'
+                                /*, '<td>' + file.name + '</td>'*/
+                                , '<td>' +'<img onclick="$.table.imageViewSimp(\''+ result +'\')" src="'+ result +'">' + '</td>'
+                                , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                                , '<td>等待上传</td>'
+                                , '<td>'
+                                , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                                , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                                , '</td>'
+                                , '</tr>'].join(''));
+
+                            //单个重传
+                            tr.find('.demo-reload').on('click', function () {
+                                obj.upload(index, file);
+                            });
+
+                            //删除
+                            tr.find('.demo-delete').on('click', function () {
+                                delete files[index]; //删除对应的文件
+                                tr.remove();
+                                uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                            });
+
+                            demoListView.append(tr);
+                        });
+                    }
+                    , done: function (res, index, upload) {
+                        if (res.code == 0) { //上传成功
+                            debugger
+                            var tr = demoListView.find('tr#upload-' + index)
+                                , tds = tr.children();
+                            tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                            tds.eq(3).html(''); //清空操作
+
+                            $('#attachment').val($('#attachment').val() + "," + res.url);
+                            return delete this.files[index]; //删除文件队列已经上传成功的文件
+                        }
+                        this.error(index, upload);
+                    },allDone: function(obj){ //当文件全部被提交后，才触发
+                        console.log("allDone:"+obj.total); //得到总文件数
+                        console.log("allDone:"+obj.successful); //请求成功的文件数
+                        console.log("allDone:"+obj.aborted); //请求失败的文件数
+
+                        //提交表单
+                        $.operate.save(prefix + "/add", $('#form-manager-add').serialize());
+                    }
+                    , error: function (index, upload) {
+                        var tr = demoListView.find('tr#upload-' + index)
+                            , tds = tr.children();
+                        tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                        tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                    }
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>

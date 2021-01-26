@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增考勤统计')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-statistics-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工id：</label>
+                <div class="col-sm-8">
+                    <input name="empId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工姓名：</label>
+                <div class="col-sm-8">
+                    <input name="empName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">工号：</label>
+                <div class="col-sm-8">
+                    <input name="empNum" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">入职日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="nonManagerDate" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">离职日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="quitDate" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">结算日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="finalDate" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">部门id：</label>
+                <div class="col-sm-8">
+                    <input name="deptId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="deptName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">一级部门id：</label>
+                <div class="col-sm-8">
+                    <input name="firstDeptId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">一级部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="firstDeptName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">二级部门id：</label>
+                <div class="col-sm-8">
+                    <input name="secondDeptId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">二级部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="secondDeptName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">区域：</label>
+                <div class="col-sm-8">
+                    <input name="district" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">岗位id：</label>
+                <div class="col-sm-8">
+                    <input name="postId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">岗位名称：</label>
+                <div class="col-sm-8">
+                    <input name="postName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">应出勤小时数：</label>
+                <div class="col-sm-8">
+                    <input name="shouldAttendance" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">应公休小时数：</label>
+                <div class="col-sm-8">
+                    <input name="shouldPublicHoliday" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">实出勤小时数：</label>
+                <div class="col-sm-8">
+                    <input name="actualAttendance" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">实出勤天数：</label>
+                <div class="col-sm-8">
+                    <input name="actualAttendanceDay" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">实公休小时数：</label>
+                <div class="col-sm-8">
+                    <input name="actualPublicHoliday" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">实公休天数：</label>
+                <div class="col-sm-8">
+                    <input name="actualPublicHolidayDay" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">享受法定假工时：</label>
+                <div class="col-sm-8">
+                    <input name="legalPublicHoliday" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">上班时长：</label>
+                <div class="col-sm-8">
+                    <input name="workDuration" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">法定假加班：</label>
+                <div class="col-sm-8">
+                    <input name="legalOvertime" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">平时加班：</label>
+                <div class="col-sm-8">
+                    <input name="generalOvertime" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">调休：</label>
+                <div class="col-sm-8">
+                    <input name="lieuLeave" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">病假：</label>
+                <div class="col-sm-8">
+                    <input name="sickLeave" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">事假：</label>
+                <div class="col-sm-8">
+                    <input name="personalLeave" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">年假：</label>
+                <div class="col-sm-8">
+                    <input name="annualLeave" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">产假，陪产假，婚假，丧假：</label>
+                <div class="col-sm-8">
+                    <input name="otherLeave" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">旷工：</label>
+                <div class="col-sm-8">
+                    <input name="absentLeave" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">上月累计余假：</label>
+                <div class="col-sm-8">
+                    <input name="previousHoliday" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">本月加班存休：</label>
+                <div class="col-sm-8">
+                    <input name="overtimeHoliday" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">本月累计余假：</label>
+                <div class="col-sm-8">
+                    <input name="allHoliday" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">计薪工时：</label>
+                <div class="col-sm-8">
+                    <input name="payWorkHour" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">工龄：</label>
+                <div class="col-sm-8">
+                    <input name="workingAge" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">剩余年假：</label>
+                <div class="col-sm-8">
+                    <input name="overAnnualLeave" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">全勤奖：</label>
+                <div class="col-sm-8">
+                    <input name="attendanceBonus" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">夜班补贴：</label>
+                <div class="col-sm-8">
+                    <input name="nightSubsidy" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">餐补：</label>
+                <div class="col-sm-8">
+                    <input name="mealSubsidy" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">其他补贴：</label>
+                <div class="col-sm-8">
+                    <input name="otherSubsidy" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">迟到次数：</label>
+                <div class="col-sm-8">
+                    <input name="lateNums" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">迟到扣费：</label>
+                <div class="col-sm-8">
+                    <input name="lateDeduct" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">未打卡扣费：</label>
+                <div class="col-sm-8">
+                    <input name="notClockDeduct" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">早退扣费：</label>
+                <div class="col-sm-8">
+                    <input name="earlyDeduct" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">水电扣费：</label>
+                <div class="col-sm-8">
+                    <input name="waterElectricityDeduct" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">其他扣费：</label>
+                <div class="col-sm-8">
+                    <input name="otherDeduct" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工签名：</label>
+                <div class="col-sm-8">
+                    <input name="empSignature" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">创建者id：</label>
+                <div class="col-sm-8">
+                    <input name="createId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">更新者id：</label>
+                <div class="col-sm-8">
+                    <input name="updateId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">删除标志：</label>
+                <div class="col-sm-8">
+                    <input name="delFlag" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/statistics"
+        $("#form-statistics-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-statistics-add').serialize());
+            }
+        }
+
+        $("input[name='nonManagerDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='quitDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='finalDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

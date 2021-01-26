@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改离职申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-quit-edit" th:object="${hrQuit}">
+        <input name="id" th:field="*{id}" type="hidden">
+
+        <div class="form-group" style="display: none">
+            <label class="col-sm-3 control-label">申请人：</label>
+            <div class="col-sm-8">
+                <input name="applyUserName" th:field="*{applyUserName}" class="form-control" type="text" readonly>
+            </div>
+        </div>
+        <div class="form-group" style="display: none">
+            <label class="col-sm-3 control-label">申请时间：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input name="applyTime" th:value="${#dates.format(hrQuit.applyTime, 'yyyy-MM-dd')}" readonly="readonly" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>职级：</label>
+            <div class="col-sm-8">
+                <select name="rank" class="form-control m-b" th:with="rank=${@dict.getType('employeesGrade')}" required>
+                    <option th:each="dict : ${rank}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{rank}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">预计离职时间：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input name="quitTime" th:value="${#dates.format(hrQuit.quitTime, 'yyyy-MM-dd')}" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">离职原因：</label>
+            <div class="col-sm-8">
+                <textarea name="reason" class="form-control" required>[[*{reason}]]</textarea>
+            </div>
+        </div>
+
+        <div th:replace="include/fileUploadUtil::fileUploadShow(${hrQuit},'附件')" ></div>
+        <div th:replace="include/fileUploadUtil::fileUploadUtil('重新上传附件',5)" ></div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: datetimepicker-js" />
+<script type="text/javascript">
+    var prefix = ctx + "hr/quit";
+    $("#form-quit-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+
+            //上传图片
+            $("#testListAction").click();
+            if (!$("#demoList").html()){
+                //没有图片直接提交表单
+                submitFrom();
+            }
+
+        }
+    }
+    function submitFrom(){
+        $.operate.save(prefix + "/edit", $('#form-quit-edit').serialize());
+    }
+
+    $("input[name='quitTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        startDate: new Date(),
+        autoclose: true
+    });
+
+    $("input[name='realityStartTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='realityEndTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='applyTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+</script>
+</body>
+</html>

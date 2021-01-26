@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增培训档案')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-records-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">员工工号：</label>
+                <div class="col-sm-8">
+                    <input name="empNum" class="form-control" type="text">
+                </div>
+            </div>
+           <!-- <div class="form-group">
+                <label class="col-sm-3 control-label">员工姓名：</label>
+                <div class="col-sm-8">
+                    <input name="empName" class="form-control" type="text" readonly="true">
+                </div>
+            </div>
+
+            <div class="form-group col-sm-12">
+                <label class="col-sm-3 control-label is-required">部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" readonly="true" required>
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:if="${dept.getStatus() != '1' && dept.getDelFlag() == '0' }" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-group col-sm-12">
+                <label class="col-sm-3 control-label is-required">岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" required>
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>-->
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  is-required">培训时长：</label>
+                <div class="col-sm-8">
+                    <input name="trainingTime" class="form-control" type="text" required>
+                </div>
+            </div>
+          <!--  <div class="form-group">
+                <label class="col-sm-3 control-label">培训次数：</label>
+                <div class="col-sm-8">
+                    <input name="participateTotal" class="form-control" type="text">
+                </div>
+            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label  is-required">培训开始时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="trainingStartTime" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">培训结束时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="trainingEndTime" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">培训地点：</label>
+                <div class="col-sm-8">
+                    <input name="trainingSite" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">培训方式：</label>
+                <div class="col-sm-8">
+                    <select name="trainingType" th:with="type=${@dict.getType('trainingType')}"  class="form-control m-b" required>
+                        <option value="">请选择</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">培训内容：</label>
+                <div class="col-sm-8">
+                    <input name="trainingContent" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">培训成绩：</label>
+                <div class="col-sm-8">
+                    <input name="trainingScore" class="form-control" type="text" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">是否考试：</label>
+                <div class="col-sm-8">
+                    <select name="examFlag"  class="form-control m-b" required>
+                        <option value="">请选择</option>
+                        <option value="0">是</option>
+                        <option value="1">否</option>
+                    </select>
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label is-required">是否考试：</label>
+                <div class="col-sm-8">
+                    <select name="trainingType" th:with="type=${@dict.getType('trainingType')}"  class="form-control m-b" required>
+                        &lt;!&ndash;                        <option value="">请选择</option>&ndash;&gt;
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>-->
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">是否通过：</label>
+                <div class="col-sm-8">
+                    <select name="passFlag"  class="form-control m-b" required>
+                        <option value="">请选择</option>
+                        <option value="0">是</option>
+                        <option value="1">否</option>
+                    </select>
+                </div>
+            </div>
+            <!--<div class="form-group">
+                <label class="col-sm-3 control-label">创建人id：</label>
+                <div class="col-sm-8">
+                    <input name="createId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">更新人id：</label>
+                <div class="col-sm-8">
+                    <input name="updateId" class="form-control" type="text">
+                </div>
+            </div>-->
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/records"
+        $("#form-records-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                    var startTime = $("input[name='trainingStartTime']").data("datetimepicker").getDate();
+                    var endTime = $("input[name='trainingEndTime']").data("datetimepicker").getDate();
+                    if (startTime > endTime){
+                        $.modal.alertWarning("培训开始时间不能在结束时间之后");
+                        return;
+                    }
+                $.operate.save(prefix + "/add", $('#form-records-add').serialize());
+            }
+        }
+
+
+        $("input[name='trainingStartTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='trainingEndTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

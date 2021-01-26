@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('劳动合同列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>员工姓名：</label>
+                                <input type="text" name="empName" />
+                            </li>
+                            <!--
+                            <li>
+                                <label>合同主体：</label>
+                                <input type="text" name="subjectContract"/>
+                            </li>-->
+                            <li>
+                                <label>合同年限：</label>
+                                <input type="text" name="contractYear"/>
+                            </li>
+                            <li>
+                                <label>到期情况：</label>
+                                <select  name="overdue">
+                                    <option value="" selected="selected">请选择</option>
+                                    <option value="30">近30天到期</option>
+                                    <option value="-1">已到期</option>
+                                </select>
+                            </li>
+                            <li class="select-time">
+                                <label>合同开始：</label>
+                                <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginContractStar]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endContractStar]"/>
+                            </li>
+                            <li class="select-time">
+                                <label>合同结束：</label>
+                                <input type="text" class="time-input" id="beginContractEnd" placeholder="开始时间" name="params[beginContractEnd]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endContractEnd" placeholder="结束时间" name="params[endContractEnd]"/>
+                            </li>
+                           <!-- <li>
+                                <label>续签次数：</label>
+                                <input type="text" name="renewCount"/>
+                            </li>
+                            <li>
+                                <label>流程实例id：</label>
+                                <input type="text" name="instanceId"/>
+                            </li>
+                            <li>
+                                <label>审核状态：</label>
+                                <select name="auditStatus">
+                                    <option value="">所有</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>创建者id：</label>
+                                <input type="text" name="createId"/>
+                            </li>
+                            <li>
+                                <label>更新者id：</label>
+                                <input type="text" name="updateId"/>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group" >
+               <!-- <a class="btn btn-success" onclick="$.modal.openMain('劳动合同流程', '/hr/contract',($(window).width() - 50),($(window).height() - 50));">
+                    <i class="fa fa-plus"></i> 劳动合同流程
+                </a>-->
+                <!--<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="hr:contract:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>-->
+               <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="hr:contract:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:contract:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+               -->
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:contract:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "hr/contract";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list?isFrom=contractList",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                detailUrl: prefix + "/edit/{id}",
+                modalName: "劳动合同",
+                columns: [
+                {
+                    field: 'id', 
+                    title: '劳动合同id',
+                    visible: false
+                },
+                {
+                    field: 'empId', 
+                    title: '员工id'
+                },
+                    {
+                        field: 'empName',
+                        title: '员工'
+                    },
+                {
+                    field: 'subjectContract', 
+                    title: '合同主体'
+                },
+                {
+                    field: 'contractYear', 
+                    title: '合同年限'
+                },
+                {
+                    field: 'contractStar', 
+                    title: '合同开始'
+                },
+                {
+                    field: 'contractEnd', 
+                    title: '合同结束'
+                },
+                {
+                    field: 'renewCount', 
+                    title: '续签次数'
+                },{
+                        field: 'overdueStr',
+                        title: '到期情况',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<font color="red">' + value + '</font>');
+                            return actions.join('');
+                        }
+                    },
+                    /*{
+                        field: 'contractUrl',
+                        title: '合同',
+                        formatter: function(value, row, index) {
+                            var actions = [];
+                            actions.push('<a class="btn btn-success " href="javascript:void(0)" onclick="$.operate.preview(\'' + value + '\')">下载</a>');
+                            return actions.join('');
+                        }
+
+                    },*/
+                {
+                    field: 'createId', 
+                    title: '创建者id',
+                    visible: false
+                },
+                {
+                    field: 'updateId', 
+                    title: '更新者id',
+                    visible: false
+                },
+                {
+                    field: 'remark', 
+                    title: '备注',
+                    visible: false
+                }/*,
+                {
+                    title: '操作',
+                    align: 'center'/!*,
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs " href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-eye"></i> 表单数据</a> ');
+                        return actions.join('');
+                    }*!/
+                }*/]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

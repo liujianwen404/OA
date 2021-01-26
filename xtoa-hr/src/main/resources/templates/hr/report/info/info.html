@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('百度ECharts')" />
+</head>
+<body class="gray-bg">
+
+        <div class="tab-content">
+            <div >
+                <div class="ibox float-e-margins">
+                <div class="echarts" id="echarts-pie-chart1"></div>
+                </div>
+            </div>
+
+            <div  class="col-sm-6">
+                <div class="ibox float-e-margins">
+                <div class="echarts" id="echarts-pie-chart2"></div>
+                </div>
+            </div>
+
+            <div  class="col-sm-6">
+                <div class="ibox float-e-margins">
+                <div class="echarts" id="echarts-pie-chart3"></div>
+                </div>
+            </div>
+
+            <div  class="col-sm-6">
+                <div class="ibox float-e-margins">
+                <div class="echarts" id="echarts-pie-chart4"></div>
+                </div>
+            </div>
+
+            <div  class="col-sm-6">
+                <div class="ibox float-e-margins">
+                <div class="echarts" id="echarts-pie-chart5"></div>
+                </div>
+            </div>
+        </div>
+
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: echarts-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/report/info";
+	    $(function () {
+            //部门人数统计
+            $.operate.get(prefix + "/list",function (result) {
+                var legendData=[];
+                var seriesData=[];
+                var list = result.data;
+
+                for(var i in list){
+                    legendData.push(list[i].dept_name + " " + list[i].num);
+                    seriesData.push({name:list[i].dept_name + " " + list[i].num,value:list[i].num});
+                }
+                var pieChart = echarts.init(document.getElementById("echarts-pie-chart1"));
+                var pieoption = {
+                    title : {
+                        text: '部门人数统计',
+                        // subtext: '纯属虚构',
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        /*orient : 'vertical',
+                        x : 'left',*/
+                        bottom: 10,
+                        left: 'center',
+                        data: legendData
+                    },
+                    calculable : true,
+                    series : [
+                        {
+                            name:'',
+                            type:'pie',
+                            radius : '55%',
+                            center: ['50%', '55%'],
+                            data: seriesData,
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                pieChart.setOption(pieoption);
+                $(window).resize(pieChart.resize);
+            });
+
+            //转正转正人数统计
+            $.operate.get(ctx + "hr/report/regular" + "/list",function (result) {
+                var legendData=[];
+                var seriesData=[];
+                var list = result.data;
+                for(var i in list){
+                    legendData.push(list[i].dept_name + " " + list[i].num);
+                    seriesData.push({name:list[i].dept_name + " " + list[i].num,value:list[i].num});
+                }
+                var pieChart = echarts.init(document.getElementById("echarts-pie-chart2"));
+                var pieoption = {
+                    title : {
+                        text: '转正人数统计',
+                        // subtext: '纯属虚构',
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient : 'vertical',
+                        x : 'left',
+                        data: legendData
+                    },
+                    calculable : true,
+                    series : [
+                        {
+                            name:'',
+                            type:'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data: seriesData
+                        }
+                    ]
+                };
+                pieChart.setOption(pieoption);
+                $(window).resize(pieChart.resize);
+            });
+
+            //招聘统计
+            $.operate.get(ctx + "hr/report/recruit" + "/list",function (result) {
+                var legendData=[];
+                var seriesData=[];
+                var list = result.data;
+                for(var i in list){
+                    legendData.push(list[i].dept_name + " " + list[i].num);
+                    seriesData.push({name:list[i].dept_name + " " + list[i].num,value:list[i].num});
+                }
+                var pieChart = echarts.init(document.getElementById("echarts-pie-chart3"));
+                var pieoption = {
+                    title : {
+                        text: '招聘人数统计',
+                        // subtext: '纯属虚构',
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient : 'vertical',
+                        x : 'left',
+                        data: legendData
+                    },
+                    calculable : true,
+                    series : [
+                        {
+                            name:'',
+                            type:'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data: seriesData
+                        }
+                    ]
+                };
+                pieChart.setOption(pieoption);
+                $(window).resize(pieChart.resize);
+            });
+
+            //离职统计
+            $.operate.get(ctx + "hr/report/quit" + "/list",function (result) {
+                var legendData=[];
+                var seriesData=[];
+                var list = result.data;
+                for(var i in list){
+                    legendData.push(list[i].dept_name + " " + list[i].num);
+                    seriesData.push({name:list[i].dept_name + " " + list[i].num,value:list[i].num});
+                }
+                var pieChart = echarts.init(document.getElementById("echarts-pie-chart4"));
+                var pieoption = {
+                    title : {
+                        text: '离职人数统计',
+                        // subtext: '纯属虚构',
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient : 'vertical',
+                        x : 'left',
+                        data: legendData
+                    },
+                    calculable : true,
+                    series : [
+                        {
+                            name:'',
+                            type:'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data: seriesData
+                        }
+                    ]
+                };
+                pieChart.setOption(pieoption);
+                $(window).resize(pieChart.resize);
+            });
+
+            //调动人数统计
+            $.operate.get(ctx + "hr/report/jobTransfer" + "/list",function (result) {
+                var legendData=[];
+                var seriesData=[];
+                var list = result.data;
+                for(var i in list){
+                    legendData.push(list[i].dept_name + " " + list[i].num);
+                    seriesData.push({name:list[i].dept_name + " " + list[i].num,value:list[i].num});
+                }
+
+                var pieChart = echarts.init(document.getElementById("echarts-pie-chart5"));
+                var pieoption = {
+                    title : {
+                        text: '调动人数统计',
+                        // subtext: '纯属虚构',
+                        x:'center'
+                    },
+                    tooltip : {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient : 'vertical',
+                        x : 'left',
+                        data: legendData
+                    },
+                    calculable : true,
+                    series : [
+                        {
+                            name:'',
+                            type:'pie',
+                            radius : '55%',
+                            center: ['50%', '60%'],
+                            data: seriesData
+                        }
+                    ]
+                };
+                pieChart.setOption(pieoption);
+                $(window).resize(pieChart.resize);
+            });
+
+	    });
+    </script>
+</body>
+</html>

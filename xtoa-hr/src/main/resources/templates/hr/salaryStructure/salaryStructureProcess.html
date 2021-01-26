@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('薪资结构列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                           <!-- <li>
+                                <label>原始薪资结构id：</label>
+                                <input type="text" name="oldId"/>
+                            </li>-->
+                            <li>
+                                <label>员工姓名：</label>
+                                <input type="text" name="empName"/>
+                            </li>
+                            <li>
+                                <label>基本工资：</label>
+                                <input type="text" name="basic"/>
+                            </li>
+                            <li>
+                                <label>周末：</label>
+                                <input type="text" name="weekendWork"/>
+                            </li>
+                            <li>
+                                <label>岗位补贴：</label>
+                                <input type="text" name="allowance"/>
+                            </li>
+                            <li>
+                                <label>其他补贴：</label>
+                                <input type="text" name="otherSubsidies"/>
+                            </li>
+                            <li>
+                                <label>绩效工资基数：</label>
+                                <input type="text" name="performanceBonus"/>
+                            </li>
+                            <div th:include="include/deptSearch::deptSearch"></div>
+                            <li>
+                                <label>岗位：</label>
+                                <select id="postId" class="form-control m-b" name="postId" th:with="postAll=${@postService.getPostAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <div class="layui-inline">
+                                    <label >日期: </label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="monthDate" class="layui-input" id="test3" placeholder="yyyy-MM">
+                                    </div>
+                                </div>
+                                <!--<label>日期：</label>
+                                <input type="text" class="time-input" placeholder="日期" name="monthDate"/>-->
+                            </li>
+
+                            <!--<li>
+                                <label>周末上班工资：</label>
+                                <input type="text" name="weekendWork"/>
+                            </li>
+                            <li>
+                                <label>岗位津贴：</label>
+                                <input type="text" name="allowance"/>
+                            </li>
+                            <li>
+                                <label>绩效奖金标准：</label>
+                                <input type="text" name="performanceBonus"/>
+                            </li>
+                            <li>
+                                <label>交通补贴：</label>
+                                <input type="text" name="travelAllowance"/>
+                            </li>
+                            <li>
+                                <label>伙食补贴：</label>
+                                <input type="text" name="foodAllowance"/>
+                            </li>
+                            <li>
+                                <label>住宿补贴：</label>
+                                <input type="text" name="accommodationSubsidy"/>
+                            </li>
+                            <li>
+                                <label>高温补贴：</label>
+                                <input type="text" name="highSubsidy"/>
+                            </li>
+                            <li>
+                                <label>加班补贴：</label>
+                                <input type="text" name="overtimeAllowance"/>
+                            </li>
+                            <li>
+                                <label>夜班补贴：</label>
+                                <input type="text" name="nightAllowance"/>
+                            </li>
+                            <li>
+                                <label>全勤奖：</label>
+                                <input type="text" name="attendanceBonus"/>
+                            </li>-->
+                           <!-- <li>
+                                <label>是否为历史数据(0:不是，1：是)：</label>
+                                <input type="text" name="isHistory"/>
+                            </li>
+                            <li>
+                                <label>调薪情况：</label>
+                                <input type="text" name="salaryContent"/>
+                            </li>-->
+                           <!-- <li>
+                                <label>流程实例id：</label>
+                                <input type="text" name="instanceId"/>
+                            </li>
+                            <li>
+                                <label>审核状态：</label>
+                                <select name="auditStatus">
+                                    <option value="">所有</option>
+                                </select>
+                            </li>
+                            <li>
+                                <label>创建者id：</label>
+                                <input type="text" name="createId"/>
+                            </li>
+                            <li>
+                                <label>更新者id：</label>
+                                <input type="text" name="updateId"/>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group" hidden>
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="hr:salaryStructure:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="hr:salaryStructure:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:salaryStructure:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:salaryStructure:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table class="my-bootstrap-table" id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var removeFlag = [[${@permission.hasPermi('hr:salaryStructure:remove')}]];
+        var datas = [[${@dict.getType('auditStatus')}]];
+        var prefix = ctx + "hr/salaryStructure";
+
+        $(function() {
+            var options = {
+                url: prefix + "/listProcess",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                detailUrl: prefix + "/info/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "薪资结构",
+                columns: [
+                {
+                    field: 'id', 
+                    title: '薪资结构',
+                    visible: false
+                },
+                {
+                    field: 'oldId', 
+                    title: '原始薪资结构id',
+                    visible: false
+                },
+                {
+                    field: 'empId', 
+                    title: '员工id',
+                    visible: false
+                },{
+                        field: 'monthDate',
+                        title: '月份'
+                    },{
+                        field: 'empName',
+                        title: '员工'
+                    },
+                    {
+                        field: 'adjustDate',
+                        title: '调整日期'
+                    },
+                    {
+                        field: 'payGrade',
+                        title: '薪酬等级'
+                    },
+                {
+                    field: 'comprehensive', 
+                    title: '当月综合薪资'
+                },
+                {
+                    field: 'basic', 
+                    title: '基本工资'
+                },
+                {
+                    field: 'performanceBonus',
+                    title: '绩效工资基数'
+                },
+                {
+                    field: 'overtimePay',
+                    title: '加班费'
+                },
+                {
+                    field: 'allowance',
+                    title: '岗位补贴'
+                },
+                {
+                    field: 'otherSubsidies',
+                    title: '其他补贴'
+                },
+                {
+                    field: 'attendanceBonus',
+                    title: '全勤奖'
+                },
+                {
+                    field: 'salaryContent',
+                    title: '调薪情况'
+                },
+                {
+                    field: 'isHistory', 
+                    title: '是否为历史数据(0:不是，1：是)',
+                    visible: false
+                },
+                {
+                        field: 'todoUserName',
+                        title: '当前处理人'
+                    },
+                    {
+                        field : 'auditStatus',
+                        title : '审核状态',
+                        align : 'center',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDictLabel(datas, value);
+                        }
+                    },
+                {
+                    field: 'instanceId', 
+                    title: '流程实例id',
+                    visible: false
+                },
+                {
+                    field: 'auditStatus', 
+                    title: '审核状态',
+                    visible: false
+                },
+                {
+                    field: 'createId', 
+                    title: '创建者id',
+                    visible: false
+                },
+                {
+                    field: 'updateId', 
+                    title: '更新者id',
+                    visible: false
+                },
+                {
+                    field: 'remark', 
+                    title: '备注',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if (row.instanceId){
+                            actions.push('<a class="btn btn-primary btn-xs " href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\',1000)"><i class="fa fa-eye"></i> 表单数据</a> ');
+                            actions.push('<a class="btn btn-warning btn-xs " href="javascript:void(0)" onclick="$.operate.showHistoryDialog(\'' + row.instanceId + '\')"><i class="fa fa-list"></i> 审批历史</a> ');
+                            actions.push('<a class="btn btn-info btn-xs " href="javascript:void(0)" onclick="$.operate.showProcessImgDialog(\'' + row.instanceId + '\')"><i class="fa fa-image"></i> 进度查看</a> ');
+                            if (row.delFlag == 0 && row.auditStatus == 1){
+                                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.repeal(\'' + row.instanceId + '\',\'' + prefix + '/repeal'  + '\')"><i class="fa fa-remove"></i>撤回</a>');
+                            }
+                        }
+
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+
+    </script>
+</body>
+</html>

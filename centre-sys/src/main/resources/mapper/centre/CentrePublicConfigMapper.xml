@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.centre.mapper.CentrePublicConfigMapper">
+    <resultMap type="com.ruoyi.centre.domain.CentrePublicConfig" id="CentrePublicConfigResult">
+        <id property="serverId" column="server_id"/>
+            <result property="name" column="name"/>
+            <result property="webUrl" column="web_url"/>
+            <result property="logo" column="logo"/>
+            <result property="enable" column="enable"/>
+            <result property="sortValue" column="sort_value"/>
+            <result property="createName" column="create_name"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.server_id,
+            entity.name,
+            entity.web_url,
+            entity.logo,
+            entity.enable,
+            entity.sort_value,
+            entity.create_name,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectCentrePublicConfigList" parameterType="com.ruoyi.centre.domain.CentrePublicConfig" resultMap="CentrePublicConfigResult">
+        select <include refid="baseColumns"/> from centre_public_config entity
+        <where>
+            <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+            <if test="webUrl != null  and webUrl != ''"> and entity.web_url = #{webUrl}</if>
+            <if test="logo != null  and logo != ''"> and entity.logo = #{logo}</if>
+            <if test="enable != null "> and entity.enable = #{enable}</if>
+            <if test="sortValue != null "> and entity.sort_value = #{sortValue}</if>
+            <if test="createName != null  and createName != ''"> and entity.create_name like concat('%', #{createName}, '%')</if>
+        </where>
+
+    </select>
+
+
+    <delete id="deleteCentrePublicConfigById" parameterType="Integer">
+        delete from centre_public_config where server_id = #{serverId}
+    </delete>
+
+    <delete id="deleteCentrePublicConfigByIds" parameterType="String">
+        delete from centre_public_config where server_id in
+        <foreach item="serverId" collection="array" open="(" separator="," close=")">
+            #{serverId}
+        </foreach>
+    </delete>
+
+</mapper>

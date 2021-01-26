@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrRecruitMapper">
+    
+    <resultMap type="com.ruoyi.base.domain.HrRecruit" id="THrRecruitResult">
+        <result property="recruitId"    column="recruit_id"    />
+        <result property="empName"    column="emp_name"    />
+        <result property="recruitDeptId"    column="recruit_dept_id"    />
+        <result property="recruitPostId"    column="recruit_post_id"    />
+        <result property="applyDate"    column="apply_date"    />
+        <result property="applyDutyDate"    column="apply_duty_date"    />
+        <result property="recruitCount"    column="recruit_count"    />
+        <result property="nonManagerCount"    column="non_manager_count"    />
+        <result property="awaitCount"    column="await_count"    />
+        <result property="recruitDescription"    column="recruit_description"    />
+        <result property="recruitEducation"    column="recruit_education"    />
+        <result property="recruitMinAge"    column="recruit_min_age"    />
+        <result property="recruitMaxAge"    column="recruit_max_age"    />
+        <result property="recruitMarriage"    column="recruit_marriage"    />
+        <result property="recruitSex"    column="recruit_sex"    />
+        <result property="recruitMajor"    column="recruit_major"    />
+        <result property="recruitEfl"    column="recruit_EFL"    />
+        <result property="recruitSkill"    column="recruit_skill"    />
+        <result property="recruitMinSalary"    column="recruit_min_salary"    />
+        <result property="recruitMaxSalary"    column="recruit_max_salary"    />
+        <result property="recruitProbationDate"    column="recruit_probation_date"    />
+        <result property="recruitProbationSalary"    column="recruit_probation_salary"    />
+        <result property="recruitJobDescription"    column="recruit_job_description"    />
+        <result property="recruitType"    column="recruit_type"    />
+        <result property="showType"    column="show_type"    />
+        <result property="releaseStatus"    column="release_status"    />
+        <result property="createId"    column="create_id"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTHrRecruitVo">
+        select recruit_id, emp_name, recruit_dept_id, recruit_post_id, apply_date, apply_duty_date, recruit_count, non_manager_count, await_count, recruit_description, recruit_education, recruit_min_age, recruit_max_age, recruit_marriage, recruit_sex, recruit_major, recruit_EFL, recruit_skill, recruit_min_salary, recruit_max_salary, recruit_probation_date, recruit_probation_salary, recruit_job_description, recruit_type, show_type, release_status, create_id, update_id, create_by, update_by, remark, del_flag, create_time, update_time from t_hr_recruit
+    </sql>
+
+    <select id="selectTHrRecruitList" parameterType="HrRecruit" resultMap="THrRecruitResult">
+        select * from t_hr_recruit entity
+        LEFT JOIN sys_dept d ON entity.recruit_dept_id = d.dept_id
+        <where>  
+            <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+            <if test="recruitDeptId != null "> and entity.recruit_dept_id = #{recruitDeptId}</if>
+            <if test="recruitPostId != null "> and entity.recruit_post_id = #{recruitPostId}</if>
+            <if test="applyDate != null "> and entity.apply_date = #{applyDate}</if>
+            <if test="applyDutyDate != null "> and entity.apply_duty_date = #{applyDutyDate}</if>
+            <if test="recruitCount != null "> and entity.recruit_count = #{recruitCount}</if>
+            <if test="nonManagerCount != null "> and entity.non_manager_count = #{nonManagerCount}</if>
+            <if test="awaitCount != null "> and entity.await_count = #{awaitCount}</if>
+            <if test="recruitDescription != null  and recruitDescription != ''"> and entity.recruit_description = #{recruitDescription}</if>
+            <if test="recruitEducation != null  and recruitEducation != ''"> and entity.recruit_education = #{recruitEducation}</if>
+            <if test="recruitMinAge != null "> and entity.recruit_min_age = #{recruitMinAge}</if>
+            <if test="recruitMaxAge != null "> and entity.recruit_max_age = #{recruitMaxAge}</if>
+            <if test="recruitMarriage != null  and recruitMarriage != ''"> and entity.recruit_marriage = #{recruitMarriage}</if>
+            <if test="recruitSex != null  and recruitSex != ''"> and entity.recruit_sex = #{recruitSex}</if>
+            <if test="recruitMajor != null  and recruitMajor != ''"> and entity.recruit_major = #{recruitMajor}</if>
+            <if test="recruitEfl != null  and recruitEfl != ''"> and entity.recruit_EFL = #{recruitEfl}</if>
+            <if test="recruitSkill != null  and recruitSkill != ''"> and entity.recruit_skill = #{recruitSkill}</if>
+            <if test="recruitMinSalary != null "> and entity.recruit_min_salary = #{recruitMinSalary}</if>
+            <if test="recruitMaxSalary != null "> and entity.recruit_max_salary = #{recruitMaxSalary}</if>
+            <if test="recruitProbationDate != null  and recruitProbationDate != ''"> and entity.recruit_probation_date = #{recruitProbationDate}</if>
+            <if test="recruitProbationSalary != null "> and entity.recruit_probation_salary = #{recruitProbationSalary}</if>
+            <if test="recruitJobDescription != null  and recruitJobDescription != ''"> and entity.recruit_job_description = #{recruitJobDescription}</if>
+            <if test="recruitType != null "> and entity.recruit_type = #{recruitType}</if>
+            <if test="showType != null "> and entity.show_type = #{showType}</if>
+            <if test="releaseStatus != null "> and entity.release_status = #{releaseStatus}</if>
+            <if test="createId != null "> and entity.create_id = #{createId}</if>
+            <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+            and entity.del_flag = 0
+            and d.del_flag = 0
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        order by entity.create_time desc
+    </select>
+    
+    <select id="selectTHrRecruitById" parameterType="Long" resultMap="THrRecruitResult">
+        <include refid="selectTHrRecruitVo"/>
+        where recruit_id = #{recruitId}
+        and del_flag = 0
+    </select>
+        
+    <insert id="insertTHrRecruit" parameterType="HrRecruit" useGeneratedKeys="true" keyProperty="recruitId">
+        insert into t_hr_recruit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="empName != null  and empName != ''">emp_name,</if>
+            <if test="recruitDeptId != null ">recruit_dept_id,</if>
+            <if test="recruitPostId != null ">recruit_post_id,</if>
+            <if test="applyDate != null ">apply_date,</if>
+            <if test="applyDutyDate != null ">apply_duty_date,</if>
+            <if test="recruitCount != null ">recruit_count,</if>
+            <if test="nonManagerCount != null ">non_manager_count,</if>
+            <if test="awaitCount != null "> await_count ,</if>
+            <if test="recruitDescription != null  and recruitDescription != ''">recruit_description,</if>
+            <if test="recruitEducation != null  and recruitEducation != ''">recruit_education,</if>
+            <if test="recruitMinAge != null ">recruit_min_age,</if>
+            <if test="recruitMaxAge != null ">recruit_max_age,</if>
+            <if test="recruitMarriage != null  and recruitMarriage != ''">recruit_marriage,</if>
+            <if test="recruitSex != null  and recruitSex != ''">recruit_sex,</if>
+            <if test="recruitMajor != null  and recruitMajor != ''">recruit_major,</if>
+            <if test="recruitEfl != null  and recruitEfl != ''">recruit_EFL,</if>
+            <if test="recruitSkill != null  and recruitSkill != ''">recruit_skill,</if>
+            <if test="recruitMinSalary != null ">recruit_min_salary,</if>
+            <if test="recruitMaxSalary != null ">recruit_max_salary,</if>
+            <if test="recruitProbationDate != null  and recruitProbationDate != ''">recruit_probation_date,</if>
+            <if test="recruitProbationSalary != null ">recruit_probation_salary,</if>
+            <if test="recruitJobDescription != null  and recruitJobDescription != ''">recruit_job_description,</if>
+            <if test="recruitType != null ">recruit_type,</if>
+            <if test="showType != null ">show_type,</if>
+            <if test="releaseStatus != null ">release_status,</if>
+            <if test="createId != null ">create_id,</if>
+            <if test="updateId != null ">update_id,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="empName != null  and empName != ''">#{empName},</if>
+            <if test="recruitDeptId != null ">#{recruitDeptId},</if>
+            <if test="recruitPostId != null ">#{recruitPostId},</if>
+            <if test="applyDate != null ">#{applyDate},</if>
+            <if test="applyDutyDate != null ">#{applyDutyDate},</if>
+            <if test="recruitCount != null ">#{recruitCount},</if>
+            <if test="nonManagerCount != null ">#{nonManagerCount},</if>
+            <if test="awaitCount != null ">#{awaitCount},</if>
+            <if test="recruitDescription != null  and recruitDescription != ''">#{recruitDescription},</if>
+            <if test="recruitEducation != null  and recruitEducation != ''">#{recruitEducation},</if>
+            <if test="recruitMinAge != null ">#{recruitMinAge},</if>
+            <if test="recruitMaxAge != null ">#{recruitMaxAge},</if>
+            <if test="recruitMarriage != null  and recruitMarriage != ''">#{recruitMarriage},</if>
+            <if test="recruitSex != null  and recruitSex != ''">#{recruitSex},</if>
+            <if test="recruitMajor != null  and recruitMajor != ''">#{recruitMajor},</if>
+            <if test="recruitEfl != null  and recruitEfl != ''">#{recruitEfl},</if>
+            <if test="recruitSkill != null  and recruitSkill != ''">#{recruitSkill},</if>
+            <if test="recruitMinSalary != null ">#{recruitMinSalary},</if>
+            <if test="recruitMaxSalary != null ">#{recruitMaxSalary},</if>
+            <if test="recruitProbationDate != null  and recruitProbationDate != ''">#{recruitProbationDate},</if>
+            <if test="recruitProbationSalary != null ">#{recruitProbationSalary},</if>
+            <if test="recruitJobDescription != null  and recruitJobDescription != ''">#{recruitJobDescription},</if>
+            <if test="recruitType != null ">#{recruitType},</if>
+            <if test="showType != null ">#{showType},</if>
+            <if test="releaseStatus != null ">#{releaseStatus},</if>
+            <if test="createId != null ">#{createId},</if>
+            <if test="updateId != null ">#{updateId},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTHrRecruit" parameterType="HrRecruit">
+        update t_hr_recruit
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="empName != null  and empName != ''">emp_name = #{empName},</if>
+            <if test="recruitDeptId != null ">recruit_dept_id = #{recruitDeptId},</if>
+            <if test="recruitPostId != null ">recruit_post_id = #{recruitPostId},</if>
+            <if test="applyDate != null ">apply_date = #{applyDate},</if>
+            <if test="applyDutyDate != null ">apply_duty_date = #{applyDutyDate},</if>
+            <if test="recruitCount != null ">recruit_count = #{recruitCount},</if>
+            <if test="nonManagerCount != null ">non_manager_count = #{nonManagerCount},</if>
+            <if test="awaitCount != null "> await_count = #{awaitCount},</if>
+            <if test="recruitDescription != null  and recruitDescription != ''">recruit_description = #{recruitDescription},</if>
+            <if test="recruitEducation != null  and recruitEducation != ''">recruit_education = #{recruitEducation},</if>
+            <if test="recruitMinAge != null ">recruit_min_age = #{recruitMinAge},</if>
+            <if test="recruitMaxAge != null ">recruit_max_age = #{recruitMaxAge},</if>
+            <if test="recruitMarriage != null  and recruitMarriage != ''">recruit_marriage = #{recruitMarriage},</if>
+            <if test="recruitSex != null  and recruitSex != ''">recruit_sex = #{recruitSex},</if>
+            <if test="recruitMajor != null  and recruitMajor != ''">recruit_major = #{recruitMajor},</if>
+            <if test="recruitEfl != null  and recruitEfl != ''">recruit_EFL = #{recruitEfl},</if>
+            <if test="recruitSkill != null  and recruitSkill != ''">recruit_skill = #{recruitSkill},</if>
+            <if test="recruitMinSalary != null ">recruit_min_salary = #{recruitMinSalary},</if>
+            <if test="recruitMaxSalary != null ">recruit_max_salary = #{recruitMaxSalary},</if>
+            <if test="recruitProbationDate != null  and recruitProbationDate != ''">recruit_probation_date = #{recruitProbationDate},</if>
+            <if test="recruitProbationSalary != null ">recruit_probation_salary = #{recruitProbationSalary},</if>
+            <if test="recruitJobDescription != null  and recruitJobDescription != ''">recruit_job_description = #{recruitJobDescription},</if>
+            <if test="recruitType != null ">recruit_type = #{recruitType},</if>
+            <if test="showType != null ">show_type = #{showType},</if>
+            <if test="releaseStatus != null ">release_status = #{releaseStatus},</if>
+            <if test="createId != null ">create_id = #{createId},</if>
+            <if test="updateId != null ">update_id = #{updateId},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where recruit_id = #{recruitId}
+    </update>
+
+    <update id="deleteTHrRecruitById" parameterType="Long">
+        update  t_hr_recruit set del_flag = "1" where recruit_id = #{recruitId}
+    </update>
+
+    <update id="deleteTHrRecruitByIds" parameterType="String">
+        update  t_hr_recruit set del_flag = "1" where recruit_id in
+        <foreach item="recruitId" collection="array" open="(" separator="," close=")">
+            #{recruitId}
+        </foreach>
+    </update>
+
+    <select id="findAllInfo" resultType="com.ruoyi.base.domain.VO.HrRecruitVO" >
+        	SELECT
+                recruit_dept_id as recruitDeptId,
+                (SELECT dept_name FROM sys_dept WHERE dept_id = recruit_dept_id ) as deptName,
+                recruit_post_id as recruit_post_id,
+                (SELECT post_name FROM sys_post WHERE post_id = recruit_post_id ) as postName,
+                SUM( IF ( recruit_type = 0, recruit_count, 0 ) ) AS recruitCount0,
+                SUM( IF ( recruit_type = 1, recruit_count, 0 ) ) AS recruitCount1,
+                GROUP_CONCAT( DISTINCT ( create_by ) ) AS createBy,
+                SUM( await_count ) AS awaitCount,
+                SUM( non_manager_count ) AS nonManagerCount,
+            IF
+                ( locate( '0', GROUP_CONCAT( DISTINCT ( release_status ) ) ), 0, 1 ) AS releaseStatus,
+                create_time AS createTime
+            FROM
+                t_hr_recruit
+                where non_manager_count != recruit_count and del_flag = 0
+                <if test="hrFlag == 0">
+                    and show_type = 0
+                </if>
+            GROUP BY
+                recruit_dept_id,
+                recruit_post_id
+            ORDER BY
+                release_status ASC,
+            create_time DESC
+    </select>
+    <select id="findAllInfoCount" resultType="java.lang.Integer">
+                select sum(recruit_count - non_manager_count)
+                FROM
+                t_hr_recruit
+                where non_manager_count != recruit_count and del_flag = 0
+                <if test="hrFlag == 0">
+                    and  show_type = 0
+                </if>
+    </select>
+    <select id="selectTHrRecruitByHrNonManager" resultMap="THrRecruitResult">
+        select * from t_hr_recruit where recruit_post_id = #{nonManagerPostId}
+        and  recruit_dept_id = #{nonManagerDeptId} and del_flag = '0' and release_status = 1
+        and recruit_count > non_manager_count
+        order by recruit_type asc limit 1
+    </select>
+
+    <select id="updateRecruitCountByHrInterpolate" resultMap="THrRecruitResult" >
+        select * from t_hr_recruit where recruit_post_id = #{interpolatePostId}
+        and del_flag = '0' and release_status = 1 and recruit_count > non_manager_count
+        order by recruit_type asc limit 1
+    </select>
+</mapper>

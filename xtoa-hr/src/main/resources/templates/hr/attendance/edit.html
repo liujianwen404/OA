@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改考勤统计')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-attendance-edit" th:object="${hrAttendance}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工id：</label>
+                <div class="col-sm-8">
+                    <input name="empId" th:field="*{empId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工姓名：</label>
+                <div class="col-sm-8">
+                    <input name="empName" th:field="*{empName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">工号：</label>
+                <div class="col-sm-8">
+                    <input name="empNum" th:field="*{empNum}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">入职日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="nonManagerDate" th:value="${#dates.format(hrAttendance.nonManagerDate, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">离职日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="quitDate" th:value="${#dates.format(hrAttendance.quitDate, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">结算日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="finalDate" th:value="${#dates.format(hrAttendance.finalDate, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">部门id：</label>
+                <div class="col-sm-8">
+                    <input name="deptId" th:field="*{deptId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="deptName" th:field="*{deptName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">一级部门id：</label>
+                <div class="col-sm-8">
+                    <input name="firstDeptId" th:field="*{firstDeptId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">一级部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="firstDeptName" th:field="*{firstDeptName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">二级部门id：</label>
+                <div class="col-sm-8">
+                    <input name="secondDeptId" th:field="*{secondDeptId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">二级部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="secondDeptName" th:field="*{secondDeptName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">岗位id：</label>
+                <div class="col-sm-8">
+                    <input name="postId" th:field="*{postId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">岗位名称：</label>
+                <div class="col-sm-8">
+                    <input name="postName" th:field="*{postName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">应出勤：</label>
+                <div class="col-sm-8">
+                    <input name="shouldAttendance" th:field="*{shouldAttendance}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">应公休：</label>
+                <div class="col-sm-8">
+                    <input name="shouldPublicHoliday" th:field="*{shouldPublicHoliday}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">实出勤：</label>
+                <div class="col-sm-8">
+                    <input name="actualAttendance" th:field="*{actualAttendance}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">实公休：</label>
+                <div class="col-sm-8">
+                    <input name="actualPublicHoliday" th:field="*{actualPublicHoliday}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">法定假加班：</label>
+                <div class="col-sm-8">
+                    <input name="legalOvertime" th:field="*{legalOvertime}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">平时加班：</label>
+                <div class="col-sm-8">
+                    <input name="generalOvertime" th:field="*{generalOvertime}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">调休：</label>
+                <div class="col-sm-8">
+                    <input name="lieuLeave" th:field="*{lieuLeave}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">病假：</label>
+                <div class="col-sm-8">
+                    <input name="sickLeave" th:field="*{sickLeave}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">事假：</label>
+                <div class="col-sm-8">
+                    <input name="personalLeave" th:field="*{personalLeave}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">年假：</label>
+                <div class="col-sm-8">
+                    <input name="annualLeave" th:field="*{annualLeave}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">产假，陪产假，婚假，丧假：</label>
+                <div class="col-sm-8">
+                    <input name="otherLeave" th:field="*{otherLeave}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">旷工：</label>
+                <div class="col-sm-8">
+                    <input name="absentLeave" th:field="*{absentLeave}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">本月加班存休：</label>
+                <div class="col-sm-8">
+                    <input name="overtimeHoliday" th:field="*{overtimeHoliday}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">本月累计余假：</label>
+                <div class="col-sm-8">
+                    <input name="allHoliday" th:field="*{allHoliday}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">计薪工时：</label>
+                <div class="col-sm-8">
+                    <input name="payWorkHour" th:field="*{payWorkHour}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">工龄：</label>
+                <div class="col-sm-8">
+                    <input name="workingAge" th:field="*{workingAge}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">剩余年假：</label>
+                <div class="col-sm-8">
+                    <input name="overAnnualLeave" th:field="*{overAnnualLeave}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">全勤奖：</label>
+                <div class="col-sm-8">
+                    <input name="attendanceBonus" th:field="*{attendanceBonus}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">夜班补贴：</label>
+                <div class="col-sm-8">
+                    <input name="nightSubsidy" th:field="*{nightSubsidy}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">餐补：</label>
+                <div class="col-sm-8">
+                    <input name="mealSubsidy" th:field="*{mealSubsidy}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">其他补贴：</label>
+                <div class="col-sm-8">
+                    <input name="otherSubsidy" th:field="*{otherSubsidy}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">迟到扣费：</label>
+                <div class="col-sm-8">
+                    <input name="lateDeduct" th:field="*{lateDeduct}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">未打卡扣费：</label>
+                <div class="col-sm-8">
+                    <input name="notClockDeduct" th:field="*{notClockDeduct}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">早退扣费：</label>
+                <div class="col-sm-8">
+                    <input name="earlyDeduct" th:field="*{earlyDeduct}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">水电扣费：</label>
+                <div class="col-sm-8">
+                    <input name="waterElectricityDeduct" th:field="*{waterElectricityDeduct}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">其他扣费：</label>
+                <div class="col-sm-8">
+                    <input name="otherDeduct" th:field="*{otherDeduct}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工签名：</label>
+                <div class="col-sm-8">
+                    <input name="empSignature" th:field="*{empSignature}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">备注：</label>
+                <div class="col-sm-8">
+                    <input name="remark" th:field="*{remark}" class="form-control" type="text">
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/attendance";
+        $("#form-attendance-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-attendance-edit').serialize());
+            }
+        }
+
+        $("input[name='nonManagerDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='quitDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='finalDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

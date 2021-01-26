@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=0" >
+    <!-- import CSS -->
+    <link rel="stylesheet" href="/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .toDisplay {
+            display : none;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-button  v-bind:class="{toDisplay : isDisplay}" type="success" @click="updateprojectPlanTask" round>完成任务</el-button>
+    <!--<el-button @click="visible = true">Button</el-button>-->
+    <!--<div>{{message}}</div>-->
+    <div style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);font-size: 30px;width: 90%;margin-left: 5%;" id="contentDiv"></div>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="/vue/vue.js"></script>
+<script src="/vue/axios/axios.min.js"></script>
+<!-- import JavaScript -->
+<script src="/element-ui/lib/index.js"></script>
+<script>
+    var context = '[[${projectPlanTask.contentDescribe}]]';
+    HTMLDecode(context);
+    var vueApp = new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                visible: false,
+                message: HTMLDecode(context),
+                isDisplay: '[[${projectPlanTask.status}]]' == '0' ? false : true
+            }
+        },
+        methods: {
+            updateprojectPlanTask: function () {
+
+                Vue.prototype.$confirm('确定此任务已完成了吗?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+
+                    axios({
+                              method:'get',
+                              url:'/webApi/updateprojectPlanTask?projectPlanTaskId='+ '[[${projectPlanTask.id}]]'
+                    }).then(function(res){
+                            if (!res.data.code) {
+                                vueApp.isDisplay = true;
+                                Vue.prototype.$message({
+                                    message: '操作成功，任务状态已更新！',
+                                    type: 'success'
+                                });
+                            }else {
+                                Vue.prototype.$message({
+                                    type: 'info',
+                                    message: '操作失败'
+                                });
+                            }
+                    });
+                }).catch(() => {
+                    Vue.prototype.$message({
+                        message: '操作成功，任务状态已更新！',
+                        type: 'success'
+                    });
+                });
+
+
+            }
+        }
+    })
+    //解析转义后的富文本标签
+    function HTMLDecode(text) {
+        var temp = document.createElement('div');
+        temp.innerHTML = text;
+        var output = temp.innerText || temp.textContent;
+        temp = null;
+        document.getElementById("contentDiv").innerHTML=output;
+        return output;
+    }
+
+</script>
+</html>

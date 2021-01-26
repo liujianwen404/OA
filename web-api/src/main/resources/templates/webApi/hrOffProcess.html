@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=0" >
+    <!-- import CSS -->
+    <link rel="stylesheet" href="/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .el-header, .el-footer {
+            background-color: #82b4ca;
+            color: #333;
+            text-align: center;
+            line-height: 60px;
+            font-size: 28px;
+        }
+
+        .el-aside {
+            background-color: #d0efdc;
+            color: #333;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .el-main {
+            background-color: #d0efdc;
+            color: #333;
+            text-align: center;
+            line-height: 90px;
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+            line-height: 260px;
+        }
+
+        .el-container:nth-child(7) .el-aside {
+            line-height: 320px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+
+    <el-container>
+        <el-header><div style="font-family:'Helvetica Neue'" >offer流程审核通过</div></el-header>
+        <el-main>
+
+            <div style="box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);font-size: 25px;width: 90%;margin-left: 5%;" id="contentDiv">
+                <div>部门：{{hrOff.deptName}}</div>
+                <div>职位：{{hrOff.postName}}</div>
+                <div>姓名：{{hrOff.offName}}</div>
+                <div>邮箱：{{hrOff.offEmail}}</div>
+                <div>附件：<el-button type="primary" @click="download" round>下载</el-button></div>
+            </div>
+
+        </el-main>
+    </el-container>
+
+
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="/vue/vue.js"></script>
+<!--<script src="/vue/axios/axios.min.js"></script>-->
+<!-- import JavaScript -->
+<script src="/element-ui/lib/index.js"></script>
+<script>
+    var vueApp = new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                hrOff: {
+                    id: '[[${id}]]',
+                    deptId: '[[${deptId}]]',
+                    postId: '[[${postId}]]',
+                    deptName: '[[${deptName}]]',
+                    postName: '[[${postName}]]',
+                    offName: '[[${offName}]]',
+                    offEmail: '[[${offEmail}]]',
+                    adjunct: '[[${adjunct}]]'
+
+                }
+            }
+        },
+        methods: {
+            download : function (url) {
+                            window.location.href =  "/webApi/common/download/resource?resource=" + this.hrOff.adjunct;
+            }
+        }
+    })
+
+</script>
+</html>

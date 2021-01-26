@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('调薪记录')" />
+    <th:block th:include="include :: bootstrap-fileinput-css" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:include="include :: footer" />
+     <th:block th:include="include :: bootstrap-fileinput-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:salaryStructure:edit')}]];
+        // var removeFlag = [[${@permission.hasPermi('hr:salaryStructure:remove')}]];
+        var prefix = ctx + "hr/salaryStructure";
+        var empId = [[${empId}]]
+        $(function() {
+            var options = {
+                url: prefix + "/infoList/"+empId+"",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "薪资结构",
+                columns: [
+                {
+                    field: 'id',
+                    title: '薪资结构',
+                    visible: false
+                },
+                {
+                    field: 'empId',
+                    title: '员工id',
+                    visible: false
+                },
+                {
+                    field: 'empName',
+                    title: '员工',
+                    visible: false
+                },
+                {
+                    title: "调薪次序",
+                    formatter: function (value, row, index) {
+                        return $.table.serialNumber(index);
+                    }
+                },
+                {
+                    field: 'adjustDate',
+                    title: '调薪时间'
+                },
+                {
+                    field: 'postName',
+                    title: '职位'
+                },
+                {
+                    field: 'payGrade',
+                    title: '薪酬等级'
+                },
+                {
+                    field: 'comprehensive',
+                    title: '综合薪资'
+                },
+                {
+                    field: 'basic',
+                    title: '基本工资'
+                },
+                {
+                    field: 'overtimePay',
+                    title: '加班费'
+                },
+                {
+                    field: 'performanceBonus',
+                    title: '绩效工资基数'
+                },
+                {
+                    field: 'allowance',
+                    title: '岗位补贴'
+                },
+                {
+                    field: 'otherSubsidies',
+                    title: '其他补贴'
+                },
+                {
+                    field: 'remark',
+                    title: '备注'
+                }]
+            };
+            $.table.init(options);
+
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改考勤组')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: bootstrap-select-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-group-edit" th:object="${hrAttendanceGroup}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">考勤组类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control noselect2 selectpicker" onchange="typeChange()">
+                        <option th:value="0" th:selected="*{type == '0'}">固定班制</option>
+                        <option th:value="1" th:selected="*{type == '1'}">排班制</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label is-required">考勤组名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" th:field="*{name}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">参与考勤人员：</label>
+                <div class="col-sm-8">
+                    <div class='input-group'>
+                        <input class='form-control' type='hidden' name='empId' id='empId' th:field="*{empId}" required>
+                        <input class='form-control' type='text' name='empName' id='empName' th:field="*{empName}" readonly="readonly" required>
+                        <span class='input-group-addon input-sm' onclick='selectEmpTree("", this)'>
+                            <i class='fa fa-search'>选择</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="type0">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">默认班次：</label>
+                    <div class="col-sm-8">
+                        <select name="defaultClass" id="defaultClass" class="form-control noselect2 selectpicker">
+                            <option value="">请选择</option>
+                            <option th:each="list:${classList}" th:text="${list.name}" th:selected="${list.id} == *{defaultClass}"  th:value="${list.id}" ></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">周一：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input class='form-control week-id' type='hidden' name='monClassId' id='monClassId' th:field="*{monClassId}" required>
+                            <input class="form-control week-name" type="text" name="monClassName" id="monClassName" th:field="*{monClassName}" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("monday")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeClass('monClassId','monClassName')">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">周二：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input class='form-control week-id' type='hidden' name='tueClassId' id='tueClassId' th:field="*{tueClassId}" required>
+                            <input class="form-control week-name" type="text" name="tueClassName" id="tueClassName" th:field="*{tueClassName}" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("tuesday")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeClass('tueClassId','tueClassName')">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">周三：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input class='form-control week-id' type='hidden' name='wedClassId' id='wedClassId' th:field="*{wedClassId}" required>
+                            <input class="form-control week-name" type="text" name="wedClassName" id="wedClassName" th:field="*{wedClassName}" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("wednesday")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeClass('wedClassId','wedClassName')">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">周四：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input class='form-control week-id' type='hidden' name='thuClassId' id='thuClassId' th:field="*{thuClassId}" required>
+                            <input class="form-control week-name" type="text" name="thuClassName" id="thuClassName" th:field="*{thuClassName}" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("thursday")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeClass('thuClassId','thuClassName')">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">周五：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input class='form-control week-id' type='hidden' name='friClassId' id='friClassId' th:field="*{friClassId}" required>
+                            <input class="form-control week-name" type="text" name="friClassName" id="friClassName" th:field="*{friClassName}" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("friday")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeClass('friClassId','friClassName')">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">周六：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input class='form-control week-id' type='hidden' name='satClassId' id='satClassId' th:field="*{satClassId}" required>
+                            <input class="form-control week-name" type="text" name="satClassName" id="satClassName" th:field="*{satClassName}" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("saturday")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeClass('satClassId','satClassName')">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">周日：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input class='form-control week-id' type='hidden' name='sunClassId' id='sunClassId' th:field="*{sunClassId}" required>
+                            <input class="form-control week-name" type="text" name="sunClassName" id="sunClassName" th:field="*{sunClassName}" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("sunday")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeClass('sunClassId','sunClassName')">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">必须打卡的日期：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input name="mustDateClass" th:field="*{mustDateClass}" class="form-control" type="text" readonly>
+                            <input name="mustDate" th:field="*{mustDate}" class="form-control" type="hidden" readonly>
+                            <span class='input-group-addon input-sm' data-toggle="modal" data-backdrop="static" data-keyboard="false"  data-target="#addMustDate">
+                                <i class='fa fa-search'>添加</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeMustDate()">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">不用打卡的日期：</label>
+                    <div class="col-sm-8">
+                        <div class='input-group'>
+                            <input name="needNotDate" th:field="*{needNotDate}" class="form-control" type="text" readonly>
+                            <span class='input-group-addon input-sm' data-toggle="modal" data-backdrop="static" data-keyboard="false"  data-target="#addNeedNotDate">
+                                <i class='fa fa-search'>添加</i>
+                            </span>
+                            <span class='input-group-addon input-sm' onclick="removeNeedNotDate()">
+                                <i class='fa fa-times-circle'>清除</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="type1" style="display: none">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label labelReqerd is-required">排班班次：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <input class='form-control' th:field="*{scheduClassId}" type='hidden' name='scheduClassId' id='scheduClassId' required>
+                            <input class="form-control" th:field="*{scheduClassName}" type="text" name="scheduClassName" id="scheduClassName" readonly required>
+                            <span class='input-group-addon input-sm' onclick='selectScheduClass()'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">有效范围：</label>
+                <div class="col-sm-8">
+                    <select name="scope" class="form-control noselect2 selectpicker">
+                        <option th:value="100" th:selected="*{scope == '100'}">100米</option>
+                        <option th:value="200" th:selected="*{scope == '200'}">200米</option>
+                        <option th:value="300" th:selected="*{scope == '300'}">300米</option>
+                        <option th:value="400" th:selected="*{scope == '400'}">400米</option>
+                        <option th:value="500" th:selected="*{scope == '500'}">500米</option>
+                        <option th:value="600" th:selected="*{scope == '600'}">600米</option>
+                        <option th:value="700" th:selected="*{scope == '700'}">700米</option>
+                        <option th:value="800" th:selected="*{scope == '800'}">800米</option>
+                        <option th:value="900" th:selected="*{scope == '900'}">900米</option>
+                        <option th:value="1000" th:selected="*{scope == '1000'}">1000米</option>
+                        <option th:value="2000" th:selected="*{scope == '2000'}">2000米</option>
+                        <option th:value="3000" th:selected="*{scope == '3000'}">3000米</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">考勤地址：</label>
+                <div class="col-sm-8">
+                    <input type="hidden" name="longitude" id="longitude" th:field="*{longitude}">
+                    <input type="hidden" name="latitude" id="latitude" th:field="*{latitude}">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="address" id="address" th:field="*{address}" readonly required>
+                        <span class="input-group-btn">
+                            <button type="button" onclick="openMap()" class="btn btn-primary">修改</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="modal inmodal fade" id="addMustDate" tabindex="-1" role="dialog" aria-hidden="true" >
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">选择日期</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label">日期：</label>
+                        <div class="input-group date">
+                            <input name="date1" class="form-control" placeholder="yyyy-MM-dd" type="text" readonly>
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">班次：</label>
+                        <div class="input-group">
+                            <input class='form-control' type='hidden' name='mustClassId' id='mustClassId' required>
+                            <input class="form-control" type="text" name="mustClassName" id="mustClassName" readonly>
+                            <span class='input-group-addon input-sm' onclick='selectAttendanceClass("must")'>
+                                <i class='fa fa-search'>选择</i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMustDate()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal fade" id="addNeedNotDate" tabindex="-1" role="dialog" aria-hidden="true" >
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title">选择日期</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="date2" class="form-control" placeholder="yyyy-MM-dd" type="text" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="saveNeedNotDate()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: bootstrap-select-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/attendanceGroup";
+        $("#form-group-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-group-edit').serialize());
+            }
+        }
+
+        // 选择字典处理函数
+        function selectEmpTree(columnId, obj) {
+            let userIds = `[[${hrAttendanceGroup.empId}]]`;
+            let url = ctx + "system/user/selectTree";
+            $.ajax({
+                type: 'post',
+                url:url,
+                data:{userIds:userIds},
+                success:function (result) {
+                    resultUrl = result;//返回的结果页面
+                    var _btn = ['<i class="fa fa-check"></i> 确认', '<i class="fa fa-close"></i> 关闭'];
+                    layer.open({
+                        type: 1,
+                        maxmin: true,
+                        shade: 0.3,
+                        title: '选择流程抄送人员',
+                        fix: false,
+                        area: [380 + 'px', 600 + 'px'],
+                        content: resultUrl,
+                        shadeClose: false,
+                        btn: _btn,
+                        yes: function(index,layero) {
+                            doSubmit(index,layero);
+                        },
+                        cancel: function () {
+                            return true;
+                        }
+                    });
+                }
+            });
+
+        }
+
+        function doSubmit(index,layero){
+
+            var body = layer.getChildFrame('body', index);
+            var userId =  $(layero).find("#userId").val();
+            var empNames =  $(layero).find("#empNames").val();
+            layer.close(index);
+            $("#empId").val(userId);
+            $("#empName").val(empNames);
+            $.ajax({
+                url: prefix + "/compareEmp",
+                data: {"empId":$("#empId").val(),"groupId":$("#id").val()},
+                type: 'POST',
+                success: function (result) {
+
+                    if (result.msg == "exist") {
+                        console.log(result)
+                        $("#empId").val("");
+                        $("#empName").val("");
+                        $.modal.alertWarning("选择的员工["+result.data+"]已存在考勤组，请重新选择");
+                    }
+                }
+            });
+
+        }
+
+        $("#defaultClass").change(function () {
+
+            var id = $("select[name = defaultClass]").val();
+            var name = $("#defaultClass :selected").text();
+            $(".week-id").val(id);
+            $(".week-name").val(name);
+        })
+
+        function selectAttendanceClass(day){
+            if(day == "monday"){
+                var url = ctx + "hr/attendanceClass/selectClass?classId=monClassId&className=monClassName";
+            }
+            if(day == "tuesday"){
+                var url = ctx + "hr/attendanceClass/selectClass?classId=tueClassId&className=tueClassName";
+            }
+            if(day == "wednesday"){
+                var url = ctx + "hr/attendanceClass/selectClass?classId=wedClassId&className=wedClassName";
+            }
+            if(day == "thursday"){
+                var url = ctx + "hr/attendanceClass/selectClass?classId=thuClassId&className=thuClassName";
+            }
+            if(day == "friday"){
+                var url = ctx + "hr/attendanceClass/selectClass?classId=friClassId&className=friClassName";
+            }
+            if(day == "saturday"){
+                var url = ctx + "hr/attendanceClass/selectClass?classId=satClassId&className=satClassName";
+            }
+            if(day == "sunday"){
+                var url = ctx + "hr/attendanceClass/selectClass?classId=sunClassId&className=sunClassName";
+            }
+            if(day == "must") {
+                var url = ctx + "hr/attendanceClass/selectClass?classId=mustClassId&className=mustClassName";
+            }
+            $.modal.open("选择班次", url);
+        }
+
+        function selectScheduClass(){
+            $.modal.open("选择排班班次", ctx + "hr/attendanceClass/selectScheduClass");
+        }
+
+        $("input[name='date1']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: 2,
+            autoclose: true
+        });
+
+        $("input[name='date2']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: 2,
+            autoclose: true
+        });
+
+        var mustDateArray = new Array();
+        var needNotDateArray = new Array();
+        var mustDateClassIdArray = new Array();
+        var mustDateClassNameArray = new Array();
+        function saveMustDate() {
+            var mustDate = $("input[name=date1]").val();
+            var mustClassId = $("input[name=mustClassId]").val();
+            var mustClassName = $("input[name=mustClassName]").val();
+            if(mustDate == null){
+                $.modal.alertWarning("请选择日期");
+                return;
+            }
+            if(mustClassId == null || mustClassId == ""){
+                $.modal.alertWarning("请选择班次");
+                return;
+            }
+            //如果必须打卡的日期数组中有这个日期，则不允许添加，以免重复
+            if($.inArray(mustDate,mustDateArray) >= 0){
+                $.modal.alertWarning("选择的日期已存在，请重新选择");
+                return;
+            }
+            //如果不用打卡的日期数组中有这个日期，则不允许添加，以免矛盾
+            if($.inArray(mustDate,needNotDateArray) >= 0){
+                $.modal.alertWarning("选择的日期有冲突");
+                return;
+            }
+            mustDateArray.push(mustDate);
+            mustDateClassIdArray.push(mustDate+":"+mustClassId);
+            mustDateClassNameArray.push(mustDate+":"+mustClassName);
+            $("input[name=mustDateClass]").val(mustDateClassNameArray);
+            $("input[name=mustDate]").val(mustDateClassIdArray);
+            $('#addMustDate').modal("hide");
+        }
+
+        function saveNeedNotDate() {
+            var needNotDate = $("input[name=date2]").val();
+            if(needNotDate == null){
+                $.modal.alertWarning("请选择日期");
+                return;
+            }
+            //如果不用打卡的日期数组中有这个日期，则不允许添加，以免重复
+            if($.inArray(needNotDate,needNotDateArray) >= 0){
+                $.modal.alertWarning("选择的日期已存在，请重新选择");
+                return;
+            }
+            //如果必须打卡的日期数组中有这个日期，则不允许添加，以免矛盾
+            if($.inArray(needNotDate,mustDateArray) >= 0){
+                $.modal.alertWarning("选择的日期有冲突");
+                return;
+            }
+            needNotDateArray.push(needNotDate);
+            $("input[name=needNotDate]").val(needNotDateArray);
+            $('#addNeedNotDate').modal("hide");
+        }
+
+        function removeClass(classId,className) {
+            $("input[name="+classId+"]").val("");
+            $("input[name="+className+"]").val("");
+        }
+
+        function removeMustDate() {
+            $("input[name=mustDate]").val("");
+            $("input[name=mustDateClass]").val("");
+            mustDateArray = [];
+        }
+
+        function removeNeedNotDate() {
+            $("input[name=needNotDate]").val("");
+            needNotDateArray = [];
+        }
+
+        function openMap(){
+            var scope = $("select[name=scope]").val();
+            var url = ctx + "hr/attendanceGroup/map?scope="+scope;
+            $.modal.open("选择考勤位置", url);
+        }
+
+        function typeChange() {
+            let type = $("select[name=type]").val();
+            if(type == 0){
+                $("#type0").removeAttr("style");
+                $("#type1").attr("style","display: none");
+            }if(type == 1){
+                $("#type1").removeAttr("style");
+                $("#type0").attr("style","display: none");
+            }
+        }
+
+        $(function () {
+            let type = '[[${hrAttendanceGroup.type}]]'
+            if(type == 0){
+                $("#type0").removeAttr("style");
+                $("#type1").attr("style","display: none");
+            }if(type == 1){
+                $("#type1").removeAttr("style");
+                $("#type0").attr("style","display: none");
+            }
+        })
+    </script>
+</body>
+</html>

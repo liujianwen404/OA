@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('check表格页')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var prefix = ctx + "hr/attendanceClass";
+
+    $(function() {
+        var options = {
+            url: prefix + "/list",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            columns: [{
+                checkbox: true
+            },
+            {
+                field: 'id',
+                title: '序号'
+            },
+            {
+                field: 'name',
+                title: '班次名称'
+            },
+            {
+                field: 'workTime',
+                title: '上班时间'
+            },
+            {
+                field: 'closingTime',
+                title: '下班时间',
+                formatter: function (value, row, index) {
+                    if(row.workTime > row.closingTime){
+                        return "次日 " + value;
+                    }
+
+                }
+            },
+            {
+                field: 'restStartTime',
+                title: '休息开始时间'
+            },
+            {
+                field: 'restEndTime',
+                title: '休息结束时间',
+                formatter: function (value, row, index) {
+                    if(row.restStartTime > row.restEndTime){
+                        return "次日 " + value;
+                    }
+
+                }
+            },
+            {
+                field: 'hours',
+                title: '工作时长'
+            },
+            {
+                field: 'createId',
+                title: '创建者ID',
+                visible: false
+            },
+            {
+                field: 'updateId',
+                title: '更新者ID',
+                visible: false
+            },
+            {
+                field: 'remark',
+                title: '备注'
+            }]
+        };
+        $.table.init(options);
+    });
+
+    function submitHandler() {
+        var ids = $.table.selectFirstColumns();
+        var names = $.table.selectColumns("name");
+        if (ids.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.close();
+        // 父页面的方法
+        // parent.selectUsers();
+        // 父页面的变量
+        parent.$("#scheduClassId").val(ids.join());
+        parent.$("#scheduClassName").val(names.join());
+    }
+</script>
+</body>
+</html>

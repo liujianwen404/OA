@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('调动申请列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="addTransfer()" shiro:hasPermission="hr:jobTransfer:add">
+                    <i class="fa fa-plus"></i> 调动申请
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+
+     <div class="container-div" id="hiddenDiv" hidden="hidden">
+         <div class="row">
+             <form class="form-horizontal m" id="form-toolRepeal">
+                 <div class="btn-group-sm" id="toolRepeal" >
+                     <div class="form-group">
+                         <input name="instanceId" id="instanceId" class="form-control" type="hidden">
+                         <label class="col-sm-3 control-label is-required">撤回理由：</label>
+                         <div class="col-sm-8">
+                             <input name="message" class="form-control" type="text" required>
+                         </div>
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:jobTransfer:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:jobTransfer:remove')}]];
+       /* var jobTransferTypeDatas = [[${@dict.getType('sys_jo_transfer')}]];
+
+        var recruitDeptAllDatas = [[${@deptService.getDeptAll()}]];*/
+        var recruitPostAllDatas = [[${@postService.getPostAll()}]];
+
+        var prefix = ctx + "hr/jobTransfer";
+        var currentUser = [[${currentUser}]];
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                detailUrl: prefix + "/detail/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "调动申请",
+                uniqueId: "jobTransferId",
+                columns: [
+                {
+                    field: 'jobTransferId', 
+                    title: '调动申请id',
+                    visible: false
+                },
+                {
+                    field: 'empId', 
+                    title: '名称',
+                    formatter: function(value, row, index) {
+                        return "调动申请-"+row.empName;
+                    }
+                },
+                {
+                    field: 'empName',
+                    title: '调动人姓名'
+                },
+                {
+                    field: 'nonManagerDate', 
+                    title: '入职日期',
+                    formatter: function(value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field: 'currentPostId',
+                    title: '现部门岗位',
+                    formatter: function(value, row, index) {
+                        return  row.nowLeaderName+" : "
+                            + $.table.selectPostLabel(recruitPostAllDatas, row.currentPostId);
+                    }
+
+                },
+                {
+                    field: 'jobTransferPostId',
+                    title: '新部门岗位',
+                    formatter: function(value, row, index) {
+                        return row.newleaderName+" : "
+                            + $.table.selectPostLabel(recruitPostAllDatas, row.jobTransferPostId);
+                    }
+                },
+                    {
+                        field: 'jobTransferType',
+                        title: '调动类型'
+                    },
+                    {
+                        field: 'todoUserName',
+                        title: '当前处理人'
+                    },
+                    {
+                        field: 'auditStatus',
+                        title: '审核状态',
+                        formatter: function(value, row, index) {
+                            if (value == 0){
+                                return '待提交';
+                            }
+                            if (value == 1){
+                                return '审核中';
+                            }
+                            if (value == 2){
+                                return '通过';
+                            }
+                            if (value == 4){
+                                return '撤销';
+                            }
+                            return '拒绝';
+                        }
+                    },
+                    {
+                        field: 'jobTransferrDate',
+                        title: '调动日期',
+                        formatter: function(value, row, index) {
+                            return value;
+                        }
+                    },{
+                        field: 'applyTime',
+                        title: '申请时间'
+                    },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.jobTransferId + '\')"><i class="fa fa-edit"></i>详情</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.showHistoryDialog(\'' + row.instanceId + '\')"><i class="fa fa-list"></i> 审批历史</a> ');
+                        actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.showProcessImgDialog(\'' + row.instanceId + '\')"><i class="fa fa-image"></i> 进度查看</a> ');
+                        if (row.delFlag == 0 && row.status == "0" && row.auditStatus == 0){
+                            actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="commit(\'' + row.jobTransferId + '\',\'' + row.createBy + '\')"><i class="fa fa-edit"></i>提交</a>');
+                        }
+
+                        if (row.delFlag == 0 && row.auditStatus < 2 && row.status == "1"){
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="repeal(\'' + row.instanceId + '\',\'' + row.createBy + '\')"><i class="fa fa-remove"></i>撤回</a>');
+                        }
+
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.jobTransferId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function addTransfer() {
+            $.operate.openDiv("调动申请" ,  prefix + "/add",1000);
+        }
+
+
+
+
+        function commit(jobTransferId,createBy){
+
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人提交申请！");
+                return;
+            }
+
+            var url = prefix + "/commit?jobTransferId="+jobTransferId;
+            $.ajax({
+                url: url,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                success: function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.closeAll();
+                        $.modal.alertSuccess(result.msg);
+                        $.table.refresh();
+                    } else if (result.code == web_status.WARNING) {
+                        layer.close(index);
+                        $.modal.enable();
+                        $.modal.alertWarning(result.msg)
+                    } else {
+                        layer.close(index);
+                        $.modal.enable();
+                        $.modal.alertError(result.msg);
+                    }
+                }
+            });
+
+        }
+
+        function repeal(instanceId,createBy){
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人撤回！");
+                return;
+            }
+
+            var url = prefix + "/repeal";
+            $('#instanceId').val(instanceId);
+            layer.open({
+                type: 1,
+                area: ['600px', '300px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: "撤销申请",
+                content: $('#hiddenDiv'),
+                btn: ['确定', '关闭'],
+                // 弹层外区域关闭
+                shadeClose: false,
+                yes: function(index) {
+                    if ($.validate.form('form-toolRepeal')) {
+                        $.operate.save(url, $('#form-toolRepeal').serialize());
+                    }
+                }
+            });
+
+        }
+
+    </script>
+</body>
+</html>

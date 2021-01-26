@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('员工列表')" />
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li class="select-time">
+                            <label style="width: 120px">申请日期：</label>
+                            <input type="text" class="time-input" name="applyDate" placeholder="申请日期"/>
+                        </li>
+
+                        <li>
+                            <label style="width: 120px">需招聘部门：</label>
+                            <select id="recruitDeptId" name="recruitDeptId" th:with="deptAll=${@deptService.getDeptAll()}">
+                                <option value="">所有</option>
+                                <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label style="width: 120px">需招聘岗位：</label>
+                            <select id="recruitPostId" name="recruitPostId" th:with="postAll=${@postService.getPostAll()}">
+                                <option value="">所有</option>
+                                <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <label style="width: 120px">申请人姓名：</label>
+                            <input type="text" name="empName"/>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="employee:emp:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer" />
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('employee:emp:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('employee:emp:remove')}]];
+    var prefix = ctx + "hr/report/recruit";
+
+    $(function() {
+        // // debugger
+        var sexMap = {};
+        $('#sex option').each(function(i, n){
+            sexMap[$(n).val()] = $(n).text();
+        });
+
+        var empStatusMap = {};
+        $('#empStatus option').each(function(i, n){
+            empStatusMap[$(n).val()] = $(n).text();
+        });
+
+        var deptIdMap = {};
+        $('#recruitDeptId option').each(function(i, n){
+            deptIdMap[$(n).val()] = $(n).text();
+        });
+
+        var postIdsMap = {};
+        $('#recruitPostId option').each(function(i, n){
+            postIdsMap[$(n).val()] = $(n).text();
+        });
+
+        //获取两个日期之间的天数
+        function DateDiff(start, end) {
+            var sdate = new Date(start);
+            var now = new Date(end);
+            var days = now.getTime() - sdate.getTime();
+            var day = parseInt(days / (1000 * 60 * 60 * 24));
+            return day;
+        }
+
+
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: ctx + "hr/recruit" + "/export",
+            modalName: "招聘",
+            columns: [{
+                checkbox: false
+            },
+
+                {
+                    field: 'empName',
+                    title: '申请人姓名'
+                },
+                {
+                    field: 'recruitDeptId',
+                    title: '需招聘部门',
+                    formatter: function(val, row, index){return deptIdMap[val];}
+
+                },
+
+                {
+                    field: 'applyDate',
+                    title: '申请日期'
+                },
+                {
+                    field: 'applyDutyDate',
+                    title: '申请到岗时间'
+                },
+
+                {
+                    field: 'recruitCount',
+                    title: '招聘人数',
+                },
+                {
+                    field: 'nonManagerCount',
+                    title: '入职人数'
+                },
+                {
+                    field: 'awaitCount',
+                    title: '待入职人数'
+                },
+
+
+                 {
+                     field: 'recruitSex',
+                     title: '招聘性别'
+                 },
+
+                {
+                    field: 'recruitProbationDate',
+                    title: '试用期'
+                },
+
+                {
+                    field: 'recruitJobDescription',
+                    title: '工作经验'
+                },
+                {
+                    field: 'recruitDescription',
+                    title: '岗位描述'
+                }
+            ]};
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

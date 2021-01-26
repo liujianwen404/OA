@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrContractMapper">
+    <resultMap type="com.ruoyi.base.domain.HrContract" id="HrContractResult">
+        <id property="id" column="id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="subjectContract" column="subject_contract"/>
+            <result property="contractYear" column="contract_year"/>
+            <result property="contractStar" column="contract_star"/>
+            <result property="contractEnd" column="contract_end"/>
+            <result property="renewCount" column="renew_count"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="auditStatus" column="audit_status"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="contractUrl" column="contract_url"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.emp_id,
+            entity.subject_contract,
+            entity.contract_year,
+            entity.contract_star,
+            entity.contract_end,
+            entity.renew_count,
+            entity.instance_id,
+            entity.audit_status,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.contract_url,
+            entity.update_time
+        </sql>
+
+    <sql id="whereSpl">
+        <if test="empId != null "> and entity.emp_id = #{empId}</if>
+        <if test="subjectContract != null  and subjectContract != ''"> and entity.subject_contract = #{subjectContract}</if>
+        <if test="contractYear != null "> and entity.contract_year = #{contractYear}</if>
+        <if test="contractStar != null "> and entity.contract_star = #{contractStar}</if>
+        <if test="contractEnd != null "> and entity.contract_end = #{contractEnd}</if>
+        <if test="renewCount != null "> and entity.renew_count = #{renewCount}</if>
+        <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+        <if test="auditStatus != null  and auditStatus != ''"> and entity.audit_status = #{auditStatus}</if>
+        <if test="createId != null "> and entity.create_id = #{createId}</if>
+        <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+        <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+
+        <if test="params.beginContractStar != null and params.beginContractStar != '' " > and entity.contract_star >= #{params.beginContractStar} </if>
+        <if test="params.endContractStar != null and params.endContractStar != '' " > and entity.contract_star <![CDATA[ <= ]]> str_to_date(CONCAT(#{params.endContractStar},' 23:59:59'), '%Y-%m-%d %H:%i:%s') </if>
+
+        <if test="params.beginContractEnd != null and params.beginContractEnd != '' " > and entity.contract_end >= #{params.beginContractEnd} </if>
+        <if test="params.endContractEnd != null and params.endContractEnd  != '' " > and entity.contract_end <![CDATA[ <= ]]> str_to_date(CONCAT(#{params.endContractEnd},' 23:59:59'), '%Y-%m-%d %H:%i:%s') </if>
+
+
+        <if test=" overdue != null and overdue != -1 ">
+                and entity.contract_end <![CDATA[ <= ]]> DATE_ADD(NOW(),INTERVAL #{overdue} DAY)
+                and entity.contract_end <![CDATA[ > ]]> NOW()
+        </if>
+        <if test=" overdue == -1 ">
+                and entity.contract_end <![CDATA[ <= ]]> NOW()
+        </if>
+
+    </sql>
+
+
+    <select id="selectHrContractList" parameterType="com.ruoyi.base.domain.HrContract" resultMap="HrContractResult">
+        select <include refid="baseColumns"/>,e.emp_name empName from t_hr_contract entity
+        left join t_hr_emp e on entity.emp_id = e.emp_id
+        LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        where  entity.del_flag = '0'
+        AND e.del_flag = 0
+        AND d.del_flag = 0
+          <include refid="whereSpl"/>
+        <if test="empName != null  and empName != ''"> and e.emp_name like concat('%', #{empName}, '%')</if>
+
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+          order by create_time desc
+    </select>
+    <select id="selectHrContractListIsFrom" parameterType="com.ruoyi.base.domain.HrContract" resultMap="HrContractResult">
+        select <include refid="baseColumns"/> from t_hr_contract entity
+        left join t_hr_emp e on entity.emp_id = e.emp_id
+        LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        where  entity.del_flag = '0' AND entity.audit_status = 2
+        AND e.del_flag = 0
+        AND d.del_flag = 0
+        AND entity.renew_count = ( SELECT MAX( renew_count ) FROM t_hr_contract WHERE emp_id = entity.emp_id )
+          <include refid="whereSpl"/>
+        <if test="empName != null  and empName != ''"> and e.emp_name like concat('%', #{empName}, '%')</if>
+
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+          order by create_time desc
+    </select>
+
+
+    <update id="deleteHrContractById" parameterType="Long">
+        update  t_hr_contract set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrContractByIds" parameterType="String">
+        update  t_hr_contract set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

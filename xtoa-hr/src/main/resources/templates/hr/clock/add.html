@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增补卡申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-clock-add">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}" th:selected="${dept.getDeptId() == hrEmp?.deptId}" th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:selected="${post.getPostId() == hrEmp?.postId}" th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">原因：</label>
+                <div class="col-sm-8">
+                    <textarea name="reason" class="form-control" required></textarea>
+                    <input name="title" id="title" class="form-control" type="text" style="display: none;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">补卡类型：</label>
+                <div class="col-sm-8">
+                    <select class="form-control noselect2 selectpicker" name="checkType" required>
+                        <option value="">请选择</option>
+                        <option value="OnDuty">上班</option>
+                        <option value="OffDuty">下班</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">补卡时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="dates" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">第一次未打卡：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="firstTime" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">第二次未打卡：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="secondTime" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">第三次未打卡：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="thirdTime" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/clock"
+        $("#form-clock-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $('input[name=title]').val('[[${hrEmp?.empName}]]补卡申请');
+                $("select[name=deptId]").attr("disabled",false);
+                $("select[name=postId]").attr("disabled",false);
+                $.operate.save(prefix + "/add", $('#form-clock-add').serialize());
+            }
+        }
+
+        $("input[name='dates']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+        $("input[name='firstTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+        $("input[name='secondTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+        $("input[name='thirdTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+    </script>
+</body>
+</html>

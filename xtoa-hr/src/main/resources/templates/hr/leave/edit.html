@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改请假业务')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+
+    <link th:href="@{/ajax/libs/layui/css/layui.css}" rel="stylesheet"/>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-leave-edit" th:object="${hrLeave}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <div class="col-sm-11">
+                    <span style="margin-left: 30%">[[${holidayHours}]]</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请人：</label>
+                <div class="col-sm-8">
+                    <input name="applyUserName" th:value="*{applyUserName}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="applyTime" th:value="${#dates.format(hrLeave.applyTime, 'yyyy-MM-dd HH:mm')}" class="form-control"  type="text" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">请假类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b" th:with="type=${@dict.getType('biz_leave_type')}">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{type}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>原因：</label>
+                <div class="col-sm-8">
+                    <textarea name="reason" class="form-control" required>[[*{reason}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>开始时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="startTime" th:value="${#dates.format(hrLeave.startTime, 'yyyy-MM-dd HH:mm')}" class="form-control calcTotalSecondInput" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>结束时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="endTime" th:value="${#dates.format(hrLeave.endTime, 'yyyy-MM-dd HH:mm')}" class="form-control calcTotalSecondInput" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">请假时长：</label>
+                <div class="col-sm-8">
+                    <input name="totalTime" th:field="*{totalTime}" class="form-control" type="text" style="display: none;">
+                    <input name="totalHours" class="form-control" type="text" style="display: none;">
+                    <input name="hoursFlag" class="form-control" type="text" value="0" style="display: none;">
+                    <input name="totalTimeText" th:value="*{totalHours + ' 小时'}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">相关证明：</label>
+                <div class="col-sm-8">
+                    <div class="layui-upload-list">
+                        <table class="layui-table">
+                            <thead>
+                            <tr><th>文件</th>
+
+                                <th>操作</th>
+                            </tr></thead>
+                            <tbody id="demoListOld" >
+                            <tr th:each="img : *{imgList}"  th:id="${#strings.substring(img,30,45)}">
+                                <td><img th:onclick="$.table.imageViewSimp([[${img}]])" th:src="${img}" ></td>
+
+                                <td><button class="layui-btn layui-btn-xs layui-btn-danger"
+                                            th:onclick="remImg([[${img}]],[[${hrLeave.id}]]);" >删除</button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <input id="imgUrls" name="imgUrls" type="hidden" >
+                <label class="col-sm-3 control-label">相关证明(最多9张)：</label>
+                <div class="col-sm-8">
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn layui-btn-normal" id="testList">选择多图片</button>
+                        <div class="layui-upload-list">
+                            <table class="layui-table">
+                                <thead>
+                                <tr><th>文件</th>
+                                    <th>大小</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr></thead>
+                                <tbody id="demoList"></tbody>
+                            </table>
+                        </div>
+                        <button type="button" style="display: none;" class="layui-btn" id="testListAction" >开始上传</button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js" />
+
+    <script th:src="@{/ajax/libs/layui/layui.all.js}"></script>
+    <script th:inline="javascript">
+        var prefix = ctx + "hr/leave";
+        $("#form-leave-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form() && validateStartTimeAndEndTime()) {
+                $('input[name="title"]').val($('#type option:selected').text());
+                debugger
+                if ( $("input[name='totalTimeText']").val() == "0 小时" || $("input[name='totalTimeText']").val() == "0.0 小时"){
+                    $.modal.alertWarning("请假时长有误！");
+                    return;
+                }
+
+
+                //上传图片
+                $("#testListAction").click();
+
+                debugger
+                if (!$("#demoList").html()){
+                    //没有图片直接提交表单
+                    $.operate.save(prefix + "/edit", $('#form-leave-edit').serialize());
+                }
+
+
+                /*$.operate.save(prefix + "/edit", $('#form-leave-edit').serialize());*/
+            }
+        }
+
+        $("input[name='startTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii",
+            minView: 0,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+            autoclose: true
+        });
+
+        $("input[name='endTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii",
+            minView: 0,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+            autoclose: true
+        });
+
+        // 监听开始和结束日期填写，动态生成请假时长
+        $(".calcTotalSecondInput").change(function () {
+            $.ajax({
+                type: 'POST',
+                url: prefix + "/leaveTime",
+                data: $('#form-leave-edit').serialize(),
+                dataType: 'json',
+                success: function (result) {
+                    if (result.msg == "success") {
+                        // console.log(result.data);
+                        console.log(result.data["hours"])
+                        $('input[name="totalTimeText"]').val(result.data["hours"] + " 小时");
+                        $('input[name="totalTime"]').val(result.data["days"]);
+                        $('input[name="totalHours"]').val(result.data["hours"]);
+                        //余额标识
+                        $('input[name="hoursFlag"]').val("1");
+                    } else {
+                        console.log(result.data)
+                        $('input[name="totalTimeText"]').val(result.data["hours"] + " 小时");
+                        //余额标识
+                        $('input[name="hoursFlag"]').val("0");
+                        $.modal.alertWarning(result.msg);
+                    }
+                },
+                error: function (error) {
+                    $.modal.alertWarning("系统错误，请联系管理员");
+                }
+            });
+        });
+
+        function validateStartTimeAndEndTime() {
+            if ($('input[name="startTime"]').val() > $('input[name="endTime"]').val()) {
+                $.modal.alertWarning("结束时间必须大于开始时间");
+                return false;
+            }
+            return true;
+        }
+        $(document).ready(function () {
+
+            layui.use('upload', function(){
+                var $ = layui.jquery
+                    ,upload = layui.upload;
+
+                //多文件列表示例
+                var demoListView = $('#demoList')
+                    , uploadListIns = upload.render({
+                    elem: '#testList'
+                    , url: '/common/upload' //改成您自己的上传接口
+                    , accept: 'file'
+                    , multiple: true
+                    , auto: false
+                    , acceptMime:  'image/*'
+                    , bindAction: '#testListAction'
+                    , choose: function (obj) {
+                        var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                        //读取本地文件
+                        obj.preview(function (index, file, result) {
+
+                            var tr = $(['<tr id="upload-' + index + '">'
+                                /*, '<td>' + file.name + '</td>'*/
+                                , '<td>' +'<img  onclick="$.table.imageViewSimp(\''+ result +'\')" src="'+ result +'">' + '</td>'
+                                , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                                , '<td>等待上传</td>'
+                                , '<td>'
+                                , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                                , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                                , '</td>'
+                                , '</tr>'].join(''));
+
+                            //单个重传
+                            tr.find('.demo-reload').on('click', function () {
+                                obj.upload(index, file);
+                            });
+
+                            //删除
+                            tr.find('.demo-delete').on('click', function () {
+                                delete files[index]; //删除对应的文件
+                                tr.remove();
+                                uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                            });
+
+                            demoListView.append(tr);
+
+                        });
+                    }
+                    , done: function (res, index, upload) {
+                        console.log("done:"+res); //得到总文件数
+                        console.log("done:"+index); //请求成功的文件数
+                        console.log("done:"+upload); //请求失败的文件数
+                        if (res.code == 0) { //上传成功
+
+                            var tr = demoListView.find('tr#upload-' + index)
+                                , tds = tr.children();
+                            tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                            tds.eq(3).html(''); //清空操作
+
+                            $('#imgUrls').val($('#imgUrls').val() + "," + res.url);
+
+                            return delete this.files[index]; //删除文件队列已经上传成功的文件
+                        }
+                        this.error(index, upload);
+                    },allDone: function(obj){ //当文件全部被提交后，才触发
+                        console.log("allDone:"+obj.total); //得到总文件数
+                        console.log("allDone:"+obj.successful); //请求成功的文件数
+                        console.log("allDone:"+obj.aborted); //请求失败的文件数
+
+                        //提交表单
+                        $.operate.save(prefix + "/edit", $('#form-leave-edit').serialize());
+                    }
+                    , error: function (index, upload) {
+                        var tr = demoListView.find('tr#upload-' + index)
+                            , tds = tr.children();
+                        tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                        tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                    }
+                });
+            });
+        });
+
+        function remImg(url,id) {
+
+            $.ajax({
+                type: 'POST',
+                url:  prefix + "/editDelImg",
+                data: {id:id,img:url},
+                dataType: 'json',
+                success: function (result) {
+                    if (result.code == 0 ) {
+                        $("#"+url.substring(30,45)).remove();
+                    }
+                },
+                error: function (error) {
+                    $.modal.alertWarning("系统错误，请联系管理员");
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrAttendanceClassMapper">
+    <resultMap type="com.ruoyi.base.domain.HrAttendanceClass" id="HrAttendanceClassResult">
+        <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <result property="workTime" column="work_time"/>
+            <result property="closingTime" column="closing_time"/>
+            <result property="restStartTime" column="rest_start_time"/>
+            <result property="restEndTime" column="rest_end_time"/>
+            <result property="hours" column="hours"/>
+            <result property="elasticityFlag" column="elasticity_flag"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.name,
+            entity.work_time,
+            entity.closing_time,
+            entity.rest_start_time,
+            entity.rest_end_time,
+            entity.hours,
+            entity.elasticity_flag,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectHrAttendanceClassList" parameterType="com.ruoyi.base.domain.HrAttendanceClass" resultMap="HrAttendanceClassResult">
+        select <include refid="baseColumns"/> from t_hr_attendance_class entity
+        where  entity.del_flag = '0'
+            <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+                <if test="workTime != null  and workTime != ''"> and entity.work_time = #{workTime}</if>
+                <if test="closingTime != null  and closingTime != ''"> and entity.closing_time = #{closingTime}</if>
+                <if test="restStartTime != null  and restStartTime != ''"> and entity.rest_start_time = #{restStartTime}</if>
+                <if test="restEndTime != null  and restEndTime != ''"> and entity.rest_end_time = #{restEndTime}</if>
+                <if test="hours != null  and hours != ''"> and entity.hours = #{hours}</if>
+                <if test="elasticityFlag != null  and elasticityFlag != ''"> and entity.elasticity_flag = #{elasticityFlag}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+    <select id="selectHrAttendanceClassAll" parameterType="com.ruoyi.base.domain.HrAttendanceClass" resultMap="HrAttendanceClassResult">
+        select <include refid="baseColumns"/> from t_hr_attendance_class entity
+        where  entity.del_flag = '0'
+    </select>
+
+
+    <update id="deleteHrAttendanceClassById" parameterType="Long">
+        update  t_hr_attendance_class set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrAttendanceClassByIds" parameterType="String">
+        update  t_hr_attendance_class set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

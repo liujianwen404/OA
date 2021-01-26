@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HolidayMapper">
+    <resultMap type="com.ruoyi.base.domain.Holiday" id="HolidayResult">
+        <id property="id" column="id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="userId" column="user_id"/>
+            <result property="type" column="type"/>
+            <result property="hours" column="hours"/>
+            <result property="useHours" column="use_hours"/>
+            <result property="startDate" column="start_date"/>
+            <result property="endDate" column="end_date"/>
+            <result property="source" column="source"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+
+            <result property="isPublic" column="is_public"/>
+            <result property="overtimeId" column="overtime_id"/>
+            <result property="attendanceDate" column="attendance_date"/>
+            <result property="classInfoId" column="class_info_id"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.user_id,
+            entity.type,
+            entity.hours,
+            entity.use_hours,
+            entity.start_date,
+            entity.end_date,
+            entity.source,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time,
+
+            entity.is_public,
+            entity.attendance_date,
+            entity.class_info_id,
+            entity.overtime_id
+        </sql>
+    <update id="deleteHolidayByIdClassInfoId" parameterType="Long">
+        update  t_holiday set del_flag =  '1' where class_info_id = #{classInfoId}
+    </update>
+
+    <select id="selectHolidayList" parameterType="com.ruoyi.base.domain.Holiday" resultMap="HolidayResult">
+        select <include refid="baseColumns"/> from t_holiday entity
+        left join t_hr_emp emp on entity.emp_id = emp.emp_id
+        LEFT JOIN sys_dept d ON emp.dept_id = d.dept_id
+        <where>
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+            <if test="empName != null and empName != '' "> and entity.emp_name like CONCAT('%',#{empName},'%')</if>
+            <if test="userId != null "> and entity.user_id = #{userId}</if>
+            <if test="deptId != null "> and ( emp.dept_id = #{deptId} or emp.dept_id IN (
+                SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0') )</if>
+            <if test="postId != null "> and emp.post_id = #{postId}</if>
+            <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+            <if test="hours != null "> and entity.hours = #{hours}</if>
+            <if test="useHours != null "> and entity.use_hours = #{useHours}</if>
+            <if test="startDate != null "> and entity.start_date = #{startDate}</if>
+            <if test="endDate != null "> and entity.end_date = #{endDate}</if>
+            <if test="source != null  and source != ''"> and entity.source = #{source}</if>
+            <if test="createId != null "> and entity.create_id = #{createId}</if>
+            <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+            and entity.del_flag = '0'
+            AND emp.del_flag = 0
+            AND d.del_flag = 0
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+    <select id="getHolidayHours" resultType="java.util.Map">
+    SELECT
+        sum( CASE WHEN h.type = 1 THEN ifnull( h.hours - h.use_hours, 0 ) ELSE 0 END ) AS holidayType1,
+        sum( CASE WHEN h.type = 4 THEN ifnull( h.hours - h.use_hours, 0 ) ELSE 0 END ) AS holidayType4
+    FROM
+        t_holiday h
+    WHERE
+        h.emp_id = #{userId}
+        AND h.hours > h.use_hours
+        AND h.del_flag = '0'
+        AND h.end_date >= now()
+    </select>
+
+    <select id="selectHolidayType1ByUserId" resultMap="HolidayResult">
+        select <include refid="baseColumns"/>
+        FROM
+            t_holiday entity
+        WHERE
+        entity.emp_id = #{userId}
+            AND entity.hours > entity.use_hours
+            AND entity.del_flag = '0'
+            AND entity.end_date >= now()
+            and entity.type = ${type}
+        order by entity.end_date asc
+    </select>
+
+    <select id="selectRemainingAnuualLeave" resultType="double">
+        SELECT
+            IFNULL(MAX(a.hours - a.use_hours),0)
+        FROM
+            t_holiday a
+        WHERE
+            a.del_flag = '0'
+            AND a.emp_id = #{empId}
+            AND YEAR(a.start_date) = #{year}
+            AND a.type = 4
+    </select>
+
+    <select id="selectPublicOvertime" resultType="double">
+        SELECT
+            IFNULL(MAX(a.hours),0)
+        FROM
+            t_holiday a
+        WHERE
+            a.del_flag = '0'
+            AND a.emp_id = #{empId}
+            AND YEAR ( a.attendance_date ) = #{year}
+            AND MONTH ( a.attendance_date ) = #{month}
+            AND a.is_public IN (1,2)
+    </select>
+
+    <select id="selectGeneralOvertime" resultType="double">
+        SELECT
+            IFNULL(MAX(a.hours),0)
+        FROM
+            t_holiday a
+        WHERE
+            a.del_flag = '0'
+            AND a.emp_id = #{empId}
+            AND YEAR ( a.attendance_date ) = #{year}
+            AND MONTH ( a.attendance_date ) = #{month}
+            AND a.is_public = 0
+    </select>
+
+    <select id="selectLegalOvertime" resultType="double">
+        SELECT
+            IFNULL(MAX(a.hours),0)
+        FROM
+            t_holiday a
+        WHERE
+            a.del_flag = '0'
+            AND a.emp_id = #{empId}
+            AND YEAR ( a.attendance_date ) = #{year}
+            AND MONTH ( a.attendance_date ) = #{month}
+            AND a.is_public = 2
+    </select>
+
+
+    <update id="deleteHolidayById" parameterType="Long">
+        update  t_holiday set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHolidayByIds" parameterType="String">
+        update  t_holiday set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

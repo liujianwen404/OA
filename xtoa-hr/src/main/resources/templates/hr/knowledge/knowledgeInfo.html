@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('知识列表')"/>
+</head>
+<body class="gray-bg" th:fragment="knowledgeInfo">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-tableMy"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlagInfo = [[${@permission.hasPermi('hr:knowledge:edit')}]];
+    var removeFlagInfo = [[${@permission.hasPermi('hr:knowledge:remove')}]];
+    var typeDatasInfo = [[${@dict.getType('sys_sknowledge_type')}]];
+    var prefixInfo = ctx + "hr/knowledge";
+
+    var isFrom = [[${isFrom}]];
+    var parems = "?";
+    if (isFrom) {
+        parems = parems + "isFrom="+isFrom;
+    }
+
+
+    $(function () {
+        var options = {
+            id: "bootstrap-tableMy",
+            url: prefixInfo + "/list"+parems,
+            createUrl: prefixInfo + "/add",
+            updateUrl: prefixInfo + "/edit/{id}",
+            removeUrl: prefixInfo + "/remove",
+            exportUrl: prefixInfo + "/export",
+            modalName: "知识",
+            onLoadSuccess: function(data) {
+                getRanking();
+            },
+            columns: [
+                {
+                    field: 'id',
+                    title: '知识id',
+                    visible: false
+                },
+                {
+                    field: 'type',
+                    title: '类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(typeDatasInfo, value);
+                    }
+                },
+                {
+                    field: 'titel',
+                    title: '标题'
+                },
+                {
+                    field: 'cover',
+                    title: '封面',
+                    formatter: function (value, row, index) {
+
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'content',
+                    title: '内容',
+                    visible: false
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        if (value == '0') {
+                            return '正常';
+                        }
+                        return '关闭';
+                    }
+                },
+
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs " href="javascript:void(0)" onclick="look(\'' + row.id + '\',\'\')"><i class="fa fa-edit"></i>阅读</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlagInfo + '" href="javascript:void(0)" onclick="editByTableIdMy(\'' + row.id + '\',' + '\'bootstrap-tableMy' + '\',1200)"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlagInfo + '" href="javascript:void(0)" onclick="removeByTableIdMy(\'' + row.id + '\',' + '\'bootstrap-tableMy' + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+
+    });
+
+    function editByTableIdMy(id, tableId,width) {
+        $.operate.editByTableId(id, tableId, width,refTable);
+    }
+
+
+    function removeByTableIdMy(id, tableId) {
+        $.operate.removeByTableId(id, tableId, refTable);
+    }
+
+    function refTable() {
+        debugger
+        $.table.refresh("bootstrap-tableMy");
+        //刷新浏览
+        if ($("#bootstrap-tableBrowse")) {
+            $.table.refresh("bootstrap-tableBrowse");
+        }
+        //刷新收藏
+        if ($("#bootstrap-tableEnshrine")) {
+            $.table.refresh("bootstrap-tableEnshrine");
+        }
+    }
+
+    function look(id, isLook) {
+        $.ajax({
+            url: prefixInfo + "/selectOne",    //后台controller中的请求路径
+            type: 'POST',
+            data: {'id': id, "isLook": isLook},
+            async: false,
+            datatype: 'json',
+            success: function (data) {
+                if (data.code == 0) {
+                    layer.open({
+                        title: false,
+                        type: 1,
+                        closeBtn: true,
+                        shadeClose: true,
+                        area: ['600px', '650px'],
+                        content: "<div>" +
+                        "<h1 style='text-align: center'>标题：" + data.data.titel + "</h1><br/>" +
+                        "<div style='margin: 15px 5px'>" + data.data.content + "</div>" +
+                        // "<div><button type=\"button\" class=\"layui-btn layui-btn-normal\" onclick='enshrine('"+data.data.id+"')'>收藏</button></div>" +
+                        "</div>"
+                    });
+                    //刷新浏览
+                    if ($("#bootstrap-tableBrowse")) {
+                        $.table.refresh("bootstrap-tableBrowse");
+                    }
+                }
+            },
+            error: function () {
+                alert('操作出错');
+            }
+        });
+    }
+
+    function getRanking() {
+        //不是主页来的
+        if (!isFrom) {
+            $.ajax({
+                url : prefix + "/getRanking",    //后台controller中的请求路径
+                type : 'POST',
+                data: {},
+                async : false,
+                datatype : 'json',
+                success : function(data) {
+                    debugger
+                    if(data.code == 0){
+                        debugger
+                        $("#count").html(data.data.count);
+                        $("#myCount").html(data.data.myCount);
+                        $("#deptCount").html(data.data.deptCount);
+                        $("#headCount").html(data.data.headCount);
+                        $("#dCount").html(data.data.dCount);
+                    }
+                },
+                error : function() {
+                    $.modal.alertError("操作出错");
+                }
+            });
+        }
+    }
+
+</script>
+</body>
+</html>

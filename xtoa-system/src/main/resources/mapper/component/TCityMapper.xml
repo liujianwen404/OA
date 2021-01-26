@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TCityMapper">
+    
+    <resultMap type="com.ruoyi.system.domain.TCity" id="TCityResult">
+        <result property="cityId"    column="city_id"    />
+        <result property="cityName"    column="city_name"    />
+        <result property="provinceId"    column="province_id"    />
+        <result property="provinceName"    column="province_name"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTCityVo">
+        select city_id, city_name, province_id, province_name, create_time, update_time from t_city
+    </sql>
+
+    <select id="selectTCityList" parameterType="com.ruoyi.system.domain.TCity" resultMap="TCityResult">
+        <include refid="selectTCityVo"/>
+        <where>  
+            <if test="cityName != null  and cityName != ''"> and city_name like concat('%', #{cityName}, '%')</if>
+            <if test="provinceId != null  and provinceId != ''"> and province_id = #{provinceId}</if>
+            <if test="provinceName != null  and provinceName != ''"> and province_name like concat('%', #{provinceName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectTCityById" parameterType="String" resultMap="TCityResult">
+        <include refid="selectTCityVo"/>
+        where city_id = #{cityId}
+    </select>
+    <select id="selectAll" resultMap="TCityResult">
+        select * from t_city
+    </select>
+    <select id="getCityNmae" resultType="string">
+        select city_name FROM t_city where province_name like concat(#{s},'%')
+    </select>
+
+    <insert id="insertTCity" parameterType="com.ruoyi.system.domain.TCity">
+        insert into t_city
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cityId != null  and cityId != ''">city_id,</if>
+            <if test="cityName != null  and cityName != ''">city_name,</if>
+            <if test="provinceId != null  and provinceId != ''">province_id,</if>
+            <if test="provinceName != null  and provinceName != ''">province_name,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cityId != null  and cityId != ''">#{cityId},</if>
+            <if test="cityName != null  and cityName != ''">#{cityName},</if>
+            <if test="provinceId != null  and provinceId != ''">#{provinceId},</if>
+            <if test="provinceName != null  and provinceName != ''">#{provinceName},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTCity" parameterType="com.ruoyi.system.domain.TCity">
+        update t_city
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cityName != null  and cityName != ''">city_name = #{cityName},</if>
+            <if test="provinceId != null  and provinceId != ''">province_id = #{provinceId},</if>
+            <if test="provinceName != null  and provinceName != ''">province_name = #{provinceName},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where city_id = #{cityId}
+    </update>
+
+    <delete id="deleteTCityById" parameterType="String">
+        delete from t_city where city_id = #{cityId}
+    </delete>
+
+    <delete id="deleteTCityByIds" parameterType="String">
+        delete from t_city where city_id in 
+        <foreach item="cityId" collection="array" open="(" separator="," close=")">
+            #{cityId}
+        </foreach>
+    </delete>
+    
+</mapper>

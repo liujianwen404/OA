@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('项目迭代任务列表')" />
+    <style type="text/css">
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle !important;
+        }
+
+        table {
+            width: 100px;
+            table-layout: fixed; /* 只有定义了表格的布局算法为fixed，下面td的定义才能起作用。 */
+        }
+
+        td {
+            width: 100%;
+            word-break: keep-all; /* 不换行 */
+            white-space: nowrap; /* 不换行 */
+            overflow: hidden; /* 内容超出宽度时隐藏超出部分的内容 */
+            text-overflow: ellipsis; /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用*/
+            -o-text-overflow: ellipsis;
+            -icab-text-overflow: ellipsis;
+            -khtml-text-overflow: ellipsis;
+            -moz-text-overflow: ellipsis;
+            -webkit-text-overflow: ellipsis;
+        }
+
+    </style>
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label class="col-sm-3 control-label">所属项目：</label>
+                                <div class="col-sm-8">
+                                    <select id="projectId" name="projectId" class="form-control" >
+                                        <option value="">全部</option>
+                                        <option th:each="projectSelectList:${projectSelectList}" th:value="${projectSelectList.id}" th:text="${projectSelectList.name}"></option>
+                                    </select>
+                                </div>
+                            </li>
+                            <li>
+                                <label class="col-sm-3 control-label">所属迭代：</label>
+                                <select id="projectPlanId" name="projectPlanId" class="form-control" >
+                                    <option value="">全部</option>
+                                    <option th:each="projectPlanSelectList:${projectPlanSelectList}" th:value="${projectPlanSelectList.id}" th:text="${projectPlanSelectList.name}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label class="col-sm-3 control-label">负责人：</label>
+                                <input type="text" name="empName"/>
+                            </li>
+
+                            <li>
+                                <label class="col-sm-3 control-label">提出人：</label>
+                                <input type="text" name="introducerName"/>
+                            </li>
+
+                            <li>
+                                <label>状态：</label>
+                                <select name="status" th:with="type=${@dict.getType('sys_project_task_status')}">
+                                    <option value="">全部</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <label class="col-sm-3 control-label">优先级：</label>
+                                <div class="col-sm-8">
+                                <select name="priority" th:with="type=${@dict.getType('sys_project_priority')}">
+                                    <option value="">全部</option>
+                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                </select>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="project:projectPlanTask:add">
+                    <i class="fa fa-plus"></i> 添加需求
+                </a>
+        <!--        <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="project:projectPlanTask:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="project:projectPlanTask:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>-->
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="project:projectPlanTask:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" style="table-layout:fixed;"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+
+
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('project:projectPlanTask:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('project:projectPlanTask:remove')}]];
+        var statusDatas = [[${@dict.getType('sys_project_task_status')}]];
+        var prefix = ctx + "project/projectPlanTask";
+        var priorityData = [[${@dict.getType('sys_project_priority')}]];
+
+        $(function() {
+
+
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "项目迭代任务",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'name',
+                    title: '标题',
+                    width:'18%'
+                },
+                {
+                    field: 'id', 
+                    title: '任务id',
+                    visible: false
+                },
+                {
+                    field: 'projectId', 
+                    title: '项目id',
+                    visible: false
+                },
+                {
+                    field: 'projectName',
+                    title: '所属项目'
+                },
+                {
+                    field: 'projectPlanId', 
+                    title: '所属迭代id',
+                    visible: false
+                },
+                {
+                    field: 'projectPlanName',
+                    title: '所属迭代'
+                },
+                {
+                    field: 'empName',
+                    title: '负责人id',
+                    visible: false
+                },
+                {
+                    field: 'empName',
+                    title: '负责人'
+                },
+                {
+                    field: 'introducerId',
+                    title: '提出人id',
+                    visible: false
+                },
+                {
+                    field: 'introducerName',
+                    title: '提出人'
+                },
+                {
+                    field: 'priority',
+                    title: '优先级',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(priorityData, value);
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(statusDatas, value);
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    field: 'startTime', 
+                    title: '开始时间'
+                },
+                {
+                    field: 'endTime', 
+                    title: '结束时间'
+                },
+
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }], onLoadSuccess: function() {
+                    // if($("#name").val().length>20){
+                    $('.bootstrap-table tr td').each(function () {
+                        $(this).attr("title", $(this).text());
+                        $(this).css("cursor", 'pointer');
+
+                    });
+                    // }
+
+                }
+            };
+            $.table.init(options);
+        });
+
+    </script>
+
+</body>
+</html>

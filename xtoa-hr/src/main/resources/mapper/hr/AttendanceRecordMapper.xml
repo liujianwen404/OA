@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.AttendanceRecordMapper">
+    <resultMap type="com.ruoyi.base.domain.AttendanceRecord" id="AttendanceRecordResult">
+        <id property="id" column="id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empNum" column="emp_num"/>
+            <result property="empName" column="emp_name"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+            <result property="dates" column="dates"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.emp_id,
+            entity.emp_num,
+            entity.emp_name,
+            entity.start_time,
+            entity.end_time,
+            entity.dates,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectAttendanceRecordList" parameterType="com.ruoyi.base.domain.AttendanceRecord" resultMap="AttendanceRecordResult">
+        select <include refid="baseColumns"/> from t_attendance_record entity
+        where  entity.del_flag = '0'
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="empNum != null  and empNum != ''"> and entity.emp_num = #{empNum}</if>
+                <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+                <if test="startTime != null  and startTime != ''"> and entity.start_time = #{startTime}</if>
+                <if test="endTime != null  and endTime != ''"> and entity.end_time = #{endTime}</if>
+                <if test="dates != null "> and entity.dates = #{dates}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteAttendanceRecordById" parameterType="Long">
+        update  t_attendance_record set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteAttendanceRecordByIds" parameterType="String">
+        update  t_attendance_record set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectShouldAttendance" parameterType="Long" resultType="hashmap">
+        SELECT LAST_DAY( dates ) AS dates, IFNULL(restDays,0) AS restDays, IFNULL(( amount - restDays ),0 ) AS workDays
+        FROM
+            (
+            SELECT
+                emp_id,
+                max( dates ) AS dates,
+                DATEDIFF(
+                    date_add( max( dates )- DAY ( max( dates ))+ 1, INTERVAL 1 MONTH ),
+                DATE_ADD( max( dates ), INTERVAL - DAY ( max( dates ))+ 1 DAY )) AS amount
+            FROM
+                t_attendance_record
+            WHERE
+                emp_id = #{empId}
+            ) t1
+        LEFT JOIN (
+            SELECT IFNULL( emp_id, #{empId} ) AS emp_id, COUNT(*) AS restDays
+            FROM t_attendance_record
+            WHERE emp_id = #{empId} AND type = "1" ) t2
+        ON t1.emp_id = t2.emp_id
+    </select>
+
+    <select id="selectLateList" parameterType="com.ruoyi.base.domain.AttendanceRecord" resultMap="AttendanceRecordResult">
+        select <include refid="baseColumns"/> from t_attendance_record a
+        where  1=1
+        AND a.del_flag = '0'
+        AND a.emp_num = #{empNum}
+        AND a.late != ""
+    </select>
+
+    <select id="selectLateCount" parameterType="com.ruoyi.base.domain.AttendanceRecord" resultType="int">
+        select count(*) from t_attendance_record a
+        where  1=1
+        AND a.del_flag = '0'
+        AND a.emp_num = #{empNum}
+        AND a.late != ""
+        ORDER BY a.dates DESC
+    </select>
+
+    <select id="selectGeneralLateCount" parameterType="String" resultType="Long">
+        SELECT
+        IFNULL(max(a.late_num),0) as nums
+        FROM
+        t_attendance_record a
+        WHERE
+        1 = 1
+        AND a.emp_num = #{empNum}
+        AND a.late != ""
+        AND a.late_times &lt;= 10
+        AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectGeneralEarlyCount" parameterType="String" resultType="Long">
+        SELECT
+        IFNULL(max(a.early_num),0) as nums
+        FROM
+        t_attendance_record a
+        WHERE
+        1 = 1
+        AND a.emp_num = #{empNum}
+        AND a.early != ""
+        AND a.early_times &lt;= 10
+        AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectFinesAndSubsidy" resultType="hashmap">
+        SELECT
+            IFNULL( SUM( a.early_fines ), 0 ) AS earlyFines,
+            IFNULL( SUM( a.late_fines ), 0 ) AS lateFines,
+            IFNULL( SUM( a.night_subsidy ), 0 ) AS nightSubsidy,
+            IFNULL( SUM( a.meal_subsidy ), 0 ) AS mealSubsidy
+        FROM
+            t_attendance_record a
+        WHERE
+        1 = 1
+        AND a.emp_num = #{empNum}
+        AND YEAR (a.dates) = #{year}
+        AND MONTH(a.dates) = #{month}
+        AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectMonth" parameterType="String" resultType="Long">
+        SELECT
+        IFNULL(MAX(MONTH(dates)),MONTH(CURRENT_DATE)) AS month
+        FROM
+        t_attendance_record a
+        WHERE
+        1 = 1
+        AND a.emp_num = #{empNum}
+        AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectRecordByCondition" resultType="com.ruoyi.base.domain.AttendanceRecord">
+        SELECT
+            *
+        FROM
+            t_attendance_record a
+        WHERE
+            1 = 1
+            AND a.emp_num = #{empNum}
+            AND a.dates = #{date}
+            AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectNotClockInNums" resultType="Long">
+        SELECT
+            IFNULL( SUM( a.no_clock_in ), 0 ) + IFNULL( SUM( a.no_clock_off ), 0 ) as num
+        FROM
+            t_attendance_record a
+        WHERE
+            1 = 1
+            AND a.emp_num = #{empNum}
+            AND YEAR (a.dates) = #{year}
+            AND MONTH(a.dates) = #{month}
+            AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectFillClockInNums" resultType="Long">
+        SELECT
+            count(*)
+        FROM
+            t_hr_fill_clock a
+        WHERE
+            1 = 1
+            AND a.apply_user_num = #{empNum}
+            AND YEAR (a.dates) = #{year}
+            AND MONTH(a.dates) = #{month}
+            AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectRepositoryClasses" resultType="String">
+        SELECT
+            IFNULL(MAX(a.classes),0) as classes
+        FROM
+            t_attendance_record a
+        WHERE
+            1 = 1
+            AND a.classes LIKE '%仓库考勤%'
+            AND a.emp_num = #{empNum}
+            AND YEAR (a.dates) = #{year}
+            AND MONTH(a.dates) = #{month}
+            AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectLeaveNums" resultType="Long">
+        SELECT
+            count(*)
+        FROM
+            t_hr_leave a
+        LEFT JOIN sys_user b ON a.apply_user = b.login_name
+        LEFT JOIN t_hr_emp c ON b.user_id = c.user_id
+        WHERE
+            c.emp_num = #{empNum}
+            AND YEAR (a.start_time) = #{year}
+            AND MONTH(a.start_time) = #{month}
+            AND a.type NOT IN (1,4)
+            AND a.del_flag =  '0'
+    </select>
+
+</mapper>

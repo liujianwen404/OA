@@ -1,0 +1,340 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div style="display: inline" class="importUtil" th:fragment="importUtil(downloadTemplateUrl,importUrl,checkUrl,exportErrorList,exportError)">
+    <a class="btn btn-info" style="padding: 4px 7px;" onclick="importUtilOpenUpload()" >
+        <i class="fa fa-upload"></i> 导入
+    </a>
+
+ <!--   <a style="display: none" class="btn btn-info" id="openRunDivBtn" onclick="openRunDiv()" >
+        <i class="fa fa-upload"></i> 等待
+    </a>
+    <a style="display: none" class="btn btn-info" id="openRunDivBtn2" onclick="openSuccessDiv()" >
+        <i class="fa fa-upload"></i> 等待
+    </a>-->
+
+    <!-- 导入区域 1-->
+    <div class="container-div" id="importUtilDiv" style="display: none;" >
+
+        <div class="row" id="importUtilFileDiv" style="display: none;height: 30%">
+            <a class="btn btn-info" onclick="downloadTemplate()">
+                <i class="fa fa-upload"></i> 模板下载
+            </a>
+            <form class="form-horizontal m" id="importUtilFrom">
+                <div class="ibox-content">
+                    <div class="form-group">
+                        <input type="file"  id="importUtilFile" name="importUtilFile" />
+                        <font color="red" id="fontRed" style="display: none;" class="pull-left mt10">
+                            仅允许导入“xls”或“xlsx”格式文件！
+                        </font>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="row" id="importUtilRunDiv" style="display: none;">
+            <h1 style="margin-top: 17%;margin-left: 35%;" >导入中，请耐心等待！</h1>
+        </div>
+
+        <div class="row" id="importUtilSuccessDiv" style="display: none;height: 50%;">
+            <h1 style="margin-top: 8%;margin-left: 40%;" >导入结束</h1>
+        </div>
+
+        <div class="row" id="importUtilListDiv" style="display: none;">
+            <div  class="table-responsive" style="height: 200px" >
+                <table class="table table-condensed" id="dataTable" style="font-size: 18px">
+
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script>
+
+
+        var downloadTemplateUrl = '[[${downloadTemplateUrl}]]';
+        var importUrl = '[[${importUrl}]]';
+        var checkUrl = '[[${checkUrl}]]';
+        var exportErrorList = '[[${exportErrorList}]]';
+        var exportError = '[[${exportError}]]';
+
+
+        document.getElementById("importUtilFile").addEventListener("change",function () {
+            // debugger
+            var file = document.getElementById("importUtilFile");
+            if (file){
+                var filePath = file.value;    //js中无法获取文件的真是路径
+                var fileName = filePath.substring(filePath.lastIndexOf('\\')+1); //文件名
+                var extName = fileName.substring(fileName.lastIndexOf('.')+1);    //后缀名
+
+                if (extName != "xls" && extName != "xlsx"){
+                    $("#importUtilFrom")[0].reset();
+
+                    var fontRed = document.getElementById("fontRed");
+                    fontRed.style.display="inline";
+
+                }else {
+                    var fontRed = document.getElementById("fontRed");
+                    fontRed.style.display="none";
+                }
+            }
+        });
+
+        function downloadTemplate() {
+
+            $.modal.loading("正在导出数据，请稍后...");
+            $.post(downloadTemplateUrl, {}, function(result) {
+                if (result.code == web_status.SUCCESS) {
+                    window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + true;
+                } else if (result.code == web_status.WARNING) {
+                    $.modal.alertWarning(result.msg)
+                } else {
+                    $.modal.alertError(result.msg);
+                }
+                $.modal.closeLoading();
+            });
+
+        }
+
+
+        function importUtilOpenUpload(){
+            // debugger
+            $.get(checkUrl, {}, function(result) {
+                if (result.code == web_status.SUCCESS) {
+                    openFileDiv();
+                    // openRunDiv();
+                } else {
+                    openListDiv();
+                }
+            });
+        }
+        function listInfo() {
+            var importUtilListDiv = document.getElementById("importUtilListDiv");
+            importUtilListDiv.style.display="block";
+
+            $.ajax({
+                url: exportErrorList,
+                data: {},
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'POST',
+                beforeSend: function () {
+
+                },
+                success: function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        var parknames =[];
+                        for(var i=0 , len = result.data.length ; i < len ; i++){
+                            var info = result.data[i];
+                            parknames.push('<tr>\n' +
+                                '                 <td>' + info.importDate + '</td>\n' +
+                                '                 <td>' + info.importInfo + '</td>\n' +
+                                '                 <td> <a style="color: blue" onclick="downloadErrorInfo(\'' + info.importDate + '\')" > 下载失败数据 </a> </td>\n' +
+                                '           </tr>')
+                        }
+                        $("#dataTable").html(parknames.join(""));
+                    }
+                }
+            });
+
+
+        }
+
+        function openFileDiv(){
+            rsetDiv();
+            var importUtilFileDiv = document.getElementById("importUtilFileDiv");
+            importUtilFileDiv.style.display="block";
+
+            //详情列表
+            listInfo();
+
+            layer.open({
+                type: 1,
+                area: ['1200px', '600px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: "上传文件",
+                content: $('#importUtilDiv'),
+                btn: ['提交', '关闭'],
+                closeBtn: 1,
+                // 弹层外区域关闭
+                shadeClose: false,
+                yes: function(index, layero){
+                    // debugger
+                    var file = document.getElementById("importUtilFile");
+                    if (file.value != ""){
+                        var formData = new FormData(layero.find('form')[0]);
+                        $.ajax({
+                            url: importUrl,
+                            data: formData,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            type: 'POST',
+                            beforeSend: function () {
+                                openRunDiv();
+                            },
+                            success: function (result) {
+                                if (result.code == web_status.SUCCESS) {
+                                    var t1 = window.setTimeout(function() {
+                                        openSuccessDiv();
+                                    },1000)
+                                    // openSuccessDiv();
+                                } else {
+                                    $.modal.alertError("文件导入失败：" + result.msg);
+                                }
+                            }
+                        });
+                       /* var t1 = window.setTimeout(function() {
+                            openRunDiv();
+                        },500)*/
+
+
+                    }else {
+                        $.modal.alertError("没有选择文件！");
+                        //正常关闭
+                    }
+                },
+                btn2:function(index, layero){
+                    $.table.refresh();
+                },
+                cancel: function(){
+                    $.table.refresh();
+                }
+            });
+        }
+
+        function downloadErrorInfo(date) {
+
+            $.modal.loading("正在导出数据，请稍后...");
+            $.post(exportError, {"date":date}, function(result) {
+                if (result.code == web_status.SUCCESS) {
+                    window.location.href = ctx + "common/download?fileName=" + encodeURI(result.msg) + "&delete=" + true;
+                    //导出完成后清除已导出的失败数据
+                    $.get(exportError, function(result){
+                        if (result.code == web_status.SUCCESS) {
+                            console.log("清除已导出的失败数据完成！");
+                        }
+                    });
+                } else if (result.code == web_status.WARNING) {
+                    $.modal.alertWarning(result.msg)
+                } else {
+                    $.modal.alertError(result.msg);
+                }
+                $.modal.closeLoading();
+            });
+
+        }
+
+        function openListDiv(){
+            rsetDiv();
+
+            var t1 = window.setTimeout(function() {
+                var importUtilListDiv = document.getElementById("importUtilListDiv");
+                importUtilListDiv.style.display="block";
+                layer.open({
+                    type: 1,
+                    area: ['1200px', '600px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    title: "上传文件",
+                    content: $('#importUtilDiv'),
+                    btn: [ '关闭'],
+                    closeBtn: 1,
+                    // 弹层外区域关闭
+                    shadeClose: false,
+                    yes: function(index, layero){
+                        layer.close(index)
+                    },
+                    cancel: function(){
+                    }
+                });
+            },500);
+
+        }
+        function openSuccessDiv(){
+            rsetDiv();
+
+            //详情列表
+            listInfo();
+
+            var t1 = window.setTimeout(function() {
+                var importUtilSuccessDiv = document.getElementById("importUtilSuccessDiv");
+                importUtilSuccessDiv.style.display="block";
+                layer.open({
+                    type: 1,
+                    area: ['1200px', '600px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    title: "上传文件",
+                    content: $('#importUtilDiv'),
+                    btn: [ '关闭'],
+                    closeBtn: 1,
+                    // 弹层外区域关闭
+                    shadeClose: false,
+                    yes:function(index, layero){
+                        layer.close(index)
+                    },
+                    cancel: function(){
+                    }
+                });
+            },500);
+        }
+        function openRunDiv(){
+            rsetDiv();
+            var t1 = window.setTimeout(function() {
+                var importUtilRunDiv = document.getElementById("importUtilRunDiv");
+                importUtilRunDiv.style.display="block";
+                layer.open({
+                    type: 1,
+                    area: ['1200px', '600px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    title: "上传文件",
+                    content: $('#importUtilDiv'),
+                    btn: [ '关闭'],
+                    closeBtn: 1,
+                    // 弹层外区域关闭
+                    shadeClose: false,
+                    yes:function(index, layero){
+                        layer.close(index)
+                    },
+                    cancel: function(){
+                    }
+                });
+            },500);
+        }
+
+        function rsetDiv(){
+            $("#importUtilFrom")[0].reset();
+            var importUtilFileDiv = document.getElementById("importUtilFileDiv");
+            importUtilFileDiv.style.display="none";
+            var importUtilListDiv = document.getElementById("importUtilListDiv");
+            importUtilListDiv.style.display="none";
+            var importUtilSuccessDiv = document.getElementById("importUtilSuccessDiv");
+            importUtilSuccessDiv.style.display="none";
+            var importUtilRunDiv = document.getElementById("importUtilRunDiv");
+            importUtilRunDiv.style.display="none";
+            layer.closeAll();
+
+        }
+
+        window.onload = function(){
+
+        };
+
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.ProjectOperationMapper">
+    <resultMap type="com.ruoyi.base.domain.ProjectOperation" id="ProjectOperationResult">
+        <id property="id" column="id"/>
+            <result property="projectId" column="project_id"/>
+            <result property="projectPlanId" column="project_plan_id"/>
+            <result property="projectPlanTaskId" column="project_plan_task_id"/>
+            <result property="contentDescribe" column="content_describe"/>
+            <result property="empId" column="emp_id"/>
+            <result property="type" column="type"/>
+            <result property="operation" column="operation"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.project_id,
+            entity.project_plan_id,
+            entity.project_plan_task_id,
+            entity.content_describe,
+            entity.emp_id,
+            entity.type,
+            entity.operation,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectProjectOperationList" parameterType="com.ruoyi.base.domain.ProjectOperation" resultMap="ProjectOperationResult">
+        select <include refid="baseColumns"/> from t_project_operation entity
+        where  entity.del_flag = '0'
+            <if test="projectId != null "> and entity.project_id = #{projectId}</if>
+                <if test="projectPlanId != null "> and entity.project_plan_id = #{projectPlanId}</if>
+                <if test="projectPlanTaskId != null "> and entity.project_plan_task_id = #{projectPlanTaskId}</if>
+                <if test="contentDescribe != null  and contentDescribe != ''"> and entity.content_describe = #{contentDescribe}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="type != null "> and entity.type = #{type}</if>
+                <if test="operation != null "> and entity.operation = #{operation}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteProjectOperationById" parameterType="Long">
+        update  t_project_operation set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteProjectOperationByIds" parameterType="String">
+        update  t_project_operation set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

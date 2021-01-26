@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrInterpolateMapper">
+    <resultMap type="com.ruoyi.hr.domain.HrInterpolate" id="HrInterpolateResult">
+        <id property="interpolateId" column="interpolate_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="interpolateRelation" column="interpolate_relation"/>
+            <result property="interpolateName" column="interpolate__name"/>
+            <result property="birthday" column="birthday"/>
+            <result property="interpolateSex" column="interpolate_sex"/>
+            <result property="interpolateNativePlace" column="interpolate_native_place"/>
+            <result property="interpolateEducation" column="interpolate_education"/>
+            <result property="interpolateJobYear" column="interpolate_job_year"/>
+            <result property="interpolatePostId" column="interpolate_post_id"/>
+            <result property="phonenumber" column="phonenumber"/>
+            <result property="interpolateResidence" column="interpolate_residence"/>
+            <result property="resume" column="resume"/>
+            <result property="auditId" column="audit_id"/>
+            <result property="auditName" column="audit_name"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="auditStatus" column="audit_status"/>
+            <result property="instanceId" column="instance_id"/>
+            <!--<result property="interpolateDeptId" column="interpolate_post_id"/>-->
+    </resultMap>
+    <sql id="baseColumns">
+            entity.interpolate_id,
+            entity.emp_name,
+            entity.interpolate_relation,
+            entity.interpolate__name,
+            entity.birthday,
+            entity.interpolate_sex,
+            entity.interpolate_native_place,
+            entity.interpolate_education,
+            entity.interpolate_job_year,
+            entity.interpolate_post_id,
+            entity.phonenumber,
+            entity.interpolate_residence,
+            entity.resume,
+            entity.audit_id,
+            entity.audit_name,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.audit_status,
+            entity.instance_id,
+--             entity.interpolate_post_id,
+            entity.update_time
+        </sql>
+
+    <select id="selectHrInterpolateList" parameterType="HrInterpolate" resultMap="HrInterpolateResult">
+        select <include refid="baseColumns"/> from t_hr_interpolate entity
+        <where>
+            <if test="hrInterpolate.empName != null  and hrInterpolate.empName != ''"> and entity.emp_name like concat('%', #{hrInterpolate.empName}, '%')</if>
+            <if test="hrInterpolate.interpolateRelation != null  and hrInterpolate.interpolateRelation != ''"> and entity.interpolate_relation = #{hrInterpolate.interpolateRelation}</if>
+            <if test="hrInterpolate.interpolateName != null  and hrInterpolate.interpolateName != ''"> and entity.interpolate__name like concat('%', #{hrInterpolate.interpolateName}, '%')</if>
+            <if test="hrInterpolate.birthday != null "> and entity.birthday = #{hrInterpolate.birthday}</if>
+            <if test="hrInterpolate.interpolateSex != null  and hrInterpolate.interpolateSex != ''"> and entity.interpolate_sex = #{hrInterpolate.interpolateSex}</if>
+            <if test="hrInterpolate.interpolateNativePlace != null  and hrInterpolate.interpolateNativePlace != ''"> and entity.interpolate_native_place = #{hrInterpolate.interpolateNativePlace}</if>
+            <if test="hrInterpolate.interpolateEducation != null  and hrInterpolate.interpolateEducation != ''"> and entity.interpolate_education = #{hrInterpolate.interpolateEducation}</if>
+            <if test="hrInterpolate.interpolateJobYear != null  and hrInterpolate.interpolateJobYear != ''"> and entity.interpolate_job_year = #{hrInterpolate.interpolateJobYear}</if>
+            <if test="hrInterpolate.interpolatePostId != null "> and entity.interpolate_post_id = #{hrInterpolate.interpolatePostId}</if>
+            <if test="hrInterpolate.phonenumber != null  and hrInterpolate.phonenumber != ''"> and entity.phonenumber = #{hrInterpolate.phonenumber}</if>
+            <if test="hrInterpolate.interpolateResidence != null  and hrInterpolate.interpolateResidence != ''"> and entity.interpolate_residence = #{hrInterpolate.interpolateResidence}</if>
+            <if test="hrInterpolate.resume != null  and hrInterpolate.resume != ''"> and entity.resume = #{hrInterpolate.resume}</if>
+            <if test="hrInterpolate.auditId != null  and hrInterpolate.auditId != ''"> and entity.audit_id = #{hrInterpolate.auditId}</if>
+            <if test="hrInterpolate.auditName != null  and hrInterpolate.auditName != ''"> and entity.audit_name like concat('%', #{hrInterpolate.auditName}, '%')</if>
+            <if test="hrInterpolate.createId != null "> and entity.create_id = #{hrInterpolate.createId}</if>
+            <if test="hrInterpolate.updateId != null "> and entity.update_id = #{hrInterpolate.updateId}</if>
+            <if test="hrFlag == 0">
+                and  entity.create_id = #{userId}
+            </if>
+            and del_flag = 0
+         </where>
+                order by create_time desc
+    </select>
+
+
+    <update id="deleteHrInterpolateById" parameterType="Long">
+        update  t_hr_interpolate set del_flag =  '1' where interpolate_id = #{interpolateId}
+    </update>
+
+    <update id="deleteHrInterpolateByIds" parameterType="String">
+        update  t_hr_interpolate set del_flag =  '1' where interpolate_id in
+        <foreach item="interpolateId" collection="array" open="(" separator="," close=")">
+            #{interpolateId}
+        </foreach>
+    </update>
+
+</mapper>

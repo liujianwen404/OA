@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.DingdingMsgMapper">
+    <resultMap type="com.ruoyi.base.domain.DingdingMsg" id="DingdingMsgResult">
+        <id property="id" column="id"/>
+            <result property="useridList" column="userid_list"/>
+            <result property="deptIdList" column="dept_id_list"/>
+            <result property="toAllUser" column="to_all_user"/>
+            <result property="msgType" column="msg_type"/>
+            <result property="msg" column="msg"/>
+            <result property="taskId" column="task_id"/>
+            <result property="bizType" column="biz_type"/>
+            <result property="bizId" column="biz_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.userid_list,
+            entity.dept_id_list,
+            entity.to_all_user,
+            entity.msg_type,
+            entity.msg,
+            entity.task_id,
+            entity.biz_type,
+            entity.biz_id,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectDingdingMsgList" parameterType="com.ruoyi.base.domain.DingdingMsg" resultMap="DingdingMsgResult">
+        select <include refid="baseColumns"/> from t_dingding_msg entity
+        where  entity.del_flag = '0'
+            <if test="useridList != null  and useridList != ''"> and entity.userid_list = #{useridList}</if>
+                <if test="deptIdList != null  and deptIdList != ''"> and entity.dept_id_list = #{deptIdList}</if>
+                <if test="toAllUser != null "> and entity.to_all_user = #{toAllUser}</if>
+                <if test="msgType != null  and msgType != ''"> and entity.msg_type = #{msgType}</if>
+                <if test="msg != null  and msg != ''"> and entity.msg = #{msg}</if>
+                <if test="taskId != null  and taskId != ''"> and entity.task_id = #{taskId}</if>
+                <if test="bizType != null "> and entity.biz_type = #{bizType}</if>
+                <if test="bizId != null  and bizId != ''"> and entity.biz_id = #{bizId}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteDingdingMsgById" parameterType="Long">
+        update  t_dingding_msg set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteDingdingMsgByIds" parameterType="String">
+        update  t_dingding_msg set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

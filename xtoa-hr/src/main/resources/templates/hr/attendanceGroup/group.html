@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('考勤组列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>考勤组名称：</label>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add('',1000)" shiro:hasPermission="hr:attendanceGroup:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit('',1000)" shiro:hasPermission="hr:attendanceGroup:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:attendanceGroup:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:attendanceGroup:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:attendanceGroup:edit')}]];
+        var configFlag = [[${@permission.hasPermi('hr:attendanceGroup:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:attendanceGroup:remove')}]];
+        var prefix = ctx + "hr/attendanceGroup";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "考勤组",
+                sortName: "createTime",
+                sortOrder: "desc",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id', 
+                    title: '主键ID',
+                    visible: false
+                },
+                {
+                    field: 'name', 
+                    title: '考勤组名称'
+                },
+                {
+                    field: 'empId',
+                    title: '参与考勤人员ID',
+                    visible: false
+                },
+                {
+                    field: 'empName',
+                    title: '参与考勤人员',
+                    visible: false
+                },
+                {
+                    field: 'mustDate', 
+                    title: '必须打卡的日期',
+                    visible: false
+                },
+                {
+                    field: 'needNotDate', 
+                    title: '不用打卡的日期',
+                    visible: false
+                },
+                {
+                    field: 'address', 
+                    title: '打卡地址'
+                },
+                {
+                    field: 'longitude', 
+                    title: '打卡经度'
+                },
+                {
+                    field: 'latitude', 
+                    title: '打卡纬度'
+                },
+                {
+                    field: 'scope', 
+                    title: '打卡有效范围'
+                },
+                {
+                    field: 'createId', 
+                    title: '创建者ID',
+                    visible: false
+                },
+                {
+                    field: 'updateId', 
+                    title: '更新者ID',
+                    visible: false
+                },
+                {
+                    field: 'remark', 
+                    title: '备注'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if(row.type == 1){
+                            actions.push('<a class="btn btn-info btn-xs ' + configFlag + '" href="javascript:void(0)" onclick="openScheduClass(\'' + row.id + '\')"><i class="fa fa-edit"></i>配置</a> ');
+                        }
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\',1000)"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function openScheduClass(groupId){
+            let url = ctx + "hr/attendanceGroup/openScheduClass/'"+groupId+"'";
+            let width = 1500;
+            let height = ($(window).height() - 50);
+            let title = "配置排班";
+            layer.open({
+                type: 2,
+                area: [width + 'px', height + 'px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: title,
+                content: url,
+                // 弹层外区域关闭
+                shadeClose: false
+            });
+        }
+
+    </script>
+</body>
+</html>

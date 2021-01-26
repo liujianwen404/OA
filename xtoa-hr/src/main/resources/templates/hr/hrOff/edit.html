@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改off流程')" />
+    <th:block th:include="include :: select2-css" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-hrOff-edit" th:object="${hrOff}">
+            <input name="id" th:field="*{id}" type="hidden">
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">姓名：</label>
+                <div class="col-sm-8">
+                    <input name="toOffName" th:field="*{toOffName}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">入职城市：</label>
+              <!--  <div class="col-sm-4">
+                    <select class="form-control m-b" name="city" th:with="type=${@dict.getType('citys')}" required>
+                        <option value="">所有</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>-->
+                <div class="col-sm-8">
+                    <select id="city" name="city" class="form-control m-b" th:with="type=${@dict.getType('citys')}" disabled>
+                        <option value="">所有</option>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:selected="${dict.dictValue == hrOff.city}" th:value="${dict.dictValue}" ></option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">入职部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" required>
+                        <option value="">请选择</option><option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:field="*{deptId}"  th:if="${dept.getStatus() != '1' && dept.getDelFlag() == '0' }"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }" ></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">入职岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" required>
+                        <option value="">请选择</option><option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}" th:field="*{postId}"  th:hidden="${post.getStatus() == '1'}" ></option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">手机号码：</label>
+                <div class="col-sm-8">
+                    <input id="phonenumber" name="phonenumber" th:field="*{phonenumber}"  placeholder="请输入手机号码" class="form-control" type="text" maxlength="11" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">邮箱：</label>
+                <div class="col-sm-8">
+                    <input id="toOffEmail" name="toOffEmail" th:field="*{toOffEmail}"  class="form-control email" type="text" maxlength="20" placeholder="请输入邮箱" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">入职日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="nonManagerDate" th:value="${#dates.format(hrOff.nonManagerDate, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">试用期限：</label>
+                <div class="col-sm-8">
+                    <input name="probationDate" th:field="*{probationDate}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">原offer附件：</label>
+                <div class="col-sm-8">
+                    <a class="btn btn-success " id="downloadAdjunct" href="javascript:void(0)" >原文件下载</a>
+                </div>
+            </div>
+            <div class="form-group" th:if="${isDetail != 1}">
+                <label class="col-sm-3 control-label">上传新offer附件：</label>
+                <div class="col-sm-8">
+                    <input name="adjunctFile" class="form-control" type="file" >最大50M/1
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">原简历附件：</label>
+                <div class="col-sm-8">
+                    <a class="btn btn-success " id="resumeAdjunct" href="javascript:void(0)" >原文件下载</a>
+                    <!--<input name="resumeAdjunct" th:field="*{resumeAdjunct}" class="form-control" type="text">-->
+                </div>
+            </div>
+            <div class="form-group" th:if="${isDetail != 1}">
+                <label class="col-sm-3 control-label">上传新简历附件：</label>
+                <div class="col-sm-8">
+                    <input name="resumeAdjunctFile" class="form-control" type="file" >最大50M/1
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">薪酬级别审批：</label>
+                <div class="col-sm-8">
+                    <select name="salaryLevel" class="form-control m-b" th:with="type=${@dict.getType('sys_salary_level_type')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{salaryLevel}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">薪酬标准审批：</label>
+                <div class="col-sm-6">
+                    <textarea name="salaryStandard" id="salaryStandard" class="form-control" th:field="*{salaryStandard}" required></textarea>
+                </div>
+                <div class="col-sm-2" id="salaryStandardMark"><font color="red">字数限制在300字以内</font></div>
+            </div>
+
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label ">原员工入职薪资告知单附件：</label>
+                <div class="col-sm-8">
+                    <a class="btn btn-success " id="salaryAdjunct" href="javascript:void(0)" >文件下载</a>
+                    <!--<input name="salaryAdjunctFile" class="form-control" type="file" required>最大50M/1-->
+                </div>
+            </div>
+
+            <div class="form-group" th:if="${isDetail != 1}">
+                <label class="col-sm-3 control-label  ">上传新员工入职薪资告知单附件：</label>
+                <div class="col-sm-8">
+                    <input name="salaryAdjunctFile" class="form-control" type="file" >最大50M/1
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">招聘员姓名：</label>
+                <div class="col-sm-8">
+                    <input name="recruiterName" class="form-control" maxlength="10" th:field="*{recruiterName}" type="text" required>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+
+    <th:block th:include="include :: select2-js" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/hrOff";
+        $("#form-hrOff-edit").validate({
+            focusCleanup: true
+        });
+
+
+
+        $("#salaryStandardMark").hide();
+        $("#salaryStandard").keyup(function(){
+            debugger
+            var str = $("#salaryStandard").val();
+            if (str.length > 300 ){
+                $("#salaryStandard").val(str.substring(0,300));
+                $("#salaryStandardMark").show();
+                // $.modal.alertWarning("字数限制在50字以内");
+            }else {
+                $("#salaryStandardMark").hide();
+            }
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                // $.operate.save(prefix + "/edit", $('#form-hrOff-edit').serialize());
+                var form = document.getElementById('form-hrOff-edit'),
+                    formData = new FormData(form);
+                // debugger
+                $.ajax({
+                    url: prefix + "/edit",
+                    type: "post",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $.modal.loading("正在处理中，请稍后...");
+                        $.modal.disable();
+                    },
+                    success: function(result) {
+                        $.operate.successCallback(result);
+                    }
+                });
+            }
+        }
+
+        $("#downloadAdjunct").click(function(){
+            var adjunct = '[[${hrOff.adjunct}]]';
+            window.location.href = ctx + "common/download/resource?resource=" + adjunct;
+        });
+        $("#resumeAdjunct").click(function(){
+            var resumeAdjunct = '[[${hrOff.resumeAdjunct}]]';
+            window.location.href = ctx + "common/download/resource?resource=" + resumeAdjunct;
+        });
+        $("#salaryAdjunct").click(function(){
+            var salaryAdjunct = '[[${hrOff.salaryAdjunct}]]';
+            window.location.href = ctx + "common/download/resource?resource=" + salaryAdjunct;
+        });
+        $("input[name='nonManagerDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+    </script>
+</body>
+</html>

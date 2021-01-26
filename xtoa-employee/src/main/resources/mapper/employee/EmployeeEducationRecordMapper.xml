@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.employee.mapper.EmployeeEducationRecordMapper">
+    
+    <resultMap type="EmployeeEducationRecord" id="EmployeeEducationRecordResult">
+        <result property="id"    column="id"    />
+        <result property="employeeId"    column="employee_id"    />
+        <result property="employeeName"    column="employee_name"    />
+        <result property="school"    column="school"    />
+        <result property="specialities"    column="specialities"    />
+        <result property="entranceDate"    column="entrance_date"    />
+        <result property="graduateDate"    column="graduate_date"    />
+        <result property="diploma"    column="diploma"    />
+        <result property="diplomaImage"    column="diploma_image"    />
+        <result property="diplomaType"    column="diploma_type"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectEmployeeEducationRecordVo">
+        select id, employee_id, employee_name, school, specialities, entrance_date, graduate_date, diploma, diploma_image, diploma_type, status, del_flag, create_by, create_time, update_by, update_time, remark from employee_education_record
+    </sql>
+
+    <select id="selectEmployeeEducationRecordList" parameterType="EmployeeEducationRecord" resultMap="EmployeeEducationRecordResult">
+        <include refid="selectEmployeeEducationRecordVo"/>
+        <where>  
+            <if test="employeeId != null "> and employee_id = #{employeeId}</if>
+            <if test="employeeName != null  and employeeName != ''"> and employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="school != null  and school != ''"> and school = #{school}</if>
+            <if test="specialities != null  and specialities != ''"> and specialities = #{specialities}</if>
+            <if test="entranceDate != null "> and entrance_date = #{entranceDate}</if>
+            <if test="graduateDate != null "> and graduate_date = #{graduateDate}</if>
+            <if test="diploma != null  and diploma != ''"> and diploma = #{diploma}</if>
+            <if test="diplomaImage != null  and diplomaImage != ''"> and diploma_image = #{diplomaImage}</if>
+            <if test="diplomaType != null  and diplomaType != ''"> and diploma_type = #{diplomaType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectEmployeeEducationRecordById" parameterType="Long" resultMap="EmployeeEducationRecordResult">
+        <include refid="selectEmployeeEducationRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertEmployeeEducationRecord" parameterType="EmployeeEducationRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into employee_education_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="employeeId != null ">employee_id,</if>
+            <if test="employeeName != null  and employeeName != ''">employee_name,</if>
+            <if test="school != null  and school != ''">school,</if>
+            <if test="specialities != null  and specialities != ''">specialities,</if>
+            <if test="entranceDate != null ">entrance_date,</if>
+            <if test="graduateDate != null ">graduate_date,</if>
+            <if test="diploma != null  and diploma != ''">diploma,</if>
+            <if test="diplomaImage != null  and diplomaImage != ''">diploma_image,</if>
+            <if test="diplomaType != null  and diplomaType != ''">diploma_type,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="employeeId != null ">#{employeeId},</if>
+            <if test="employeeName != null  and employeeName != ''">#{employeeName},</if>
+            <if test="school != null  and school != ''">#{school},</if>
+            <if test="specialities != null  and specialities != ''">#{specialities},</if>
+            <if test="entranceDate != null ">#{entranceDate},</if>
+            <if test="graduateDate != null ">#{graduateDate},</if>
+            <if test="diploma != null  and diploma != ''">#{diploma},</if>
+            <if test="diplomaImage != null  and diplomaImage != ''">#{diplomaImage},</if>
+            <if test="diplomaType != null  and diplomaType != ''">#{diplomaType},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateEmployeeEducationRecord" parameterType="EmployeeEducationRecord">
+        update employee_education_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="employeeId != null ">employee_id = #{employeeId},</if>
+            <if test="employeeName != null  and employeeName != ''">employee_name = #{employeeName},</if>
+            <if test="school != null  and school != ''">school = #{school},</if>
+            <if test="specialities != null  and specialities != ''">specialities = #{specialities},</if>
+            <if test="entranceDate != null ">entrance_date = #{entranceDate},</if>
+            <if test="graduateDate != null ">graduate_date = #{graduateDate},</if>
+            <if test="diploma != null  and diploma != ''">diploma = #{diploma},</if>
+            <if test="diplomaImage != null  and diplomaImage != ''">diploma_image = #{diplomaImage},</if>
+            <if test="diplomaType != null  and diplomaType != ''">diploma_type = #{diplomaType},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteEmployeeEducationRecordById" parameterType="Long">
+        delete from employee_education_record where id = #{id}
+    </delete>
+
+    <delete id="deleteEmployeeEducationRecordByIds" parameterType="String">
+        delete from employee_education_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

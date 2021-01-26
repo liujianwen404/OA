@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改个人考勤记录')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-attendanceInfo-edit" th:object="${hrAttendanceInfo}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">钉钉用户ID：</label>
+                <div class="col-sm-8">
+                    <input name="dingUserId" th:field="*{dingUserId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">考勤组ID：</label>
+                <div class="col-sm-8">
+                    <input name="groupId" th:field="*{groupId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">排班ID：</label>
+                <div class="col-sm-8">
+                    <input name="planId" th:field="*{planId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">考勤班次id(没有的话表示该次打卡不在排班内)：</label>
+                <div class="col-sm-8">
+                    <input name="classId" th:field="*{classId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工ID：</label>
+                <div class="col-sm-8">
+                    <input name="empId" th:field="*{empId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">员工姓名：</label>
+                <div class="col-sm-8">
+                    <input name="empName" th:field="*{empName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">工作日：</label>
+                <div class="col-sm-8">
+                    <input name="workDate" th:field="*{workDate}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">基准时间(计算迟到和早退)：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="baseCheckTime" th:value="${#dates.format(hrAttendanceInfo.baseCheckTime, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">排班打卡时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="planCheckTime" th:value="${#dates.format(hrAttendanceInfo.planCheckTime, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">实际打卡时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="userCheckTime" th:value="${#dates.format(hrAttendanceInfo.userCheckTime, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">考勤类型(OnDuty：上班,OffDuty：下班)：</label>
+                <div class="col-sm-8">
+                    <select name="checkType" class="form-control m-b">
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">数据来源(ATM：考勤机;BEACON：IBeacon;DING_ATM：钉钉考勤机;USER：用户打卡;BOSS：老板改签;APPROVE：审批系统;SYSTEM：考勤系统;AUTO_CHECK：自动打卡)：</label>
+                <div class="col-sm-8">
+                    <select name="sourceType" class="form-control m-b">
+                        <option value="">所有</option>
+                    </select>
+                    <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">时间结果(Normal：正常;Early：早退;Late：迟到;SeriousLate：严重迟到；Absenteeism：旷工迟到；NotSigned：未打卡)：</label>
+                <div class="col-sm-8">
+                    <input name="timeResult" th:field="*{timeResult}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">位置结果(Normal：范围内;Outside：范围外，外勤打卡时为这个值)：</label>
+                <div class="col-sm-8">
+                    <input name="locationResult" th:field="*{locationResult}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">定位方法：</label>
+                <div class="col-sm-8">
+                    <input name="locationMethod" th:field="*{locationMethod}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">关联的审批表单id(当该字段非空时，表示打卡记录与请假、加班等审批有关)：</label>
+                <div class="col-sm-8">
+                    <input name="approveId" th:field="*{approveId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">关联的审批实例id(当该字段非空时，表示打卡记录与请假、加班等审批有关)：</label>
+                <div class="col-sm-8">
+                    <input name="procInstId" th:field="*{procInstId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">是否合法(当timeResult和locationResult都为Normal时，该值为Y；否则为N)：</label>
+                <div class="col-sm-8">
+                    <input name="isLegal" th:field="*{isLegal}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">设备id：</label>
+                <div class="col-sm-8">
+                    <input name="deviceId" th:field="*{deviceId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户打卡地址：</label>
+                <div class="col-sm-8">
+                    <input name="userAddress" th:field="*{userAddress}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户打卡经度：</label>
+                <div class="col-sm-8">
+                    <input name="userLongitude" th:field="*{userLongitude}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户打卡纬度：</label>
+                <div class="col-sm-8">
+                    <input name="userLatitude" th:field="*{userLatitude}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户打卡定位精度：</label>
+                <div class="col-sm-8">
+                    <input name="userAccuracy" th:field="*{userAccuracy}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">基准地址：</label>
+                <div class="col-sm-8">
+                    <input name="baseAddress" th:field="*{baseAddress}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">基准经度：</label>
+                <div class="col-sm-8">
+                    <input name="baseLongitude" th:field="*{baseLongitude}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">基准纬度：</label>
+                <div class="col-sm-8">
+                    <input name="baseLatitude" th:field="*{baseLatitude}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">基准定位精度：</label>
+                <div class="col-sm-8">
+                    <input name="baseAccuracy" th:field="*{baseAccuracy}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">部门ID：</label>
+                <div class="col-sm-8">
+                    <input name="deptId" th:field="*{deptId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">部门名称：</label>
+                <div class="col-sm-8">
+                    <input name="deptName" th:field="*{deptName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">岗位ID：</label>
+                <div class="col-sm-8">
+                    <input name="postId" th:field="*{postId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">岗位名称：</label>
+                <div class="col-sm-8">
+                    <input name="postName" th:field="*{postName}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">创建者ID：</label>
+                <div class="col-sm-8">
+                    <input name="createId" th:field="*{createId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">更新者ID：</label>
+                <div class="col-sm-8">
+                    <input name="updateId" th:field="*{updateId}" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/attendanceInfo";
+        $("#form-attendanceInfo-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-attendanceInfo-edit').serialize());
+            }
+        }
+
+        $("input[name='baseCheckTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='planCheckTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='userCheckTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrAttendanceStatisticsMapper">
+    <resultMap type="com.ruoyi.base.domain.HrAttendanceStatistics" id="HrAttendanceStatisticsResult">
+        <id property="id" column="id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="empNum" column="emp_num"/>
+            <result property="nonManagerDate" column="non_manager_date"/>
+            <result property="quitDate" column="quit_date"/>
+            <result property="finalDate" column="final_date"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+            <result property="firstDeptId" column="first_dept_id"/>
+            <result property="firstDeptName" column="first_dept_name"/>
+            <result property="secondDeptId" column="second_dept_id"/>
+            <result property="secondDeptName" column="second_dept_name"/>
+            <result property="district" column="district"/>
+            <result property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="shouldAttendance" column="should_attendance"/>
+            <result property="shouldPublicHoliday" column="should_public_holiday"/>
+            <result property="actualAttendance" column="actual_attendance"/>
+            <result property="actualAttendanceDay" column="actual_attendance_day"/>
+            <result property="actualPublicHoliday" column="actual_public_holiday"/>
+            <result property="actualPublicHolidayDay" column="actual_public_holiday_day"/>
+            <result property="legalPublicHoliday" column="legal_public_holiday"/>
+            <result property="workDuration" column="work_duration"/>
+            <result property="legalOvertime" column="legal_overtime"/>
+            <result property="generalOvertime" column="general_overtime"/>
+            <result property="lieuLeave" column="lieu_leave"/>
+            <result property="sickLeave" column="sick_leave"/>
+            <result property="personalLeave" column="personal_leave"/>
+            <result property="annualLeave" column="annual_leave"/>
+            <result property="otherLeave" column="other_leave"/>
+            <result property="absentLeave" column="absent_leave"/>
+            <result property="previousHoliday" column="previous_holiday"/>
+            <result property="overtimeHoliday" column="overtime_holiday"/>
+            <result property="allHoliday" column="all_holiday"/>
+            <result property="payWorkHour" column="pay_work_hour"/>
+            <result property="workingAge" column="working_age"/>
+            <result property="overAnnualLeave" column="over_annual_leave"/>
+            <result property="attendanceBonus" column="attendance_bonus"/>
+            <result property="nightSubsidy" column="night_subsidy"/>
+            <result property="mealSubsidy" column="meal_subsidy"/>
+            <result property="otherSubsidy" column="other_subsidy"/>
+            <result property="lateNums" column="late_nums"/>
+            <result property="lateDeduct" column="late_deduct"/>
+            <result property="notClockDeduct" column="not_clock_deduct"/>
+            <result property="earlyDeduct" column="early_deduct"/>
+            <result property="waterElectricityDeduct" column="water_electricity_deduct"/>
+            <result property="otherDeduct" column="other_deduct"/>
+            <result property="empSignature" column="emp_signature"/>
+            <result property="classId" column="class_id"/>
+            <result property="className" column="class_name"/>
+            <result property="statisticsDate" column="statistics_date"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="status" column="status"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.emp_num,
+            entity.non_manager_date,
+            entity.quit_date,
+            entity.final_date,
+            entity.dept_id,
+            entity.dept_name,
+            entity.first_dept_id,
+            entity.first_dept_name,
+            entity.second_dept_id,
+            entity.second_dept_name,
+            entity.district,
+            entity.post_id,
+            entity.post_name,
+            entity.should_attendance,
+            entity.should_public_holiday,
+            entity.actual_attendance,
+            entity.actual_attendance_day,
+            entity.actual_public_holiday,
+            entity.actual_public_holiday_day,
+            entity.legal_public_holiday,
+            entity.work_duration,
+            entity.legal_overtime,
+            entity.general_overtime,
+            entity.lieu_leave,
+            entity.sick_leave,
+            entity.personal_leave,
+            entity.annual_leave,
+            entity.other_leave,
+            entity.absent_leave,
+            entity.previous_holiday,
+            entity.overtime_holiday,
+            entity.all_holiday,
+            entity.pay_work_hour,
+            entity.working_age,
+            entity.over_annual_leave,
+            entity.attendance_bonus,
+            entity.night_subsidy,
+            entity.meal_subsidy,
+            entity.other_subsidy,
+            entity.late_nums,
+            entity.late_deduct,
+            entity.not_clock_deduct,
+            entity.early_deduct,
+            entity.water_electricity_deduct,
+            entity.other_deduct,
+            entity.emp_signature,
+            entity.class_id,
+            entity.class_name,
+            entity.statistics_date,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time,
+            entity.status
+        </sql>
+
+    <select id="selectHrAttendanceStatisticsList" parameterType="com.ruoyi.base.domain.HrAttendanceStatistics" resultMap="HrAttendanceStatisticsResult">
+        select <include refid="baseColumns"/> from t_hr_attendance_statistics entity
+            LEFT JOIN t_hr_emp e ON entity.emp_id = e.emp_id
+            LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+            where  entity.del_flag = '0'
+            AND e.del_flag = 0
+            AND d.del_flag = 0
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+                <if test="empNum != null  and empNum != ''"> and entity.emp_num = #{empNum}</if>
+                <if test="nonManagerDate != null "> and entity.non_manager_date = #{nonManagerDate}</if>
+                <if test="quitDate != null "> and entity.quit_date = #{quitDate}</if>
+                <if test="finalDate != null "> and DATE_FORMAT(entity.final_date,'%Y-%m') = DATE_FORMAT(#{finalDate},'%Y-%m')</if>
+                <if test="deptId != null "> and ( entity.dept_id = #{deptId} or entity.dept_id IN (
+                    SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                    WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0') )</if>
+                <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+                <if test="firstDeptId != null "> and entity.first_dept_id = #{firstDeptId}</if>
+                <if test="firstDeptName != null  and firstDeptName != ''"> and entity.first_dept_name like concat('%', #{firstDeptName}, '%')</if>
+                <if test="secondDeptId != null "> and entity.second_dept_id = #{secondDeptId}</if>
+                <if test="secondDeptName != null  and secondDeptName != ''"> and entity.second_dept_name like concat('%', #{secondDeptName}, '%')</if>
+                <if test="district != null  and district != ''"> and entity.district = #{district}</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+                <if test="shouldAttendance != null "> and entity.should_attendance = #{shouldAttendance}</if>
+                <if test="shouldPublicHoliday != null "> and entity.should_public_holiday = #{shouldPublicHoliday}</if>
+                <if test="actualAttendance != null "> and entity.actual_attendance = #{actualAttendance}</if>
+                <if test="actualAttendanceDay != null "> and entity.actual_attendance_day = #{actualAttendanceDay}</if>
+                <if test="actualPublicHoliday != null "> and entity.actual_public_holiday = #{actualPublicHoliday}</if>
+                <if test="actualPublicHolidayDay != null "> and entity.actual_public_holiday_day = #{actualPublicHolidayDay}</if>
+                <if test="legalPublicHoliday != null "> and entity.legal_public_holiday = #{legalPublicHoliday}</if>
+                <if test="workDuration != null "> and entity.work_duration = #{workDuration}</if>
+                <if test="legalOvertime != null "> and entity.legal_overtime = #{legalOvertime}</if>
+                <if test="generalOvertime != null "> and entity.general_overtime = #{generalOvertime}</if>
+                <if test="lieuLeave != null "> and entity.lieu_leave = #{lieuLeave}</if>
+                <if test="sickLeave != null "> and entity.sick_leave = #{sickLeave}</if>
+                <if test="personalLeave != null "> and entity.personal_leave = #{personalLeave}</if>
+                <if test="annualLeave != null "> and entity.annual_leave = #{annualLeave}</if>
+                <if test="otherLeave != null "> and entity.other_leave = #{otherLeave}</if>
+                <if test="absentLeave != null "> and entity.absent_leave = #{absentLeave}</if>
+                <if test="previousHoliday != null "> and entity.previous_holiday = #{previousHoliday}</if>
+                <if test="overtimeHoliday != null "> and entity.overtime_holiday = #{overtimeHoliday}</if>
+                <if test="allHoliday != null "> and entity.all_holiday = #{allHoliday}</if>
+                <if test="payWorkHour != null "> and entity.pay_work_hour = #{payWorkHour}</if>
+                <if test="workingAge != null "> and entity.working_age = #{workingAge}</if>
+                <if test="overAnnualLeave != null "> and entity.over_annual_leave = #{overAnnualLeave}</if>
+                <if test="attendanceBonus != null "> and entity.attendance_bonus = #{attendanceBonus}</if>
+                <if test="nightSubsidy != null "> and entity.night_subsidy = #{nightSubsidy}</if>
+                <if test="mealSubsidy != null "> and entity.meal_subsidy = #{mealSubsidy}</if>
+                <if test="otherSubsidy != null "> and entity.other_subsidy = #{otherSubsidy}</if>
+                <if test="lateNums != null "> and entity.late_nums = #{lateNums}</if>
+                <if test="lateDeduct != null "> and entity.late_deduct = #{lateDeduct}</if>
+                <if test="notClockDeduct != null "> and entity.not_clock_deduct = #{notClockDeduct}</if>
+                <if test="earlyDeduct != null "> and entity.early_deduct = #{earlyDeduct}</if>
+                <if test="waterElectricityDeduct != null "> and entity.water_electricity_deduct = #{waterElectricityDeduct}</if>
+                <if test="otherDeduct != null "> and entity.other_deduct = #{otherDeduct}</if>
+                <if test="empSignature != null  and empSignature != ''"> and entity.emp_signature = #{empSignature}</if>
+                <if test="classId != null  and classId != ''"> and entity.class_id = #{classId}</if>
+                <if test="className != null  and className != ''"> and entity.class_name = #{className}</if>
+                <if test="statisticsDate != null  and statisticsDate != ''"> and entity.statistics_date = #{statisticsDate}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+          <if test="status != null  and status != ''"> and entity.status = #{status} </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+
+    <update id="deleteHrAttendanceStatisticsById" parameterType="Long">
+        update  t_hr_attendance_statistics set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrAttendanceStatisticsByIds" parameterType="String">
+        update  t_hr_attendance_statistics set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectSingleOneByCondition" resultType="com.ruoyi.base.domain.HrAttendanceStatistics" resultMap="HrAttendanceStatisticsResult" >
+        SELECT
+            *
+        FROM
+            t_hr_attendance_statistics a
+        WHERE
+            1 = 1
+            AND a.emp_id = #{empId}
+            AND a.del_flag =  '0'
+            AND YEAR (a.final_date) = #{year}
+            AND MONTH(a.final_date) = #{month}
+    </select>
+
+    <insert id="insertOrUpdateList" parameterType="HrAttendanceStatistics">
+        insert into t_hr_attendance_statistics (id,emp_id,emp_name,emp_num,non_manager_date,quit_date,final_date
+        ,dept_id,dept_name,first_dept_id,first_dept_name,second_dept_id,second_dept_name,district,post_id,post_name
+        ,should_attendance,should_public_holiday,actual_attendance,actual_attendance_day,actual_public_holiday,actual_public_holiday_day
+        ,legal_public_holiday,work_duration,legal_overtime,general_overtime,lieu_leave,sick_leave,personal_leave,annual_leave,other_leave
+        ,absent_leave,previous_holiday,overtime_holiday,all_holiday,pay_work_hour,working_age,over_annual_leave,attendance_bonus
+        ,night_subsidy,meal_subsidy,other_subsidy,late_nums,late_deduct,not_clock_deduct,early_deduct,water_electricity_deduct,other_deduct
+        ,class_id,class_name,statistics_date,del_flag)
+        values
+        <foreach collection ="list" item="item" separator="," >
+            (#{item.id},#{item.empId},#{item.empName},#{item.empNum},#{item.nonManagerDate},#{item.quitDate},#{item.finalDate}
+            ,#{item.deptId},#{item.deptName},#{item.firstDeptId},#{item.firstDeptName},#{item.secondDeptId},#{item.secondDeptName},#{item.district}
+            ,#{item.postId},#{item.postName},#{item.shouldAttendance},#{item.shouldPublicHoliday},#{item.actualAttendance},#{item.actualAttendanceDay}
+            ,#{item.actualPublicHoliday},#{item.actualPublicHolidayDay},#{item.legalPublicHoliday},#{item.workDuration},#{item.legalOvertime}
+            ,#{item.generalOvertime},#{item.lieuLeave},#{item.sickLeave},#{item.personalLeave},#{item.annualLeave},#{item.otherLeave},#{item.absentLeave}
+            ,#{item.previousHoliday},#{item.overtimeHoliday},#{item.allHoliday},#{item.payWorkHour},#{item.workingAge},#{item.overAnnualLeave},#{item.attendanceBonus}
+            ,#{item.nightSubsidy},#{item.mealSubsidy},#{item.otherSubsidy},#{item.lateNums},#{item.lateDeduct},#{item.notClockDeduct},#{item.earlyDeduct}
+            ,#{item.waterElectricityDeduct},#{item.otherDeduct},#{item.classId},#{item.className},#{item.statisticsDate},#{item.delFlag})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        should_attendance = VALUES(should_attendance),should_public_holiday = VALUES(should_public_holiday),actual_attendance = VALUES(actual_attendance)
+        ,actual_attendance_day = VALUES(actual_attendance_day)
+        ,actual_public_holiday = VALUES(actual_public_holiday),actual_public_holiday_day = VALUES(actual_public_holiday_day),legal_public_holiday = VALUES(legal_public_holiday)
+        ,work_duration = VALUES(work_duration),legal_overtime = VALUES(legal_overtime),general_overtime = VALUES(general_overtime),lieu_leave = VALUES(lieu_leave)
+        ,sick_leave = VALUES(sick_leave),personal_leave = VALUES(personal_leave),annual_leave = VALUES(annual_leave),other_leave = VALUES(other_leave)
+        ,absent_leave = VALUES(absent_leave),previous_holiday = VALUES(previous_holiday),overtime_holiday = VALUES(overtime_holiday),all_holiday = VALUES(all_holiday),pay_work_hour = VALUES(pay_work_hour)
+        ,over_annual_leave = VALUES(over_annual_leave),attendance_bonus = VALUES(attendance_bonus),night_subsidy = VALUES(night_subsidy),meal_subsidy = VALUES(meal_subsidy)
+        ,other_subsidy = VALUES(other_subsidy),late_nums = VALUES(late_nums),late_deduct = VALUES(late_deduct),not_clock_deduct = VALUES(not_clock_deduct)
+        ,early_deduct = VALUES(early_deduct),water_electricity_deduct = VALUES(water_electricity_deduct),other_deduct = VALUES(other_deduct),class_id = VALUES(class_id)
+        ,class_name = VALUES(class_name),statistics_date = VALUES(statistics_date)
+    </insert>
+
+</mapper>

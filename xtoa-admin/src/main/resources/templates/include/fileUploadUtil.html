@@ -1,0 +1,188 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div class="fileUploadUtil" th:fragment="fileUploadUtil(titilUpload,size)">
+
+    <div class="form-group">
+        <input id="attachment" name="attachment" type="hidden" >
+        <label class="col-sm-3 control-label">[[${titilUpload}]]</label>
+        <div class="col-sm-8">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn layui-btn-normal" id="testList">选择文件</button>
+                <div class="layui-upload-list">
+                    <table class="layui-table">
+                        <thead>
+                        <tr><th>文件</th>
+                            <th>大小</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr></thead>
+                        <tbody id="demoList"></tbody>
+                    </table>
+                </div>
+                <button type="button" style="display:none;" class="layui-btn" id="testListAction" >开始上传</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var size = '[[${size}]]';
+
+        document.onreadystatechange = function() 　　//当页面加载状态改变的时候执行function
+        {
+            if(document.readyState == "complete")
+            { 　　//当页面加载状态为完全结束时进入
+
+                layui.use('upload', function (start, end){
+                    var $ = layui.jquery
+                        ,upload = layui.upload;
+
+                    //多文件列表示例
+                    var demoListView = $('#demoList')
+                        , uploadListIns = upload.render({
+                        elem: '#testList'
+                        , url: '/common/upload' //改成您自己的上传接口
+                        , accept: 'file'
+                        , multiple: true
+                        , number: size
+                        , auto: false
+                        , bindAction: '#testListAction'
+                        , choose: function (obj) {
+                            debugger
+
+                            var trSizs = document.getElementById('demoList').getElementsByTagName('tr');
+                            if ((trSizs.length ) >= size){
+                                // $.modal.alertError("同时最多只能上传的数量为：" + size);
+                                layui.layer.msg("同时最多只能上传的数量为：" + size);
+                                return;
+                            }
+
+                            var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                            //读取本地文件
+                            obj.preview(function (index, file, result) {
+
+                                var info = '';
+                                if (result.startsWith('data:image')){
+                                    info = '<img onclick="$.table.imageViewSimp(\''+ result +'\')" src="'+ result +'">';
+                                } else {
+                                    info = '<span> '+ file.name +' </span>';
+                                }
+
+
+                                var tr = $(['<tr id="upload-' + index + '">'
+                                    /*, '<td>' + file.name + '</td>'*/
+                                    , '<td>' + info + '</td>'
+                                    , '<td>' + (file.size / 1024).toFixed(1) + 'kb</td>'
+                                    , '<td>等待上传</td>'
+                                    , '<td>'
+                                    , '<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                                    , '<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                                    , '</td>'
+                                    , '</tr>'].join(''));
+
+                                //单个重传
+                                tr.find('.demo-reload').on('click', function () {
+                                    obj.upload(index, file);
+                                });
+
+                                //删除
+                                tr.find('.demo-delete').on('click', function () {
+                                    delete files[index]; //删除对应的文件
+                                    tr.remove();
+                                    uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                                });
+
+
+
+                                demoListView.append(tr);
+                            });
+                        }
+                        , done: function (res, index, upload) {
+                            if (res.code == 0) { //上传成功
+                                debugger
+                                var tr = demoListView.find('tr#upload-' + index)
+                                    , tds = tr.children();
+                                tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                                tds.eq(3).html(''); //清空操作
+
+                                $('#attachment').val($('#attachment').val() + "," + res.url);
+                                return delete this.files[index]; //删除文件队列已经上传成功的文件
+                            }
+                            this.error(index, upload);
+                        },allDone: function(obj){ //当文件全部被提交后，才触发
+                            console.log("allDone:"+obj.total); //得到总文件数
+                            console.log("allDone:"+obj.successful); //请求成功的文件数
+                            console.log("allDone:"+obj.aborted); //请求失败的文件数
+
+                            //提交表单(引入模板的页面定义)
+                            submitFrom();
+                            // $.operate.save(prefix + "/add", $('#' + formId).serialize());
+                        }
+                        , error: function (index, upload) {
+                            var tr = demoListView.find('tr#upload-' + index)
+                                , tds = tr.children();
+                            tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                            tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                        }
+                    });
+                });
+            }
+        }
+    </script>
+</div>
+    <div class="fileUploadShow" th:fragment="fileUploadShow(obj,titil)">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">[[${titil}]]</label>
+            <div class="col-sm-8">
+                <div class="layui-upload-list">
+                    <table class="layui-table">
+                        <thead>
+                        <tr><th>文件</th>
+                            <th>操作1</th>
+                        </tr></thead>
+                        <tbody th:if=" ${obj.attachment != '' }" id="demoListOld" >
+                            <tr th:each="img : ${#strings.arraySplit(obj.attachment,',')}"  th:id="${#strings.substring(img,30,45)}">
+                                <td  th:switch="${#strings.endsWith(img,'.png')
+                                            || #strings.endsWith(img,'.bmp')
+                                            || #strings.endsWith(img,'.jpg')
+                                            || #strings.endsWith(img,'.tif')
+                                            || #strings.endsWith(img,'.gif')
+                                            || #strings.endsWith(img,'.pcx')
+                                            || #strings.endsWith(img,'.tga')
+                                            || #strings.endsWith(img,'.exif')
+                                            || #strings.endsWith(img,'.fpx')
+                                            || #strings.endsWith(img,'.svg')
+                                            || #strings.endsWith(img,'.psd')
+                                            || #strings.endsWith(img,'.cdr')
+                                            || #strings.endsWith(img,'.pcd')
+                                            || #strings.endsWith(img,'.ufo')
+                                            || #strings.endsWith(img,'.dxf')
+                                            || #strings.endsWith(img,'.eps')
+                                            || #strings.endsWith(img,'.ai')
+                                            || #strings.endsWith(img,'.raw')
+                                            || #strings.endsWith(img,'.WMF')
+                                            || #strings.endsWith(img,'.webp')}">
+                                    <img th:case="true" th:onclick="$.table.imageViewSimp([[${img}]])" th:src="${img}" >
+                                    <span th:case="false"   > [[${img}]] </span>
+                                </td>
+
+                                <td><button class="layui-btn layui-btn-xs layui-btn-danger"
+                                            th:onclick="preview([[${img}]]);" >下载</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function preview(url) {
+                debugger
+                top.location.href = ctx + "common/download/resource?resource=" + url;
+            }
+
+        </script>
+    </div>
+</body>
+</html>

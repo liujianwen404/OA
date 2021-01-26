@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('考勤统计列表')" />
+    <th:block th:include="include :: bootstrap-fileinput-css" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>员工姓名：</label>
+                                <input type="text" name="empName"/>
+                            </li>
+                            <li>
+                                <label>工号：</label>
+                                <input type="text" name="empNum"/>
+                            </li>
+                            <li>
+                                <label>结算日期：</label>
+                                <select name="finalDate">
+                                    <option value="">所有</option>
+                                    <option value="2020-05-31">2020-05</option>
+                                    <option value="2020-06-30">2020-06</option>
+                                    <option value="2020-07-31">2020-07</option>
+                                    <option value="2020-08-31">2020-08</option>
+                                    <option value="2020-09-30">2020-09</option>
+                                    <option value="2020-10-31">2020-10</option>
+                                    <option value="2020-11-30">2020-11</option>
+                                    <option value="2020-12-31">2020-12</option>
+                                </select>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <!--<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="hr:attendance:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="hr:attendance:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:attendance:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>-->
+                <a class="btn btn-info" onclick="openUpload()" shiro:hasPermission="hr:attendance:import">
+                    <i class="fa fa-upload"></i> 导入
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:attendance:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+
+     <!-- 导入区域 -->
+     <div class="container-div" id="hiddenDiv" style="display: none;" >
+         <div class="row">
+             <form class="form-horizontal m" id="form-toolRepeal">
+                 <div class="ibox-content">
+                     <div class="form-group">
+                         <label class="font-noraml">文件上传</label>
+                         <div class="file-loading">
+                             <input id="fileinput" name="files" class="file" type="file" multiple data-min-file-count="1" data-theme="fas">
+                             <input type="hidden" id="month">
+                         </div>
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+    <th:block th:include="include :: footer" />
+     <th:block th:include="include :: bootstrap-fileinput-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:attendance:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:attendance:remove')}]];
+        var prefix = ctx + "hr/attendance";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                importUrl: prefix + "/import",
+                modalName: "考勤统计",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id', 
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'empId', 
+                    title: '员工id',
+                    visible: false
+                },
+                {
+                    field: 'empNum', 
+                    title: '工号'
+                },
+                {
+                    field: 'district',
+                    title: '区域'
+                },
+                {
+                    field: 'deptId', 
+                    title: '部门id',
+                    visible: false
+                },
+                {
+                    field: 'deptName', 
+                    title: '部门名称',
+                    visible: false
+                },
+                {
+                    field: 'firstDeptId', 
+                    title: '一级部门id',
+                    visible: false
+                },
+                {
+                    field: 'firstDeptName', 
+                    title: '一级部门名称'
+                },
+                {
+                    field: 'secondDeptId', 
+                    title: '二级部门id',
+                    visible: false
+                },
+                {
+                    field: 'secondDeptName', 
+                    title: '二级部门名称'
+                },
+                {
+                    field: 'postId', 
+                    title: '岗位id',
+                    visible: false
+                },
+                {
+                    field: 'postName', 
+                    title: '岗位名称'
+                },
+                {
+                    field: 'empName',
+                    title: '员工姓名'
+                },
+                {
+                    field: 'nonManagerDate',
+                    title: '入职日期',
+                    visible: false
+                },
+                {
+                    field: 'quitDate',
+                    title: '离职日期',
+                    visible: false
+                },
+                {
+                    field: 'finalDate',
+                    title: '结算日期'
+                },
+                {
+                    field: 'shouldAttendance',
+                    title: '应出勤',
+                    visible: false
+                },
+                {
+                    field: 'shouldPublicHoliday',
+                    title: '应公休',
+                    visible: false
+                },
+                {
+                    field: 'actualAttendance', 
+                    title: '实出勤',
+                    visible: false
+                },
+                {
+                    field: 'actualPublicHoliday', 
+                    title: '实公休',
+                    visible: false
+                },
+                {
+                    field: 'legalOvertime', 
+                    title: '法定假加班',
+                    visible: false
+                },
+                {
+                    field: 'generalOvertime', 
+                    title: '平时加班',
+                    visible: false
+                },
+                {
+                    field: 'lieuLeave', 
+                    title: '调休',
+                    visible: false
+                },
+                {
+                    field: 'sickLeave', 
+                    title: '病假',
+                    visible: false
+                },
+                {
+                    field: 'personalLeave', 
+                    title: '事假',
+                    visible: false
+                },
+                {
+                    field: 'annualLeave', 
+                    title: '年假',
+                    visible: false
+                },
+                {
+                    field: 'otherLeave', 
+                    title: '产假，陪产假，婚假，丧假',
+                    visible: false
+                },
+                {
+                    field: 'absentLeave', 
+                    title: '旷工',
+                    visible: false
+                },
+                {
+                    field: 'previousHoliday',
+                    title: '上月累计余假'
+                },
+                {
+                    field: 'overtimeHoliday', 
+                    title: '本月存休'
+                },
+                {
+                    field: 'allHoliday', 
+                    title: '本月累计余假'
+                },
+                {
+                    field: 'payWorkHour', 
+                    title: '计薪工时'
+                },
+                {
+                    field: 'workingAge', 
+                    title: '工龄'
+                },
+                {
+                    field: 'overAnnualLeave', 
+                    title: '剩余年假'
+                },
+                {
+                    field: 'attendanceBonus', 
+                    title: '全勤奖'
+                },
+                {
+                    field: 'nightSubsidy', 
+                    title: '夜班补贴'
+                },
+                {
+                    field: 'mealSubsidy', 
+                    title: '餐补'
+                },
+                {
+                    field: 'otherSubsidy', 
+                    title: '其他补贴',
+                    visible: false
+                },
+                {
+                    field: 'lateDeduct', 
+                    title: '迟到扣费'
+                },
+                {
+                    field: 'notClockDeduct', 
+                    title: '补卡/未打卡'
+                },
+                {
+                    field: 'earlyDeduct',
+                    title: '早退扣费'
+                },
+                {
+                    field: 'waterElectricityDeduct', 
+                    title: '水电扣费',
+                    visible: false
+                },
+                {
+                    field: 'otherDeduct', 
+                    title: '其他扣费',
+                    visible: false
+                },
+                {
+                    field: 'empSignature', 
+                    title: '员工签名',
+                    visible: false
+                },
+                {
+                    field: 'createId', 
+                    title: '创建者id',
+                    visible: false
+                },
+                {
+                    field: 'updateId', 
+                    title: '更新者id',
+                    visible: false
+                },
+                {
+                    field: 'remark', 
+                    title: '备注',
+                    visible: false
+                },
+                /*{
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }*/]
+            };
+            $.table.init(options);
+        });
+
+        function openUpload(){
+            layer.open({
+                type: 1,
+                area: ['1200px', '600px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: "上传文件",
+                content: $('#hiddenDiv'),
+                btn: '关闭',
+                closeBtn: 1,
+                // 弹层外区域关闭
+                shadeClose: false,
+                btn1:function(index, layero){
+                    window.location.reload();
+                },
+                cancel: function(){
+                    window.location.reload();
+                }
+            });
+
+        }
+
+        var uploadUrl = prefix + "/importData";
+        $("#fileinput").fileinput({
+            theme: 'explorer-fas',
+            uploadAsync: false, //关闭异步上传，改为同步上传，异步情况下多文件上传会请求后台接口多次。
+            uploadUrl: uploadUrl,
+            overwriteInitial: false,    //不允许覆盖初始的预览，所以添加文件时不会覆盖
+            initialPreviewAsData: true, // 确定你是否仅发送预览数据，而不是原始标记
+            allowedFileExtensions: ["xlsx", "xls"],  //允许的文件后缀
+            dropZoneTitle:'<p style="color: #a02828">文件上传顺序为：每日统计（请假、加班、补卡） ==> 月度汇总 ==> 考勤假期数据</p>',
+            layoutTemplates: {
+                actionUpload: '', //去除上传预览缩略图中的上传图片
+                actionZoom:'',   //去除上传预览缩略图中的查看详情预览的缩略图标
+                actionDownload:'' ,//去除上传预览缩略图中的下载图标
+                /*actionDelete:'', //去除上传预览的缩略图中的删除图标*/
+            },
+        }).on('filebatchuploadsuccess', function(event,data,previewId,index) {//同步上传回调
+            if(data.response.code == 0){
+                $.modal.alertSuccess(data.response.msg);
+            }else if(data.response.code == 500){
+                $.modal.alertError(data.response.msg);
+            }else {
+                $.modal.alertWarning(data.response.msg);
+            }
+        });
+
+    </script>
+</body>
+
+</html>

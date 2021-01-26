@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.TrainingPlanMapper">
+    
+    <resultMap type="TrainingPlan" id="TrainingPlanResult">
+        <result property="id"    column="id"    />
+        <result property="planId"    column="plan_id"    />
+        <result property="img"    column="img"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="principal"    column="principal"    />
+        <result property="trainingExplain"    column="training_explain"    />
+        <result property="releaseTime"    column="release_time"    />
+        <result property="plan"    column="plan"    />
+        <result property="createId"    column="create_id"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectTrainingPlanVo">
+        select id, plan_id, img, name, type, principal, training_explain, release_time, plan, create_id, update_id, create_by, update_by, remark, del_flag, create_time, update_time from t_hr_training_plan
+    </sql>
+
+    <select id="selectTrainingPlanList" parameterType="TrainingPlan" resultMap="TrainingPlanResult">
+        <include refid="selectTrainingPlanVo"/>
+        <where>  
+            <if test="planId != null  and planId != ''"> and plan_id = #{planId}</if>
+            <if test="img != null  and img != ''"> and img = #{img}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="principal != null  and principal != ''"> and principal = #{principal}</if>
+            <if test="trainingExplain != null  and trainingExplain != ''"> and training_explain = #{trainingExplain}</if>
+            <if test="releaseTime != null "> and release_time = #{releaseTime}</if>
+            <if test="plan != null  and plan != ''"> and plan = #{plan}</if>
+            <if test="createId != null "> and create_id = #{createId}</if>
+            <if test="updateId != null "> and update_id = #{updateId}</if>
+            and del_flag = 0
+        </where>
+    </select>
+    
+    <select id="selectTrainingPlanById" parameterType="Long" resultMap="TrainingPlanResult">
+        <include refid="selectTrainingPlanVo"/>
+        where id = #{id}
+        and del_flag = 0
+    </select>
+        
+    <insert id="insertTrainingPlan" parameterType="TrainingPlan" useGeneratedKeys="true" keyProperty="id">
+        insert into t_hr_training_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="planId != null  and planId != ''">plan_id,</if>
+            <if test="img != null  and img != ''">img,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="type != null  and type != ''">type,</if>
+            <if test="principal != null  and principal != ''">principal,</if>
+            <if test="trainingExplain != null  and trainingExplain != ''">training_explain,</if>
+            <if test="releaseTime != null ">release_time,</if>
+            <if test="plan != null  and plan != ''">plan,</if>
+            <if test="createId != null ">create_id,</if>
+            <if test="updateId != null ">update_id,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="planId != null  and planId != ''">#{planId},</if>
+            <if test="img != null  and img != ''">#{img},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="type != null  and type != ''">#{type},</if>
+            <if test="principal != null  and principal != ''">#{principal},</if>
+            <if test="trainingExplain != null  and trainingExplain != ''">#{trainingExplain},</if>
+            <if test="releaseTime != null ">#{releaseTime},</if>
+            <if test="plan != null  and plan != ''">#{plan},</if>
+            <if test="createId != null ">#{createId},</if>
+            <if test="updateId != null ">#{updateId},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">0,</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTrainingPlan" parameterType="TrainingPlan">
+        update t_hr_training_plan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="planId != null  and planId != ''">plan_id = #{planId},</if>
+            <if test="img != null  and img != ''">img = #{img},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="type != null  and type != ''">type = #{type},</if>
+            <if test="principal != null  and principal != ''">principal = #{principal},</if>
+            <if test="trainingExplain != null  and trainingExplain != ''">training_explain = #{trainingExplain},</if>
+            <if test="releaseTime != null ">release_time = #{releaseTime},</if>
+            <if test="plan != null  and plan != ''">plan = #{plan},</if>
+            <if test="createId != null ">create_id = #{createId},</if>
+            <if test="updateId != null ">update_id = #{updateId},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteTrainingPlanById" parameterType="Long">
+        update  t_hr_training_plan set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteTrainingPlanByIds" parameterType="String">
+        update t_hr_training_plan set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    
+</mapper>

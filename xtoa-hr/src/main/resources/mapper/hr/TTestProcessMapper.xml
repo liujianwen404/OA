@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.TTestProcessMapper">
+    <resultMap type="com.ruoyi.base.domain.TTestProcess" id="TTestProcessResult">
+        <id property="id" column="id"/>
+            <result property="title" column="title"/>
+            <result property="attachment" column="attachment"/>
+            <result property="path" column="path"/>
+            <result property="empId" column="emp_id"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+            <result property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="applyUserName" column="apply_user_name"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+            <result property="auditStatus" column="audit_status"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.title,
+            entity.attachment,
+            entity.path,
+            entity.emp_id,
+            entity.dept_id,
+            entity.dept_name,
+            entity.post_id,
+            entity.post_name,
+            entity.instance_id,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.apply_user_name,
+            entity.del_flag,
+            entity.remark,
+            entity.audit_status
+        </sql>
+
+    <select id="selectTTestProcessList" parameterType="com.ruoyi.base.domain.TTestProcess" resultMap="TTestProcessResult">
+        select <include refid="baseColumns"/> from t_test_process entity
+        where  entity.del_flag = '0'
+            <if test="title != null  and title != ''"> and entity.title = #{title}</if>
+                <if test="attachment != null  and attachment != ''"> and entity.attachment = #{attachment}</if>
+                <if test="path != null  and path != ''"> and entity.path = #{path}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+                <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+                <if test="postId != null "> and entity.post_id = #{postId}</if>
+                <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+                <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+                <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+                <if test="auditStatus != null  and auditStatus != ''"> and entity.audit_status = #{auditStatus}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteTTestProcessById" parameterType="Long">
+        update  t_test_process set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteTTestProcessByIds" parameterType="String">
+        update  t_test_process set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('人事审批')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-leave-edit" th:object="${entity}">
+            <input name="taskId" th:field="*{taskId}" type="hidden">
+            <input name="interpolateId" th:field="*{interpolateId}" type="hidden">
+            <input type="hidden" name="p_COM_comment" />
+            <div class="form-group" style="background-color: beige">
+                <h3>推荐人信息</h3>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">推荐人姓名：</label>
+                <div class="col-sm-2">
+                    <input name="" th:field="${userVO.loginName}" class="form-control " readonly="readonly" type="text" required>
+                    <input name="empName" id="empNameForUserName" type="hidden">
+                </div>
+                <!-- 下面三个属性不用保存到数据库，通过createrId可以获取  -->
+                <label class="col-sm-1 control-label is-required">分部：</label>
+                <div class="col-sm-2">
+                    <input name="" class="form-control " readonly="readonly" th:field="${userVO.parentDeptName}" type="text" required>
+                </div>
+                <label class="col-sm-1 control-label is-required">部门：</label>
+                <div class="col-sm-2">
+                    <input name="" class="form-control " readonly="readonly" th:field="${userVO.deptName}" type="text" required>
+                </div>
+                <label class="col-sm-1 control-label is-required">岗位：</label>
+                <div class="col-sm-2">
+                    <input name="" class="form-control " readonly="readonly" th:field="${userVO.postNmae}" type="text" >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">入职时间：</label>
+                <div class="col-sm-3">
+                    <input name="" class="form-control " readonly="readonly" th:field="${userVO.nonManagerDate}" type="text" >
+                </div>
+                <label class="col-sm-1 control-label is-required">推荐关系：</label>
+                <div class="col-sm-3">
+                    <input name="interpolateRelation" class="form-control" th:field="*{interpolateRelation}" type="text" required>
+                </div>
+
+            </div>
+            <div class="form-group" style="background-color: beige">
+                <h3>被推荐人信息</h3>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">被推荐人姓名：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateName" th:field="*{interpolateName}" class="form-control" type="text" required>
+                </div>
+                <label class="col-sm-1 control-label">生日：</label>
+                <div class="col-sm-2">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="birthday" th:value="${#dates.format(entity.birthday, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+                <label class="col-sm-1 control-label">性别：</label>
+                <div class="col-sm-2">
+                    <select name="interpolateSex" class="form-control m-b" th:with="type=${@dict.getType('sys_user_sex')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{interpolateSex}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">籍贯：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateNativePlace" th:field="*{interpolateNativePlace}" class="form-control" type="text" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label">学历：</label>
+                <div class="col-sm-2">
+                    <select name="interpolateEducation" class="form-control m-b" th:with="type=${@dict.getType('sys_education')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{interpolateEducation}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">工作年限：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateJobYear" class="form-control" th:field="*{interpolateJobYear}" type="text" required>
+                </div>
+                <label class="col-sm-1 control-label">推荐岗位：</label>
+                <div class="col-sm-2">
+                    <select name="interpolatePostId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" required>
+
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}" th:field="*{interpolatePostId}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">手机号码：</label>
+                <div class="col-sm-2">
+                    <input name="phonenumber" class="form-control"  th:field="*{phonenumber}"  type="text" required>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">现居住地：</label>
+                <div class="col-sm-2">
+                    <input name="interpolateResidence"  th:field="*{interpolateResidence}" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label is-required">简历：</label>
+                <div class="col-sm-2">
+                    <a class="btn btn-success " href="javascript:void(0)" onclick="preview()">下载</a>
+                </div>
+            </div>
+
+
+            <hr />
+            <div class="form-group taskItem">
+                <label class="col-sm-3 control-label" for="hrApproved">审批意见：</label>
+                <div class="col-sm-8">
+                    <select name="p_B_hrApproved" id="hrApproved" class="form-control m-b" required>
+                        <option value="true">同意</option>
+                        <option value="false">拒绝</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group taskItem">
+                <label class="col-sm-3 control-label">批注：</label>
+                <div class="col-sm-8">
+                    <textarea name="comment" class="form-control" ></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container-div"  style="height: initial;">
+        <div class="row">
+            <div class="col-sm-12 search-collapse" hidden>
+                <form id="role-form">
+                    <input type="hidden" id="instanceId" name="instanceId" th:value="${entity.instanceId}">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                任务名称：<input type="text" name="activityName"/>
+                            </li>
+                            <li>
+                                办理人ID：<input type="text" name="assignee"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search('role-form' , 'bootstrap-table' )"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset('role-form' , 'bootstrap-table')"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-12 select-table ">
+                <table id="bootstrap-table" ></table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "hr/interpolate";
+        $("#form-leave-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                if ($('textarea[name="comment"]').val()) {
+                    $('input[name="p_COM_comment"]').val($('textarea[name="comment"]').val());
+                }
+                var taskId = [[${taskId}]];
+                $.operate.save(prefix + "/complete/" + taskId, $('#form-leave-edit').serialize());
+            }
+        }
+
+        $("input[name='startTime']").datetimepicker({
+            autoclose: true
+        });
+
+        $("input[name='endTime']").datetimepicker({
+            autoclose: true
+        });
+
+        $(function () {
+
+            $('select[name="type"]').prop('disabled', true);
+
+            for (var i = 0; i < document.getElementsByTagName("select").length; i++) {
+                var documentName =  document.getElementsByTagName("select")[i];
+                if (documentName.id != "hrApproved") {
+                    documentName.disabled = true;
+                }
+            }
+            //审批意见
+            debugger
+            $.common.openTaskCommens($("#instanceId").val(),'role-form');
+        });
+
+
+        function preview() {
+            var url = '[[${entity.resume}]]';
+            window.location.href = ctx + "common/download/resource?resource=" + url;
+
+        }
+    </script>
+    <script th:inline="javascript">
+        var prefixhistory = ctx + "process/general";
+        for (var i = 0; i < document.getElementsByTagName("input").length; i++) {
+            var inputDocument = document.getElementsByTagName("input")[i];
+            if (inputDocument.name != 'activityName'
+                && inputDocument.name != 'assignee'
+                && inputDocument.name != 'interpolateId'){
+                inputDocument.disabled = true;
+            }
+        }
+        for (var i = 0; i < document.getElementsByTagName("textarea").length; i++) {
+            var textareaDocument = document.getElementsByTagName("textarea")[i];
+            if (textareaDocument.name != 'comment'){
+                textareaDocument.disabled = true;
+            }
+        }
+        for (var i = 0; i < document.getElementsByTagName("select").length; i++) {
+            var selectDocument = document.getElementsByTagName("select")[i];
+            if (selectDocument.name != 'p_B_hrApproved'){
+                selectDocument.disabled = true;
+            }
+        }
+
+    </script>
+</body>
+</html>

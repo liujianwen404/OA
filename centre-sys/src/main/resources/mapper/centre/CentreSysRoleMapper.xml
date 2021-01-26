@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.CentreSysRoleMapper">
+    <resultMap type="com.ruoyi.system.domain.CentreSysRole" id="CentreSysRoleResult">
+        <id property="id" column="id"/>
+            <result property="centreSysId" column="centre_sys_id"/>
+            <result property="oaRoleId" column="oa_role_id"/>
+            <result property="roleName" column="role_name"/>
+            <result property="roleId" column="role_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.centre_sys_id,
+            entity.oa_role_id,
+            entity.role_name,
+            entity.role_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_by,
+            entity.update_time,
+            entity.remark
+        </sql>
+
+    <select id="selectCentreSysRoleList" parameterType="com.ruoyi.system.domain.CentreSysRole" resultMap="CentreSysRoleResult">
+        select <include refid="baseColumns"/> from centre_sys_role entity
+        <where>
+            <if test="oaRoleId != null "> and entity.oa_role_id = #{oaRoleId}</if>
+            <if test="roleName != null  and roleName != ''"> and entity.role_name like concat('%', #{roleName}, '%')</if>
+            <if test="roleId != null "> and entity.role_id = #{roleId}</if>
+            <if test="centreSysId != null "> and entity.centre_sys_id = #{centreSysId}</if>
+        </where>
+    </select>
+
+
+    <delete id="deleteCentreSysRoleById" parameterType="Long">
+        delete FROM  centre_sys_role where id = #{id}
+    </delete>
+
+    <delete id="deleteCentreSysRoleByIds" parameterType="String">
+        delete FROM  centre_sys_role where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

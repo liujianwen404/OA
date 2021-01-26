@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('薪资结构列表')" />
+    <th:block th:include="include :: bootstrap-fileinput-css" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                           <!-- <li>
+                                <label>原始薪资结构id：</label>
+                                <input type="text" name="oldId"/>
+                            </li>-->
+                            <li>
+                                <label>员工姓名：</label>
+                                <input type="text" name="empName"/>
+                            </li>
+                            <div th:include="include/deptSearch::deptSearch"></div>
+                            <li>
+                                <label>岗位：</label>
+                                <select id="postId" class="form-control m-b" name="postId" th:with="postAll=${@postService.getPostAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                                </select>
+                            </li>
+                            <li >
+                                <div class="layui-inline">
+                                    <label >日期: </label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="monthDate" class="layui-input" id="test3" placeholder="yyyy-MM">
+                                    </div>
+                                </div>
+                                <!--<label>日期：</label>
+                                <input type="text" class="time-input" placeholder="日期" name="monthDate"/>-->
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group" >
+
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:salaryStructure:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+                <div th:replace="include/importUtil::importUtil('/hr/salaryStructure/downloadTemplate','/hr/salaryStructure/importData','/hr/salaryStructure/checkUrl','/hr/salaryStructure/exportErrorList','/hr/salaryStructure/exportError')"
+                     shiro:hasPermission="hr:salaryStructure:export" ></div>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+     <!-- 导入区域 -->
+     <div class="container-div" id="hiddenDiv" style="display: none;" >
+         <div class="row">
+             <form class="form-horizontal m" id="form-toolRepeal">
+                 <div class="ibox-content">
+                     <div class="form-group">
+                         <label class="font-noraml">文件上传</label>
+                         <div class="file-loading">
+                             <input id="fileinput" name="files" class="file" type="file" multiple data-min-file-count="1" data-theme="fas">
+                             <input type="hidden" id="month">
+                         </div>
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+    <th:block th:include="include :: footer" />
+     <th:block th:include="include :: bootstrap-fileinput-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:salaryStructure:edit')}]];
+        // var removeFlag = [[${@permission.hasPermi('hr:salaryStructure:remove')}]];
+        var prefix = ctx + "hr/salaryStructure";
+
+        $(function() {
+            var options = {
+                url: prefix + "/listInfo",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "薪资结构",
+                columns: [
+                {
+                    field: 'id',
+                    title: '薪资结构',
+                    visible: false
+                },
+                {
+                    field: 'oldId',
+                    title: '原始薪资结构id',
+                    visible: false
+                },
+                {
+                    field: 'empId',
+                    title: '员工id',
+                    visible: false
+                },{
+                        field: 'monthDate',
+                        title: '月份'
+                    },{
+                        field: 'company',
+                        title: '归属公司'
+                    },
+                    {
+                        field: 'empNum',
+                        title: '工号'
+                    },
+                    {
+                        field: 'empName',
+                        title: '姓名'
+                    },
+                    {
+                        field: 'deptName1',
+                        title: '一级部门'
+                    },
+                    {
+                        field: 'deptName2',
+                        title: '二级部门'
+                    },
+                    {
+                        field: 'postName',
+                        title: '岗位'
+                    },
+                    {
+                        field: 'nonManagerDate',
+                        title: '入职日期'
+                    },
+                    {
+                        field: 'payGrade',
+                        title: '薪酬等级'
+                    },
+                    {
+                        field: 'attGroup',
+                        title: '上班时间'
+                    },
+                    {
+                        field: 'basic',
+                        title: '基本工资'
+                    },
+                    {
+                        field: 'performanceBonus',
+                        title: '绩效奖金标准'
+                    },
+                    {
+                        field: 'overtimePay',
+                        title: '加班费'
+                    },
+                    {
+                        field: 'allowance',
+                        title: '岗位津贴'
+                    },
+                    {
+                        field: 'otherSubsidies',
+                        title: '其他补贴'
+                    },
+
+                    {
+                        field: 'shouldAttendance',
+                        title: '应出勤工时'
+                    },
+                    {
+                        field: 'actualAttendance',
+                        title: '实出勤工时'
+                    },
+
+
+
+
+                    {
+                        field: 'basicActual',
+                        title: '基本工资',
+                        visible: false
+                    },
+                    {
+                        field: 'performanceBonusActual',
+                        title: '绩效奖金标准',
+                        visible: false
+                    },
+                    {
+                        field: 'overtimePayActual',
+                        title: '加班费',
+                        visible: false
+                    },
+                    {
+                        field: 'allowanceActual',
+                        title: '岗位津贴',
+                        visible: false
+                    },
+                    {
+                        field: 'otherSubsidiesActual',
+                        title: '其他补贴',
+                        visible: false
+                    },
+
+
+
+
+                    {
+                        field: 'amortization',
+                        title: '提成',
+                        visible: false
+                    },
+                    {
+                        field: 'attendanceBonus',
+                        title: '全勤奖',
+                        visible: false
+                    },
+                    {
+                        field: 'nightAllowance',
+                        title: '夜班补贴',
+                        visible: false
+                    },
+                    {
+                        field: 'overtimeActual',
+                        title: '加班费',
+                        visible: false
+                    },
+                    {
+                        field: 'laballot',
+                        title: '应发合计'
+                    },
+                    {
+                        field: 'deductionForUtilities',
+                        title: '水电费扣款',
+                        visible: false
+                    },
+                    {
+                        field: 'deductionForOther',
+                        title: '其他扣款',
+                        visible: false
+                    },
+                    {
+                        field: 'pretaxIncome',
+                        title: '税前所得'
+                    },
+                    {
+                        field: 'socialSecurity',
+                        title: '个人社保',
+                        visible: false
+                    },
+                    {
+                        field: 'accumulationFund',
+                        title: '个人公积金',
+                        visible: false
+                    },
+                    {
+                        field: 'tallage',
+                        title: '个税',
+                        visible: false
+                    },
+                    {
+                        field: 'netPayroll',
+                        title: '实发工资'
+                    }
+
+
+
+
+
+                    ]
+            };
+            $.table.init(options);
+
+            layui.use('laydate', function(){
+                var laydate = layui.laydate;
+                //年月选择器
+                laydate.render({
+                    elem: '#test3'
+                    ,type: 'month'
+                });
+            });
+
+        });
+        function openUpload(){
+            layer.open({
+                type: 1,
+                area: ['1200px', '600px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: "上传文件",
+                content: $('#hiddenDiv'),
+                btn: '关闭',
+                closeBtn: 1,
+                // 弹层外区域关闭
+                shadeClose: false,
+                btn1:function(index, layero){
+                    window.location.reload();
+                },
+                cancel: function(){
+                    window.location.reload();
+                }
+            });
+
+        }
+        function addProcess(id) {
+            layer.open({
+                type: 2,
+                area: [800 + 'px', ($(window).height() - 50) + 'px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: title,
+                content: prefix + "/edit/" + id,
+                btn: ['确定', '关闭'],
+                // 弹层外区域关闭
+                shadeClose: false,
+                yes: callback,
+                end: function() {
+                    let callback = function(index, layero) {
+                        var iframeWin = layero.find('iframe')[0];
+                        iframeWin.contentWindow.submitHandler(index, layero);
+                    }
+
+                    callback();
+                },
+                cancel: function(index) {
+                    return true;
+                }
+            });
+        }
+        var uploadUrl = prefix + "/importData";
+        $("#fileinput").fileinput({
+            theme: 'explorer-fas',
+            uploadAsync: false, //关闭异步上传，改为同步上传，异步情况下多文件上传会请求后台接口多次。
+            uploadUrl: uploadUrl,
+            overwriteInitial: false,    //不允许覆盖初始的预览，所以添加文件时不会覆盖
+            initialPreviewAsData: true, // 确定你是否仅发送预览数据，而不是原始标记
+            allowedFileExtensions: ["xlsx", "xls"],  //允许的文件后缀
+            dropZoneTitle:'<p style="color: #a02828">将文档放到此处上传</p>',
+            layoutTemplates: {
+                actionUpload: '', //去除上传预览缩略图中的上传图片
+                actionZoom:'',   //去除上传预览缩略图中的查看详情预览的缩略图标
+                actionDownload:'' ,//去除上传预览缩略图中的下载图标
+                /*actionDelete:'', //去除上传预览的缩略图中的删除图标*/
+            },
+        }).on('filebatchuploadsuccess', function(event,data,previewId,index) {//同步上传回调
+            if(data.response.code == 0){
+                $.modal.alertSuccess(data.response.msg);
+            }else if(data.response.code == 500){
+                $.modal.alertError(data.response.msg);
+            }else {
+                $.modal.alertWarning(data.response.msg);
+            }
+        });
+
+        function operateEdit(id, auditFlag, w) {
+
+            if (auditFlag){
+                $.modal.alertWarning("有正在审批的薪资调整申请，不能重复提交！");
+                return;
+            }
+
+            $.operate.edit(id,w);
+        }
+
+        /*layui.use('laydate', function () {
+            var com = layui.laydate;
+            $(".time-input").each(function (index, item) {
+                var time = $(item);
+                // 控制控件外观
+                var type = time.attr("data-type") || 'date';
+                // 控制回显格式
+                var format = time.attr("data-format") || 'yyyy-MM-dd';
+                // 控制日期控件按钮
+                var buttons = time.attr("data-btn") || 'clear|now|confirm', newBtnArr = [];
+                // 日期控件选择完成后回调处理
+                var callback = time.attr("data-callback") || {};
+                if (buttons) {
+                    if (buttons.indexOf("|") > 0) {
+                        var btnArr = buttons.split("|"), btnLen = btnArr.length;
+                        for (var j = 0; j < btnLen; j++) {
+                            if ("clear" === btnArr[j] || "now" === btnArr[j] || "confirm" === btnArr[j]) {
+                                newBtnArr.push(btnArr[j]);
+                            }
+                        }
+                    } else {
+                        if ("clear" === buttons || "now" === buttons || "confirm" === buttons) {
+                            newBtnArr.push(buttons);
+                        }
+                    }
+                } else {
+                    newBtnArr = ['clear', 'now', 'confirm'];
+                }
+                com.render({
+                    elem: item,
+                    theme: 'molv',
+                    trigger: 'click',
+                    type: type,
+                    format: format,
+                    btns: newBtnArr,
+                    done: function (value, data) {
+                        if (typeof window[callback] != 'undefined'
+                            && window[callback] instanceof Function) {
+                            window[callback](value, data);
+                        }
+                    }
+                });
+            });
+        });
+        */
+    </script>
+</body>
+</html>

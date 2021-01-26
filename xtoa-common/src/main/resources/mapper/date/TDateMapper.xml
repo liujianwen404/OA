@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.common.utils.data.mapper.TDateMapper">
+    <resultMap type="com.ruoyi.common.utils.data.domain.TDate" id="TDateResult">
+        <id property="id" column="id"/>
+            <result property="day" column="day"/>
+            <result property="flag" column="flag"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.day,
+            entity.flag
+        </sql>
+
+    <select id="selectTDateList" parameterType="com.ruoyi.common.utils.data.domain.TDate" resultMap="TDateResult">
+        select <include refid="baseColumns"/> from t_date entity
+        <where>
+            <if test="day != null "> and entity.day = #{day}</if>
+                <if test="flag != null  and flag != ''"> and entity.flag = #{flag}</if>
+            <if test="params.beginDay != null and params.beginDay != ''"><!-- 开始时间检索 -->
+                and date_format(day,'%y%m%d') &gt;= date_format(#{params.beginDay},'%y%m%d')
+            </if>
+            <if test="params.endDay != null and params.endDay != ''"><!-- 结束时间检索 -->
+                and date_format(day,'%y%m%d') &lt;= date_format(#{params.endDay},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+
+    <update id="deleteTDateById" parameterType="Long">
+        update  t_date set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteTDateByIds" parameterType="String">
+        update  t_date set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="changeStatus">
+        update  t_date set flag =  #{flag} where id = #{id}
+    </update>
+
+    <select id="selectDateCounts" resultType="Integer">
+        SELECT count(1) FROM t_date d
+        WHERE d.`day`&gt;= DATE_FORMAT(#{startTime},'%Y-%m-%d')
+        AND d.`day`&lt;=DATE_FORMAT(#{endTime},'%Y-%m-%d')
+        AND D.flag = '0'
+    </select>
+
+    <select id="selectAllLegalPublicHoliday" resultType="double">
+        SELECT
+            COUNT( 1 )
+        FROM
+            t_date a
+        WHERE
+            a.flag = '1'
+            AND YEAR ( a.`day` ) = #{year}
+            AND MONTH ( a.`day` ) = #{month}
+    </select>
+
+    <select id="selectIsLegalDay" resultType="int">
+        SELECT
+            COUNT( 1 )
+        FROM
+            t_date a
+        WHERE
+            a.flag = '1'
+            AND  a.`day` = #{day}
+    </select>
+
+</mapper>

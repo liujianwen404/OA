@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrBusinessTripSonMapper">
+    <resultMap type="com.ruoyi.base.domain.HrBusinessTripSon" id="HrBusinessTripSonResult">
+        <id property="id" column="id"/>
+            <result property="parentId" column="parent_id"/>
+            <result property="name" column="name"/>
+            <result property="type" column="type"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+            <result property="totalTimes" column="total_times"/>
+            <result property="vehicle" column="vehicle"/>
+            <result property="journey" column="journey"/>
+            <result property="departCity" column="depart_city"/>
+            <result property="destinationCity" column="destination_city"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.parent_id,
+            entity.name,
+            entity.type,
+            entity.start_time,
+            entity.end_time,
+            entity.total_times,
+            entity.vehicle,
+            entity.journey,
+            entity.depart_city,
+            entity.destination_city,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag
+        </sql>
+
+    <select id="selectHrBusinessTripSonList" parameterType="com.ruoyi.base.domain.HrBusinessTripSon" resultMap="HrBusinessTripSonResult">
+        select <include refid="baseColumns"/> from t_hr_business_trip_son entity
+        where  entity.del_flag = '0'
+            <if test="parentId != null "> and entity.parent_id = #{parentId}</if>
+                <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+                <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+                <if test="startTime != null "> and entity.start_time = #{startTime}</if>
+                <if test="endTime != null "> and entity.end_time = #{endTime}</if>
+                <if test="totalTimes != null "> and entity.total_times = #{totalTimes}</if>
+                <if test="vehicle != null  and vehicle != ''"> and entity.vehicle = #{vehicle}</if>
+                <if test="journey != null  and journey != ''"> and entity.journey = #{journey}</if>
+                <if test="departCity != null  and departCity != ''"> and entity.depart_city = #{departCity}</if>
+                <if test="destinationCity != null  and destinationCity != ''"> and entity.destination_city = #{destinationCity}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteHrBusinessTripSonById" parameterType="Long">
+        update  t_hr_business_trip_son set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrBusinessTripSonByIds" parameterType="String">
+        update  t_hr_business_trip_son set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

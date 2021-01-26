@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('简历列表')" />
+    <th:block th:include="include :: select2-css" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>简历名称：</p>
+                                <input type="text" name="resumeName"/>
+                            </li>
+                            <li>
+                                <p>姓名：</p>
+                                <input type="text" name="name"/>
+                            </li>
+                            <li>
+                                <p>手机号码：</p>
+                                <input type="text"  maxlength="11" name="phone"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="hr:resume:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:resume:export">
+                    <i class="fa fa-download"></i> 导出
+                 </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+     <th:block th:include="include :: select2-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:resume:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:resume:remove')}]];
+        var prefix = ctx + "hr/resume";
+        // var datas = [[${@dict.getType('biz_leave_type')}]];
+        var currentUser = [[${currentUser}]];
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                detailUrl: prefix + "/edit/{id}",
+                sortName: "createTime",
+                sortOrder: "desc",
+                modalName: "简历",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'id',
+                    title : '主键ID',
+                    visible: false
+                },
+                {
+                    field : 'resumeName',
+                    title : '简历名称',
+                },
+                {
+                    field : 'name',
+                    title : '姓名'
+                },
+                {
+                    field : 'email',
+                    title : '邮箱'
+                },
+                {
+                    field : 'phone',
+                    title : '手机号码'
+                },
+                {
+                    field : 'sex',
+                    title : '性别'
+                },
+                {
+                    field : 'nativePlace',
+                    title : '籍贯'
+                },
+                {
+                    field : 'birthday',
+                    title : '出生日期'
+                },
+                {
+                    field: 'createBy',
+                    title: '创建人ID',
+                    visible: false
+                },
+                {
+                    field: 'createUserName',
+                    title: '创建人'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        // if (row.instanceId) {
+                        //     actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-eye"></i> 表单数据</a> ');
+                        //     actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showHistoryDialog(\'' + row.instanceId + '\')"><i class="fa fa-list"></i> 审批历史</a> ');
+                        //     actions.push('<a class="btn btn-info btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="showProcessImgDialog(\'' + row.instanceId + '\')"><i class="fa fa-image"></i> 进度查看</a> ');
+                        // } else {
+                        //     actions.push('<a class="btn btn-success btn-xs" href="javascript:void(0)" onclick="submitApply(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-user"></i> 提交申请</a> ');
+                        //     actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="editForm(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-edit"></i> 编辑</a> ');
+                        //     actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="removeForm(\'' + row.id + '\',\'' + row.createBy + '\')"><i class="fa fa-remove"></i> 删除</a>');
+                        // }
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function submitApply(id, createBy) {
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人提交申请！");
+                return;
+            }
+            $.modal.confirm("确认要提交申请吗?", function() {
+                var url = prefix + "/submitApply";
+                var data = { "id": id };
+                $.operate.submit(url, "post", "json", data);
+            });
+        }
+
+        function editForm(id, createBy) {
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人编辑表单！");
+                return;
+            }
+            $.operate.edit(id);
+        }
+
+        function removeForm(id, createBy) {
+            if (createBy !== currentUser.loginName) {
+                $.modal.alertWarning("不允许非创建人删除表单！");
+                return;
+            }
+            $.operate.remove(id);
+        }
+
+        /* 查看审批历史 */
+        function showHistoryDialog(instanceId) {
+            var url = ctx + 'process/general/historyList/' + instanceId;
+            $.modal.open("查看审批历史", url);
+        }
+
+        function showProcessImgDialog(instanceId) {
+            var url = ctx + 'process/general/processImg/' + instanceId;
+            $.modal.open("查看流程图 (标红表示已结束或活动中的流程)", url);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('财务付款审批')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-payment-task" th:object="${financePayment}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <input name="taskId" th:field="*{taskId}" type="hidden">
+            <input type="hidden" name="p_COM_comment" />
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请人：</label>
+                <div class="col-sm-8">
+                    <input name="applyUserName" th:field="*{applyUserName}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="createTime" th:value="${#dates.format(financePayment.createTime, 'yyyy-MM-dd HH:mm')}" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">付款事由：</label>
+                <div class="col-sm-8">
+                    <textarea name="reason" class="form-control" maxlength="20" readonly>[[*{reason}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label"><span style="color: red; ">*</span>付款公司类型：</label>
+                <div class="col-sm-8">
+                    <select name="companyType" class="form-control m-b" th:with="companyType=${@dict.getType('paymentCompanyType')}" required>
+                        <option th:each="dict : ${companyType}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{companyType}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">付款类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b" th:with="type=${@dict.getType('paymentType')}" disabled>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{type}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">付款总额：</label>
+                <div class="col-sm-8">
+                    <input name="amount" th:field="*{amount}" class="form-control" type="number" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">付款方式：</label>
+                <div class="col-sm-8">
+                    <select name="mode" class="form-control m-b" th:with="type=${@dict.getType('paymentMode')}" disabled>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{mode}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">支付日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="paymentDate" th:value="${#dates.format(financePayment.paymentDate, 'yyyy-MM-dd')}"  disabled  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">支付对象：</label>
+                <div class="col-sm-8">
+                    <input name="object" th:field="*{object}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">开户行：</label>
+                <div class="col-sm-8">
+                    <input name="bank" th:field="*{bank}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">银行账户：</label>
+                <div class="col-sm-8">
+                    <input name="account" th:field="*{account}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">附件：</label>
+                <div id="fileInsert" class="col-sm-8">
+                    <!-- 这里是文件插入位置 -->
+                </div>
+                <input id="attachment" name="attachment" class="form-control" type="hidden">
+            </div>
+
+            <hr />
+
+            <div class="form-group taskItem">
+                <label class="col-sm-3 control-label" for="approved">审批意见：</label>
+                <div class="col-sm-8">
+                    <select name="p_B_approved" id="approved" class="form-control m-b">
+                        <option value="true">同意</option>
+                        <option value="false">拒绝</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group taskItem">
+                <label class="col-sm-3 control-label">批注：</label>
+                <div class="col-sm-8">
+                    <textarea name="comment" class="form-control" ></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container-div"  style="height: initial;">
+        <div class="row">
+            <div class="col-sm-12 search-collapse" hidden>
+                <form id="role-form">
+                    <input type="hidden" id="instanceId" name="instanceId" th:value="${financePayment.instanceId}">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                任务名称：<input type="text" name="activityName"/>
+                            </li>
+                            <li>
+                                办理人ID：<input type="text" name="assignee"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search('role-form' , 'bootstrap-table' )"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset('role-form' , 'bootstrap-table')"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-12 select-table ">
+                <table id="bootstrap-table" ></table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js" />
+    <th:block th:include="include :: bootstrap-fileinput-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "hr/payment";
+        $("#form-payment-task").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                if ($('textarea[name="comment"]').val()) {
+                    $('input[name="p_COM_comment"]').val($('textarea[name="comment"]').val());
+                }
+                var taskId = [[${taskId}]];
+                $.operate.save(prefix + "/complete/" + taskId, $('#form-payment-task').serialize());
+            }
+        }
+
+        $("input[name='startTime']").datetimepicker({
+            autoclose: true
+        });
+
+        $("input[name='endTime']").datetimepicker({
+            autoclose: true
+        });
+
+        $(document).ready(function () {
+            debugger
+            let attachments = [[${financePayment.attachment}]]
+            let paths = [[${financePayment.path}]]
+            if(paths != "" && paths != null && paths != '""'){
+                let attachmentArray = $.common.trimSpace(attachments.split(";"));
+                let pathArray = $.common.trimSpace(paths.split(";"));
+                for(let i=0;i<pathArray.length;i++){
+                    var divHtml = document.createElement('div');
+                    var aHtml = document.createElement('a');
+                    aHtml.innerHTML = attachmentArray[i];
+                    $(aHtml).attr('href',pathArray[i]);
+                    $(aHtml).attr('style','color:blue');
+                    $(aHtml).attr('download',attachmentArray[i]);
+                    $(divHtml).append(aHtml).append("<br/>");
+                    $("#fileInsert").append(divHtml);
+                }
+            }
+
+        });
+
+    </script>
+
+    <script th:inline="javascript">
+        var prefixhistory = ctx + "process/general";
+
+        $(function() {
+            var options = {
+                url: prefixhistory + "/listHistory",
+                fromId: 'role-form',
+                queryParams: queryParams,
+                sortName: "createTime",
+                sortOrder: "desc",
+                modalName: "审批历史",
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                clickToSelect: false,
+                rememberSelected: false,
+                columns: [{
+                    field: 'activityId',
+                    title: '活动ID',
+                    visible: false
+                },
+                    {
+                        field: 'activityName',
+                        title: '任务名称'
+                    },
+                    {
+                        field: 'assignee',
+                        title: '处理人ID',
+                        visible: true
+                    },
+                    {
+                        field: 'assigneeName',
+                        title: '处理人'
+                    },
+                    {
+                        field: 'isApproved',
+                        title: '审批状态'
+                    },
+                    {
+                        field: 'comment',
+                        title: '审批意见'
+                    },
+                    {
+                        field: 'startTime',
+                        title: '开始时间'
+                    },
+                    {
+                        field: 'endTime',
+                        title: '结束时间'
+                    },
+                    {
+                        field: 'durationInMillis',
+                        title: '耗时',
+                        formatter: function(value, row, index) {
+                            if (!value) return '未知';
+                            return formatTotalDateSub(value / 1000);
+                        }
+                    }]
+            };
+            $.table.init(options);
+        });
+
+        function queryParams(params) {
+            var search = $.table.queryParams(params);
+            search.instanceId = $("#instanceId").val();
+            return search;
+        }
+
+    </script>
+</body>
+</html>

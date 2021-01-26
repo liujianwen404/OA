@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('人事审批')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-leave-edit" th:object="${nonManager}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <input name="taskId" th:field="*{taskId}" type="hidden">
+            <input type="hidden" name="p_COM_comment" />
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请人：</label>
+                <div class="col-sm-8">
+                    <input name="applyUserName" th:field="*{createBy}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="applyTime" th:value="${#dates.format(nonManager.createTime, 'yyyy-MM-dd HH:mm')}" class="form-control" type="text" disabled>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">入职人姓名：</label>
+                <div class="col-sm-8">
+                    <input name="nonManager" th:field="*{nonManager}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">入职日期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="nonManagerDate" th:value="${#dates.format(nonManager.nonManagerDate, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">入职岗位：</label>
+                <div class="col-sm-8">
+                    <!--<input name="nonManagerPostId" th:field="*{nonManagerPostId}" class="form-control" type="text" required>-->
+                    <select id="nonManagerPostId" name="nonManagerPostId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" readonly>
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}" th:field="*{nonManagerPostId}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">入职部门：</label>
+                <div class="col-sm-8">
+                    <!--<input name="nonManagerDeptId" th:field="*{nonManagerDeptId}" class="form-control" type="text" required>-->
+                    <select id="nonManagerDeptId" name="nonManagerDeptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" readonly>
+                        <option value="">所有</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:field="*{nonManagerDeptId}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">生日：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="birthday" th:value="${#dates.format(nonManager.birthday, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">用户性别：</label>
+                <div class="col-sm-8">
+                    <select name="sex" class="form-control m-b" th:with="type=${@dict.getType('sys_user_sex')}" readonly>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{sex}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">院校：</label>
+                <div class="col-sm-8">
+                    <input name="recruitSchools" th:field="*{recruitSchools}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">教育背景：</label>
+                <div class="col-sm-8">
+                    <select name="recruitEducation" class="form-control m-b" th:with="type=${@dict.getType('sys_education')}" readonly>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{recruitEducation}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">专业技能：</label>
+                <div class="col-sm-8">
+                    <input name="recruitSkill" th:field="*{recruitSkill}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">工作年限：</label>
+                <div class="col-sm-8">
+                    <input name="recruitJobDescription" th:field="*{recruitJobDescription}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+
+
+            <hr />
+            <div class="form-group taskItem">
+                <label class="col-sm-3 control-label is-required" for="hrApproved">审批意见：</label>
+                <div class="col-sm-8">
+                    <select name="p_B_hrApproved" id="hrApproved" class="form-control m-b" required>
+                        <option value="true">同意</option>
+                        <option value="false">拒绝</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group taskItem">
+                <a href="#comment" id="maodian"><span id="mo2g"><span></a>
+                <label class="col-sm-3 control-label">批注：</label>
+                <div class="col-sm-8">
+                    <textarea id="comment" name="comment" class="form-control" ></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="container-div " style="height: initial;">
+        <div class="row">
+            <div class="col-sm-12 search-collapse" hidden>
+                <form id="role-form">
+                    <input type="hidden" id="instanceId" name="instanceId" th:value="${nonManager.instanceId}">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                任务名称：<input type="text" name="activityName"/>
+                            </li>
+                            <li>
+                                办理人ID：<input type="text" name="assignee"/>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search('role-form' , 'bootstrap-table' )"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset('role-form' , 'bootstrap-table')"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-12 select-table ">
+                <table id="bootstrap-table" ></table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js" />
+    <script th:inline="javascript">
+        var prefix = ctx + "hr/manager";
+        $("#form-leave-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            debugger
+            $('#mo2g').click();
+            if ($.validate.form()) {
+                if ($('textarea[name="comment"]').val()) {
+                    $('input[name="p_COM_comment"]').val($('textarea[name="comment"]').val());
+                }
+                var taskId = [[${taskId}]];
+                $.operate.save(prefix + "/complete/" + taskId, $('#form-leave-edit').serialize());
+            }
+        }
+
+        $("input[name='startTime']").datetimepicker({
+            autoclose: true
+        });
+
+        $("input[name='endTime']").datetimepicker({
+            autoclose: true
+        });
+
+        $(function () {
+
+            $('select[name="type"]').prop('disabled', true);
+
+            for (var i = 0; i < document.getElementsByTagName("select").length; i++) {
+                var documentName =  document.getElementsByTagName("select")[i];
+                if (documentName.id != "hrApproved") {
+                    documentName.disabled = true;
+                }
+            }
+            //审批意见
+            debugger
+            $.common.openTaskCommens($("#instanceId").val(),'role-form');
+        });
+    </script>
+
+</body>
+</html>

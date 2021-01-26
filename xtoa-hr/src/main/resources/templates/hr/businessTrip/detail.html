@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('出差申请表单数据')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-trip-edit" th:object="${hrBusinessTrip}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}" th:selected="${dept.getDeptId() == hrEmp?.deptId}" th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:selected="${post.getPostId() == hrEmp?.postId}" th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请人：</label>
+                <div class="col-sm-8">
+                    <input name="applyUser" th:field="*{applyUserName}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="applyTime" th:value="${#dates.format(hrBusinessTrip.applyTime, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">出差事由：</label>
+                <div class="col-sm-8">
+                    <textarea name="reason" class="form-control" readonly>[[*{reason}]]</textarea>
+                </div>
+            </div>
+
+            <div id="body">
+            <div th:each="hrBusinessTripSon,stat: ${hrBusinessTripSons}">
+                <input th:attr="name='hrBusinessTripSon'+${stat.count}" th:value="${hrBusinessTripSon.id}" type="hidden">
+                <div th:id="'body['+${stat.count}+']'">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">行程(<span th:text="${stat.count}"></span>)</label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">交通工具：</label>
+                        <div class="col-sm-8">
+                            <select th:attr="name='vehicle'+${stat.count}" class="form-control m-b" disabled>
+                                <option th:text="飞机" th:selected="${hrBusinessTripSon.vehicle == '1'}"  th:value="1"></option>
+                                <option th:text="火车" th:selected="${hrBusinessTripSon.vehicle == '2'}"  th:value="2"></option>
+                                <option th:text="汽车" th:selected="${hrBusinessTripSon.vehicle == '3'}"  th:value="3"></option>
+                                <option th:text="其他" th:selected="${hrBusinessTripSon.vehicle == '4'}"  th:value="4"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">单程往返：</label>
+                        <div class="col-sm-8">
+                            <select th:attr="name='journey'+${stat.count}" class="form-control m-b" disabled>
+                                <option th:text="单程" th:selected="${hrBusinessTripSon.journey == '1'}"  th:value="1"></option>
+                                <option th:text="往返" th:selected="${hrBusinessTripSon.journey == '2'}"  th:value="2"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">出发城市：</label>
+                        <div class="col-sm-8">
+                            <input th:attr="name='departCity'+${stat.count}" class="form-control" readonly type="text" th:value="${hrBusinessTripSon.departCity}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">目的城市：</label>
+                        <div class="col-sm-8">
+                            <input th:attr="name='destinationCity'+${stat.count}" class="form-control" readonly type="text" th:value="${hrBusinessTripSon.destinationCity}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">开始时间：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input th:id="'startTime'+${stat.count}" th:attr="name='startTime'+${stat.count}" disabled class="form-control calcTotalSecondInput" th:value="${#dates.format(hrBusinessTripSon.startTime, 'yyyy-MM-dd HH:mm')}" readonly="readonly" placeholder="yyyy-MM-dd HH:mm:ss" type="text" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">结束时间：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group date">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input th:id="'endTime'+${stat.count}" th:attr="name='endTime'+${stat.count}" disabled class="form-control calcTotalSecondInput" th:value="${#dates.format(hrBusinessTripSon.endTime, 'yyyy-MM-dd HH:mm')}" placeholder="yyyy-MM-dd HH:mm:ss" readonly="readonly" type="text" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">时长，单位小时：</label>
+                        <div class="col-sm-8">
+                            <input th:id="'totalTimes'+${stat.count}" th:attr="name='totalTimes'+${stat.count}" class="form-control" type="text" th:value="${hrBusinessTripSon.totalTimes}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <input name="count" class="form-control" type="hidden">
+
+            <br/><br/>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">出差总时长：</label>
+                <div class="col-sm-8">
+                    <input name="days" th:field="*{days}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">出差备注：</label>
+                <div class="col-sm-8">
+                    <textarea name="remark" class="form-control" readonly>[[*{remark}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">同行人：</label>
+                <div class="col-sm-8">
+                    <input name="partner" th:field="*{partner}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">出差类型：</label>
+                <div class="col-sm-8">
+                    <select name="type" class="form-control m-b" disabled>
+                        <option value="">请选择</option>
+                        <option value="0" th:selected="*{type == '0'}">省内</option>
+                        <option value="1" th:selected="*{type == '1'}">省外</option>
+                    </select>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+</body>
+</html>

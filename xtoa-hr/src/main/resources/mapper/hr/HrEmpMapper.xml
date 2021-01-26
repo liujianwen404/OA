@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrEmpMapper">
+    
+    <resultMap type="com.ruoyi.base.domain.HrEmp" id="THrEmpResult">
+        <result property="empId"    column="emp_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="empStatus"    column="emp_status"    />
+        <result property="empName"    column="emp_name"    />
+        <result property="email"    column="email"    />
+        <result property="phonenumber"    column="phonenumber"    />
+        <result property="sex"    column="sex"    />
+        <result property="ethnic"    column="ethnic"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="health"    column="health"    />
+        <result property="nowResidence"    column="now_residence"    />
+        <result property="education"    column="education"    />
+        <result property="nationality"    column="nationality"    />
+        <result property="idNumber"    column="id_number"    />
+        <result property="information"    column="information"    />
+        <result property="description"    column="description"    />
+        <result property="city"    column="city"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="postId"    column="post_id"    />
+        <result property="createId"    column="create_id"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+
+        <result property="empNum"    column="emp_num"    />
+        <result property="nonManagerDate"    column="non_manager_date"    />
+        <result property="positiveDate"    column="positive_date"    />
+        <result property="quitDate"    column="quit_date"    />
+
+
+        <result property="contactsRelation"    column="contacts_relation"    />
+        <result property="contactsName"    column="contacts_name"    />
+        <result property="contactsPhone"    column="contacts_phone"    />
+        <result property="contactsAddresss"    column="contacts_addresss"    />
+        <result property="major"    column="major"    />
+        <result property="certificate"    column="certificate"    />
+        <result property="graduationDate"    column="graduation_date"    />
+        <result property="bankBranch"    column="bank_branch"    />
+        <result property="bankNumber"    column="bank_number"    />
+
+        <result property="address"    column="address"    />
+        <result property="graduation"    column="graduation"    />
+        <result property="familyMember"    column="family_member"    />
+        <result property="marriage"    column="marriage"    />
+
+        <result property="socialSecurity"    column="social_security"    />
+        <result property="providentFund"    column="provident_fund"    />
+
+
+        <result property="trialEnd"    column="trial_end"    />
+        <result property="trial"    column="trial"    />
+
+
+        <result property="quitReason"    column="quit_reason"    />
+        <result property="isQuit"    column="is_quit"    />
+        <result property="trialSalary"    column="trial_salary"    />
+        <result property="conversionSalary"    column="conversion_salary"    />
+        <result property="categor"    column="categor"    />
+        <result property="recruiter"    column="recruiter"    />
+        <result property="internaler"    column="internaler"    />
+
+        <result property="postLevel"    column="post_level"    />
+        <result property="postRank"    column="post_rank"    />
+        <result property="rank"    column="rank"    />
+
+        <!--虚拟字段-->
+        <result property="photo"    column="photo"    />
+
+
+    </resultMap>
+
+    <sql id="selectTHrEmpVo">
+        select emp_id, user_id, emp_status, emp_name, email, phonenumber, sex, ethnic, birthday, health,
+         now_residence, education, nationality, id_number, information, description, city, dept_id, post_id,
+          create_id, update_id, create_by, update_by, remark, del_flag, create_time,
+          update_time,emp_num,non_manager_date,positive_date,quit_date,
+          contacts_relation,contacts_name,contacts_phone,contacts_addresss,major,certificate,graduation_date,
+          bank_branch,bank_number,address,graduation,family_member,marriage,
+          social_security,provident_fund
+          ,trial_end,trial
+          ,quit_reason,is_quit,trial_salary,conversion_salary,categor,recruiter,internaler
+          ,post_rank,rank,post_level,photo
+           from t_hr_emp
+    </sql>
+
+
+    <select id="selectTHrEmpList" parameterType="HrEmp" resultMap="THrEmpResult">
+        select * from t_hr_emp entity
+        LEFT JOIN sys_dept d ON entity.dept_id = d.dept_id
+        <where>
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+            <if test="userId != null "> and entity.user_id = #{userId}</if>
+            <if test="empStatus != null "> and entity.emp_status = #{empStatus}</if>
+            <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+            <if test="email != null  and email != ''"> and entity.email = #{email}</if>
+            <if test="phonenumber != null  and phonenumber != ''"> and entity.phonenumber = #{phonenumber}</if>
+            <if test="sex != null  and sex != ''"> and entity.sex = #{sex}</if>
+            <if test="ethnic != null  and ethnic != ''"> and entity.ethnic = #{ethnic}</if>
+            <if test="birthday != null "> and entity.birthday = #{birthday}</if>
+            <if test="health != null  and health != ''"> and entity.health = #{health}</if>
+            <if test="nowResidence != null  and nowResidence != ''"> and entity.now_residence = #{nowResidence}</if>
+            <if test="education != null  and education != ''"> and entity.education = #{education}</if>
+            <if test="nationality != null  and nationality != ''"> and entity.nationality = #{nationality}</if>
+            <if test="idNumber != null  and idNumber != ''"> and entity.id_number = #{idNumber}</if>
+            <if test="information != null  and information != ''"> and entity.information = #{information}</if>
+            <if test="description != null  and description != ''"> and entity.description = #{description}</if>
+            <if test="city != null  and city != ''"> and entity.city like concat('%', #{city}, '%')</if>
+            <if test="deptId != null "> and ( entity.dept_id = #{deptId} or entity.dept_id IN (
+                SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0') )</if>
+            <if test="postId != null "> and entity.post_id = #{postId}</if>
+            <if test="createId != null "> and entity.create_id = #{createId}</if>
+            <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+            <if test="empNum != null and empNum != '' "> and entity.emp_num = #{empNum}</if>
+
+            <if test="contactsRelation != null  and contactsRelation != ''"> and entity.contacts_relation = #{contactsRelation}</if>
+            <if test="contactsName != null  and contactsName != ''"> and entity.contacts_name like concat('%', #{contactsName}, '%')</if>
+            <if test="contactsPhone != null  and contactsPhone != ''"> and entity.contacts_phone = #{contactsPhone}</if>
+            <if test="contactsAddresss != null  and contactsAddresss != ''"> and entity.contacts_addresss = #{contactsAddresss}</if>
+            <if test="major != null  and major != ''"> and entity.major = #{major}</if>
+            <if test="certificate != null  and certificate != ''"> and entity.certificate = #{certificate}</if>
+            <if test="graduationDate != null "> and entity.graduation_date = #{graduationDate}</if>
+            <if test="bankBranch != null  and bankBranch != ''"> and entity.bank_branch = #{bankBranch}</if>
+            <if test="bankNumber != null  and bankNumber != ''"> and entity.bank_number = #{bankNumber}</if>
+
+            <if test="address != null  and address != ''"> and entity.address like concat('%', #{address}, '%') </if>
+            <if test="graduation != null "> and entity.graduation like concat('%', #{graduation}, '%') </if>
+            <if test="familyMember != null  and familyMember != ''"> and entity.family_member = #{familyMember}</if>
+            <if test="marriage != null  and marriage != ''"> and entity.marriage = #{marriage}</if>
+
+            <if test="nonManagerStartDate != null and nonManagerEndDate != null">
+                    and entity.non_manager_date &gt;= #{nonManagerStartDate}
+                    and entity.non_manager_date &lt;= #{nonManagerEndDate}
+             </if>
+            <if test="positiveStartDate != null and positiveEndDate != null">
+                    and entity.positive_date &gt;= #{positiveStartDate}
+                    and entity.positive_date &lt;= #{positiveEndDate}
+             </if>
+            <if test="quitDate != null">
+                and entity.quit_date = #{quitDate}
+            </if>
+            and entity.del_flag = 0
+            AND d.del_flag = 0
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by entity.create_time desc
+    </select>
+    
+    <select id="selectTHrEmpById" parameterType="Long" resultMap="THrEmpResult">
+        <include refid="selectTHrEmpVo"/>
+        where emp_id = #{empId}
+    </select>
+
+    <select id="selectHrEmpByEmpNum" parameterType="String" resultMap="THrEmpResult">
+        <include refid="selectTHrEmpVo"/>
+        where emp_num = #{empNum} and del_flag = 0 and is_quit='0'
+    </select>
+
+    <select id="selectByPhonenumber" resultMap="THrEmpResult">
+        <include refid="selectTHrEmpVo"/>  where phonenumber = #{phonenumber} and del_flag = 0 and is_quit='0'
+    </select>
+    <select id="selectByEmail" resultMap="THrEmpResult">
+        <include refid="selectTHrEmpVo"/>  where email = #{email} and del_flag = 0
+    </select>
+    <select id="selectByIdNumber" resultMap="THrEmpResult">
+        <include refid="selectTHrEmpVo"/>  where id_number = #{idNumber} and del_flag = 0  and is_quit='0'
+    </select>
+    <select id="selectByUserId" resultMap="THrEmpResult">
+        <include refid="selectTHrEmpVo"/>  where user_id = #{userId}
+    </select>
+    <select id="selectListZtree" resultType="com.ruoyi.base.domain.VO.HrEmpVo">
+            select he.emp_id as empId,
+            he.user_id as userId,
+            he.emp_name as empName,
+            he.dept_id as deptId,
+            sd.dept_name as deptName,
+            he.post_id as postId,
+            sp.post_name as postName,
+            he.emp_num as empNum,
+            he.non_manager_date as nonManagerDate,
+            sd.parent_id as parentId,
+            sd2.dept_name as deptPName
+            from t_hr_emp he
+            left join sys_post sp on he.post_id = sp.post_id
+            left join sys_dept sd on he.dept_id = sd.dept_id
+            left join sys_dept sd2 on sd.parent_id = sd2.dept_id
+            where he.del_flag = 0
+    </select>
+
+    <insert id="insertTHrEmp" parameterType="HrEmp" useGeneratedKeys="true" keyProperty="empId">
+        insert into t_hr_emp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="empStatus != null ">emp_status,</if>
+            <if test="empName != null  and empName != ''">emp_name,</if>
+            <if test="email != null  and email != ''">email,</if>
+            <if test="phonenumber != null  and phonenumber != ''">phonenumber,</if>
+            <if test="sex != null  and sex != ''">sex,</if>
+            <if test="ethnic != null  and ethnic != ''">ethnic,</if>
+            <if test="birthday != null ">birthday,</if>
+            <if test="health != null  and health != ''">health,</if>
+            <if test="nowResidence != null  and nowResidence != ''">now_residence,</if>
+            <if test="education != null  and education != ''">education,</if>
+            <if test="nationality != null  and nationality != ''">nationality,</if>
+            <if test="idNumber != null  and idNumber != ''">id_number,</if>
+            <if test="information != null  and information != ''">information,</if>
+            <if test="description != null  and description != ''">description,</if>
+            <if test="city != null  and city != ''">city,</if>
+            <if test="deptId != null ">dept_id,</if>
+            <if test="postId != null ">post_id,</if>
+            <if test="createId != null ">create_id,</if>
+            <if test="updateId != null ">update_id,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+
+            <if test="empNum != null "> emp_num ,</if>
+            <if test="nonManagerDate != null "> non_manager_date ,</if>
+            <if test="positiveDate != null "> positive_date,</if>
+            <if test="quitDate != null "> quit_date,</if>
+
+            <if test="contactsRelation != null  and contactsRelation != ''"> contacts_relation,</if>
+            <if test="contactsName != null  and contactsName != ''"> contacts_name ,</if>
+            <if test="contactsPhone != null  and contactsPhone != ''"> contacts_phone ,</if>
+            <if test="contactsAddresss != null  and contactsAddresss != ''"> contacts_addresss,</if>
+            <if test="major != null  and major != ''"> major ,</if>
+            <if test="certificate != null  and certificate != ''"> certificate ,</if>
+            <if test="graduationDate != null "> graduation_date ,</if>
+            <if test="bankBranch != null  and bankBranch != ''"> bank_branch ,</if>
+            <if test="bankNumber != null  and bankNumber != ''"> bank_number ,</if>
+
+
+            <if test="address != null  and address != ''"> address,</if>
+            <if test="graduation != null "> graduation, </if>
+            <if test="familyMember != null  and familyMember != ''"> family_member ,</if>
+            <if test="marriage != null  and marriage != ''">marriage ,</if>
+
+            <if test="socialSecurity != null  and socialSecurity != ''"> social_security ,</if>
+            <if test="providentFund != null  and providentFund != ''">provident_fund ,</if>
+
+            <if test="trialEnd != null"> trial_end ,</if>
+            <if test="trial != null  and trial != ''">trial ,</if>
+
+
+            <if test="quitReason != null and quitReason != '' "> quit_reason ,</if>
+            <if test="isQuit != null and isQuit != '' ">is_quit ,</if>
+            <if test="trialSalary != null"> trial_salary ,</if>
+            <if test="conversionSalary != null">conversion_salary ,</if>
+            <if test="categor != null and categor != ''  ">categor ,</if>
+            <if test="recruiter != null"> recruiter ,</if>
+            <if test="internaler != null ">internaler ,</if>
+
+            <if test="postLevel != null ">post_level ,</if>
+            <if test="postRank != null ">post_rank ,</if>
+            <if test="rank != null ">rank ,</if>
+
+            <if test="photo != null ">photo ,</if>
+
+
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="empStatus != null ">#{empStatus},</if>
+            <if test="empName != null  and empName != ''">#{empName},</if>
+            <if test="email != null  and email != ''">#{email},</if>
+            <if test="phonenumber != null  and phonenumber != ''">#{phonenumber},</if>
+            <if test="sex != null  and sex != ''">#{sex},</if>
+            <if test="ethnic != null  and ethnic != ''">#{ethnic},</if>
+            <if test="birthday != null ">#{birthday},</if>
+            <if test="health != null  and health != ''">#{health},</if>
+            <if test="nowResidence != null  and nowResidence != ''">#{nowResidence},</if>
+            <if test="education != null  and education != ''">#{education},</if>
+            <if test="nationality != null  and nationality != ''">#{nationality},</if>
+            <if test="idNumber != null  and idNumber != ''">#{idNumber},</if>
+            <if test="information != null  and information != ''">#{information},</if>
+            <if test="description != null  and description != ''">#{description},</if>
+            <if test="city != null  and city != ''">#{city},</if>
+            <if test="deptId != null ">#{deptId},</if>
+            <if test="postId != null ">#{postId},</if>
+            <if test="createId != null ">#{createId},</if>
+            <if test="updateId != null ">#{updateId},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+
+            <if test="empNum != null "> #{empNum},</if>
+            <if test="nonManagerDate != null "> #{nonManagerDate},</if>
+            <if test="positiveDate != null "> #{positiveDate},</if>
+            <if test="quitDate != null "> #{quitDate},</if>
+
+            <if test="contactsRelation != null  and contactsRelation != ''"> #{contactsRelation},</if>
+            <if test="contactsName != null  and contactsName != ''"> #{contactsName},</if>
+            <if test="contactsPhone != null  and contactsPhone != ''">  #{contactsPhone},</if>
+            <if test="contactsAddresss != null  and contactsAddresss != ''">  #{contactsAddresss},</if>
+            <if test="major != null  and major != ''">  #{major},</if>
+            <if test="certificate != null  and certificate != ''">  #{certificate},</if>
+            <if test="graduationDate != null ">  #{graduationDate},</if>
+            <if test="bankBranch != null  and bankBranch != ''"> #{bankBranch},</if>
+            <if test="bankNumber != null  and bankNumber != ''">  #{bankNumber},</if>
+
+            <if test="address != null  and address != ''"> #{address},</if>
+            <if test="graduation != null "> #{graduation}, </if>
+            <if test="familyMember != null  and familyMember != ''"> #{familyMember} ,</if>
+            <if test="marriage != null  and marriage != ''">#{marriage} ,</if>
+
+            <if test="socialSecurity != null  and socialSecurity != ''"> #{socialSecurity} ,</if>
+            <if test="providentFund != null  and providentFund != ''"> #{providentFund} ,</if>
+
+            <if test="trialEnd != null"> #{trialEnd} ,</if>
+            <if test="trial != null  and trial != ''">#{trial} ,</if>
+
+            <if test="quitReason != null and quitReason != '' "> #{quitReason} ,</if>
+            <if test="isQuit != null and isQuit != '' ">#{isQuit} ,</if>
+            <if test="trialSalary != null"> #{trialSalary} ,</if>
+            <if test="conversionSalary != null">#{conversionSalary} ,</if>
+            <if test="categor != null and categor != ''  ">#{categor} ,</if>
+            <if test="recruiter != null"> #{recruiter} ,</if>
+            <if test="internaler != null ">#{internaler} ,</if>
+
+            <if test="postLevel != null ">#{postLevel} ,</if>
+            <if test="postRank != null ">#{postRank} ,</if>
+
+            <if test="rank != null ">#{rank} ,</if>
+
+            <if test="photo != null ">#{photo} ,</if>
+
+
+        </trim>
+    </insert>
+
+    <update id="updateTHrEmp" parameterType="HrEmp">
+        update t_hr_emp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="empStatus != null ">emp_status = #{empStatus},</if>
+            <if test="empName != null  and empName != ''">emp_name = #{empName},</if>
+            <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="phonenumber != null  and phonenumber != ''">phonenumber = #{phonenumber},</if>
+            <if test="sex != null  and sex != ''">sex = #{sex},</if>
+            <if test="ethnic != null  and ethnic != ''">ethnic = #{ethnic},</if>
+            <if test="birthday != null ">birthday = #{birthday},</if>
+            <if test="health != null  and health != ''">health = #{health},</if>
+            <if test="nowResidence != null  and nowResidence != ''">now_residence = #{nowResidence},</if>
+            <if test="education != null  and education != ''">education = #{education},</if>
+            <if test="nationality != null  and nationality != ''">nationality = #{nationality},</if>
+            <if test="idNumber != null  and idNumber != ''">id_number = #{idNumber},</if>
+            <if test="information != null  and information != ''">information = #{information},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+            <if test="city != null  and city != ''">city = #{city},</if>
+            <if test="deptId != null ">dept_id = #{deptId},</if>
+            <if test="postId != null ">post_id = #{postId},</if>
+            <if test="createId != null ">create_id = #{createId},</if>
+            <if test="updateId != null ">update_id = #{updateId},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+
+            <if test="empNum != null and empNum != ''"> emp_num = #{empNum},</if>
+            <if test="nonManagerDate != null "> non_manager_date = #{nonManagerDate},</if>
+            <if test="positiveDate != null "> positive_date = #{positiveDate},</if>
+            <if test="quitDate != null "> quit_date = #{quitDate},</if>
+
+            <if test="contactsRelation != null  and contactsRelation != ''"> contacts_relation = #{contactsRelation},</if>
+            <if test="contactsName != null  and contactsName != ''"> contacts_name = #{contactsName},</if>
+            <if test="contactsPhone != null  and contactsPhone != ''"> contacts_phone = #{contactsPhone},</if>
+            <if test="contactsAddresss != null  and contactsAddresss != ''"> contacts_addresss = #{contactsAddresss},</if>
+            <if test="major != null  and major != ''"> major = #{major},</if>
+            <if test="certificate != null  and certificate != ''"> certificate = #{certificate},</if>
+            <if test="graduationDate != null "> graduation_date = #{graduationDate},</if>
+            <if test="bankBranch != null  and bankBranch != ''"> bank_branch = #{bankBranch},</if>
+            <if test="bankNumber != null  and bankNumber != ''"> bank_number = #{bankNumber},</if>
+
+            <if test="address != null  and address != ''"> address = #{address},</if>
+            <if test="graduation != null "> graduation = #{graduation}, </if>
+            <if test="familyMember != null  and familyMember != ''"> family_member = #{familyMember} ,</if>
+            <if test="marriage != null  and marriage != ''">marriage = #{marriage} ,</if>
+
+            <if test="socialSecurity != null  and socialSecurity != ''">social_security = #{socialSecurity} ,</if>
+            <if test="providentFund != null  and providentFund != ''"> provident_fund = #{providentFund} ,</if>
+
+
+            <if test="trialEnd != null"> trial_end  = #{trialEnd},</if>
+            <if test="trial != null  and trial != ''">trial = #{trial} ,</if>
+
+            <if test="quitReason != null and quitReason != '' "> quit_reason = #{quitReason} ,</if>
+            <if test="isQuit != null and isQuit != '' ">is_quit  = #{isQuit},</if>
+            <if test="trialSalary != null"> trial_salary  = #{trialSalary},</if>
+            <if test="conversionSalary != null">conversion_salary = #{conversionSalary} ,</if>
+            <if test="categor != null and categor != ''  ">categor = #{categor} ,</if>
+            <if test="recruiter != null"> recruiter = #{recruiter} ,</if>
+            <if test="internaler != null ">internaler = #{internaler} ,</if>
+
+            <if test="postLevel != null ">post_level = #{postLevel} ,</if>
+            <if test="postRank != null ">post_rank = #{postRank} ,</if>
+            <if test="rank != null ">rank = #{rank} ,</if>
+            <if test="photo != null ">photo = #{photo} ,</if>
+        </trim>
+        where emp_id = #{empId}
+    </update>
+
+
+    <update id="deleteTHrEmpByIds" parameterType="String">
+        update  t_hr_emp set del_flag =  '1' where emp_id in
+        <foreach item="empId" collection="array" open="(" separator="," close=")">
+            #{empId}
+        </foreach>
+    </update>
+
+    <delete id="deleteTHrEmpByUserIds">
+        update t_hr_emp set del_flag = '1' where user_id in
+        <foreach collection="array" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <select id="selectEmpNameByEmpId" resultType="String" parameterType="Long">
+            SELECT
+                emp_name
+            FROM
+                t_hr_emp a
+            WHERE
+                1 = 1
+                AND a.del_flag = 0
+                AND a.emp_id = #{id}
+    </select>
+
+    <select id="selectEmpList" resultMap="THrEmpResult">
+        select * from t_hr_emp
+        where del_flag = 0
+    </select>
+
+    <select id="selectOnTheJobEmpList" resultType="hashmap">
+        SELECT
+            a.emp_id,a.emp_num,a.emp_name,a.non_manager_date,a.quit_date,a.dept_id,a.post_id,a.city ,b.ding_user_id
+        FROM
+            t_hr_emp a
+        LEFT JOIN sys_user b
+        ON a.user_id = b.user_id
+        WHERE
+            a.del_flag = 0
+        AND b.del_flag = 0
+        AND b.ding_user_id IS NOT NULL
+        AND	b.ding_user_id &lt;&gt; 'null'
+        AND ISNULL( a.quit_date )
+        UNION
+        SELECT
+            a.emp_id,a.emp_num,a.emp_name,a.non_manager_date,a.quit_date,a.dept_id,a.post_id,a.city ,b.ding_user_id
+        FROM
+            t_hr_emp a
+        LEFT JOIN sys_user b
+        ON a.user_id = b.user_id
+        WHERE
+            a.del_flag = 0
+        AND b.del_flag = 0
+        AND b.ding_user_id IS NOT NULL
+        AND	b.ding_user_id &lt;&gt; 'null'
+        AND YEAR ( a.quit_date ) = #{year}
+        AND MONTH ( a.quit_date ) = #{month}
+    </select>
+
+    <select id="selectCountAttEmpList" resultMap="THrEmpResult">
+        SELECT
+            *
+        FROM
+            t_hr_emp a
+        WHERE
+            a.del_flag = 0
+        AND ISNULL( a.quit_date )
+        UNION
+        SELECT
+            *
+        FROM
+            t_hr_emp a
+        WHERE
+            a.del_flag = 0
+        AND YEAR ( a.quit_date ) = #{year}
+        AND MONTH ( a.quit_date ) = #{month}
+    </select>
+
+    <select id="selectOnTheEmpList" resultMap="THrEmpResult">
+        SELECT
+            *
+        FROM
+            t_hr_emp a
+        WHERE
+            del_flag = 0
+            AND  ISNULL(a.quit_date)
+    </select>
+
+    <select id="selectByIdNumberAndDelete" resultMap="THrEmpResult">
+        <include refid="selectTHrEmpVo"/>  where id_number = #{idNumber} and is_quit='1' order by quit_date desc limit 1
+    </select>
+</mapper>

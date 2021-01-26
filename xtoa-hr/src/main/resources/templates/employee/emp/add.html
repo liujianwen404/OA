@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增员工')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: select2-css" />
+
+    <link th:href="@{/ajax/libs/layui/css/layui.css}" rel="stylesheet"/>
+    <style>
+        .layui-upload-img{width: 145px; height: 145px; margin: 0 10px 10px 0;}
+    </style>
+    <style>
+         .salary {
+            position: relative;
+            min-height: 1px;
+            padding-right: 0px;
+            padding-left: 0px;
+             width: 15%;
+             float: left;
+        }
+
+    </style>
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-emp-add">
+
+            <div class="form-group col-sm-12" style="background-color: beige">
+                <h3>员工基本信息</h3>
+            </div>
+
+
+
+            <div class="col-sm-12">
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">照片：</label>
+                    <div class="col-sm-8">
+                        <input name="photo" id="photo" class="form-control" type="hidden" required>
+                        <div class="layui-upload">
+                            <div class="layui-upload-list" onclick="showImg()">
+                                <img class="layui-upload-img" id="demo1">
+                                <p id="demoText"></p>
+                            </div>
+                            <button type="button" class="layui-btn" id="test1">上传图片</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">员工姓名：</label>
+                    <div class="col-sm-8">
+                        <input name="empName" class="form-control" type="text" maxlength="10" required>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">员工工号：</label>
+                    <div class="col-sm-8">
+                        <input name="empNum" class="form-control" type="text" onkeyup="checkEmpNum(this.value)" onmouseout="isEmpNumExist(this.value)"  required>
+                        <span id="empNumVai"  style="display: none;"></span>
+                    </div>
+
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">性别：</label>
+                    <div class="col-sm-8">
+                        <div class="radio-box" th:each="dict : ${@dict.getType('sys_user_sex')}">
+                            <input type="radio" th:id="${'sex_' + dict.dictCode}" name="sex" th:value="${dict.dictValue}" th:checked="${dict.default}" required>
+                            <label th:for="${'sex_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">钉钉手机号码：</label>
+                    <div class="col-sm-8">
+                        <input name="phonenumber" placeholder="请输入手机号码" class="form-control" maxlength="11" type="number" required>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">其他手机号码：</label>
+                    <div class="col-sm-8">
+                        <input name="phonenumberOther" placeholder="请输入手机号码" class="form-control" maxlength="11" type="number">
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">员工状态：</label>
+                    <div class="col-sm-8">
+                        <div class="radio-box" th:each="dict : ${@dict.getType('sys_emp_status')}">
+                            <input type="radio" th:id="${'empStatus_' + dict.dictCode}" name="empStatus" th:value="${dict.dictValue}" th:checked="${dict.default}" required>
+                            <label th:for="${'empStatus_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">入职日期：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input name="nonManagerDate" onchange="getTime('nonManagerDate','siLing')" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">司龄：</label>
+                    <div class="col-sm-8">
+                        <input id="siLing" class="form-control"  type="text" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">工作地：</label>
+                    <div class="col-sm-8" style="margin-left: -45px;">
+                        <input name="city" id="city" class="form-control cityValue" type="hidden" required>
+                        <div class="searchCitySelect">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">部门：</label>
+                    <div class="col-sm-8">
+                        <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" required>
+                            <option value="">请选择</option>
+                            <option th:each="dept : ${deptAll}" th:if="${dept.getStatus() != '1' && dept.getDelFlag() == '0' }" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">岗位：</label>
+                    <div class="col-sm-8">
+                        <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" required>
+                            <option value="">请选择</option>
+                            <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                        </select>
+                        <!--<span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 代码生成请选择字典属性</span>-->
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">用户邮箱：</label>
+                    <div class="col-sm-8">
+                        <input name="email" class="form-control email" type="text" maxlength="30" placeholder="请输入邮箱" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">身份证号码：</label>
+                    <div class="col-sm-8">
+                        <input name="idNumber" class="form-control" maxlength="20"  type="text" required>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">民族：</label>
+                    <div class="col-sm-8">
+                        <select name="ethnic" class="form-control m-b  select2-multiple" th:with="type=${@dict.getType('sys_ethnic')}" >
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">出生日期：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input name="birthday" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">身份证住址：</label>
+                    <div class="col-sm-8">
+                        <input name="address" class="form-control" type="text">
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">现居住地：</label>
+                    <div class="col-sm-8">
+                        <input name="nowResidence" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">婚姻：</label>
+                    <div class="col-sm-8">
+                        <select name="marriage" class="form-control m-b" th:with="type=${@dict.getType('sys_marriage')}" required>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">籍贯：</label>
+                    <div class="col-sm-8">
+                        <input name="nationality" class="form-control" type="text">
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">户口性质：</label>
+                    <div class="col-sm-8">
+                        <div class="radio-box" th:each="dict : ${@dict.getType('sys_categor')}">
+                            <input type="radio" th:id="${'categor_' + dict.dictCode}" name="categor" th:value="${dict.dictValue}" th:checked="${dict.default}" >
+                            <label th:for="${'categor_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">开户行支行：</label>
+                    <div class="col-sm-8">
+                        <input name="bankBranch" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">银行卡号：</label>
+                    <div class="col-sm-8">
+                        <input name="bankNumber" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">社保账号：</label>
+                    <div class="col-sm-8">
+                        <input name="socialSecurity" class="form-control" maxlength="30"  type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">公积金账号：</label>
+                    <div class="col-sm-8">
+                        <input name="providentFund" class="form-control" maxlength="30"  type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">健康状态：</label>
+                    <div class="col-sm-8">
+                        <input name="health" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">基本情况：</label>
+                    <div class="col-sm-8">
+                        <textarea name="information" class="form-control"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">家庭成员：</label>
+                    <div class="col-sm-8">
+                        <input name="familyMember" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">紧急联系人：</label>
+                    <div class="col-sm-8">
+                        <input name="contactsName" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">与紧急联系人关系：</label>
+                    <div class="col-sm-8">
+                        <input name="contactsRelation" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">紧急联系人电话：</label>
+                    <div class="col-sm-8">
+                        <input name="contactsPhone" placeholder="请输入手机号码" class="form-control"   maxlength="11" type="number" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">紧急联系人地址：</label>
+                    <div class="col-sm-8">
+                        <input name="contactsAddresss" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">招聘专员：</label>
+                    <div class="col-sm-8">
+                        <input name="recruiter" class="form-control" type="text" maxlength="10" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">内部推荐人：</label>
+                    <div class="col-sm-8">
+                        <input name="internaler" class="form-control" type="text" maxlength="10" >
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="form-group col-sm-12" style="background-color: beige">
+                <h3>教育背景</h3>
+            </div>
+
+            <div class="col-sm-12">
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label is-required">教育背景：</label>
+                    <div class="col-sm-8">
+                        <div class="radio-box" th:each="dict : ${@dict.getType('sys_education')}">
+                            <input type="radio" th:id="${'education_' + dict.dictCode}" name="education" th:value="${dict.dictValue}" th:checked="${dict.default}" required>
+                            <label th:for="${'education_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">毕业时间：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input name="graduationDate" onchange="getTime('graduationDate','seniority')" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">工龄：</label>
+                    <div class="col-sm-8">
+                        <input id="seniority" class="form-control"  type="text" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">毕业院校：</label>
+                    <div class="col-sm-8">
+                        <input name="graduation" class="form-control" type="text">
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">专业：</label>
+                    <div class="col-sm-8">
+                        <input name="major" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">持有证书：</label>
+                    <div class="col-sm-8">
+                        <input name="certificate" class="form-control" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">特长描述：</label>
+                    <div class="col-sm-8">
+                        <textarea name="description" class="form-control"></textarea>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group col-sm-12" style="background-color: beige">
+                <h3>工作经历</h3>
+            </div>
+
+            <div class="col-sm-12">
+                <div id="experienceBody" class="col-sm-12">
+                    <!--此处动态增加表单-->
+                </div>
+                <input name="count" class="form-control" type="hidden" value="0">
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label"></label>
+                    <div class="col-sm-8">
+                        <a class="btn btn-primary" onclick="experienceAdd()">
+                            <i class="fa fa-plus"></i> 增加
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="form-group col-sm-12" style="background-color: beige">
+                <h3>薪资结构</h3>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">职级：</label>
+                    <div class="col-sm-8">
+                        <select name="rank" class="form-control m-b" th:with="rank=${@dict.getType('employeesGrade')}">
+                            <option value="">请选择</option>
+                            <option th:each="dict : ${rank}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">薪酬等级：</label>
+                    <div class="col-sm-8">
+                        <input name="payGrade" class="form-control" maxlength="10" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">薪酬结构：</label>
+                    <div class="col-sm-8">
+                        <div class="col-sm-2 salary">
+                            <label class=" control-label ">当月固定工资：</label>
+                            <input name="comprehensive" class="form-control" type="number" maxlength="10" >
+                        </div>
+
+                        <div class="col-sm-2 salary">
+                            <label class=" control-label ">基本工资：</label>
+                            <input name="basic" class="form-control salaryAdd"  type="number" maxlength="10"  >
+                        </div>
+
+                        <div class="col-sm-2 salary">
+                            <label class=" control-label ">加班费：</label>
+                            <input name="overtimePay" class="form-control salaryAdd"  type="number" maxlength="10"  >
+                        </div>
+
+                        <div class="col-sm-2 salary">
+                            <label class=" control-label ">绩效工资基数：</label>
+                            <input name="performanceBonus" class="form-control salaryAdd"  type="number" maxlength="10"  >
+                        </div>
+
+                        <div class="col-sm-2 salary">
+                            <label class=" control-label ">岗位补贴：</label>
+                            <input name="allowance" class="form-control salaryAdd"  type="number" maxlength="10"  >
+                        </div>
+
+                        <div class="col-sm-2 salary">
+                            <label class=" control-label ">其他补贴：</label>
+                            <input name="otherSubsidies" class="form-control salaryAdd"  type="number" maxlength="10"  >
+                        </div>
+
+                        <!-- <div class="col-sm-2 salary">
+                             <label class=" control-label ">伙食补贴：</label>
+                             <input name="foodAllowance" class="form-control salaryAdd"  type="text" maxlength="10"  >
+                         </div>
+
+                         <div class="col-sm-2 salary">
+                             <label class=" control-label ">住宿补贴：</label>
+                             <input name="accommodationSubsidy" class="form-control salaryAdd"  type="text" maxlength="10"  >
+                         </div>
+
+                         <div class="col-sm-2 salary">
+                             <label class=" control-label ">高温补贴：</label>
+                             <input name="highSubsidy" class="form-control salaryAdd"  type="text" maxlength="10"  >
+                         </div>
+
+                         <div class="col-sm-2 salary">
+                             <label class=" control-label ">加班补贴：</label>
+                             <input name="overtimeAllowance" class="form-control salaryAdd"  type="text" maxlength="10"  >
+                         </div>
+
+                         <div class="col-sm-2 salary">
+                             <label class=" control-label ">夜班补贴：</label>
+                             <input name="nightAllowance" class="form-control salaryAdd"  type="text" maxlength="10" >
+                         </div>
+
+                         <div class="col-sm-2 salary">
+                             <label class=" control-label ">全勤奖：</label>
+                             <input name="attendanceBonus" class="form-control salaryAdd"  type="text" maxlength="10"  >
+                         </div>-->
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">试用期：</label>
+                    <div class="col-sm-8">
+                        <input name="trial" class="form-control" maxlength="25" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">试用期结束时间：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input name="trialEnd"  class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">转正薪资：</label>
+                    <div class="col-sm-8">
+                        <input name="conversionSalary" placeholder="转正薪资" class="form-control"   maxlength="8" type="number" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">试用期薪资：</label>
+                    <div class="col-sm-8">
+                        <input name="trialSalary" placeholder="试用期薪资" class="form-control"   maxlength="8" type="number" >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label ">合同主体：</label>
+                    <div class="col-sm-8">
+                        <input name="subjectContract" class="form-control" maxlength="20" type="text" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label ">合同年限（年）：</label>
+                    <div class="col-sm-8">
+                        <input name="contractYear" placeholder="合同年限" class="form-control"   maxlength="2" type="number" >
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">合同开始时间：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input name="contractStar" onchange="$.common.getTimeYeas('contractStar','contractEnd','contractYear')"  class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label class="col-sm-3 control-label">合同结束时间：</label>
+                    <div class="col-sm-8">
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input name="contractEnd"  class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group col-sm-12" style="background-color: beige">
+                <h3 align="center">----------------------- 我也是有底线的 -----------------------</h3>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <th:block th:include="include :: select2-js" />
+
+    <script th:src="@{/ajax/libs/layui/layui.all.js}"></script>
+    <script type="text/javascript">
+        var prefix = ctx + "employee/emp"
+        $("#form-emp-add").validate({
+            focusCleanup: true
+        });
+
+        $("input[name='trialEnd']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("input[name='contractStar']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("input[name='contractEnd']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        function checkEmpNum(value) {
+            if(value==''){
+                $("#empNumVai").html('请输入工号');
+                $("#empNumVai").attr("style", "display:inline; color: red;");
+            }else if(/^[^\d]*$|^[^a-zA-Z]*$|[^\da-zA-Z]/g.test(value)){
+                $("#empNumVai").html('格式不正确');
+                $("#empNumVai").attr("style", "display:inline; color: red;");
+
+            }else{
+                $("#empNumVai").attr("style", "display:none");
+            }
+        };
+
+
+        function isEmpNumExist(value) {
+             if(value!='') {
+                $.ajax({
+                    url: prefix + "/checkEmpNumIsExist",
+                    data: {"empNum":value},
+                    type: 'POST',
+                    success: function (result) {
+                        if (result == true) {
+                            $.modal.alertWarning("该工号在系统已存在");
+                        }
+                    }
+                });
+             }
+        };
+
+        function submitHandler() {
+
+            if ($.common.isEmpty($("#city").val())){
+                $.modal.alertWarning("请选择工作地");
+                return;
+            }
+
+            if ($.validate.form()) {
+                let subjectContract = $("input[name='subjectContract']").val();
+                let contractYear = $("input[name='contractYear']").val();
+                let contractStar = $("input[name='contractStar']").val();
+                let contractEnd = $("input[name='contractEnd']").val();
+                if (!$.common.isEmpty(subjectContract)  || !$.common.isEmpty(contractYear)
+                    || !$.common.isEmpty(contractStar)  || !$.common.isEmpty(contractEnd) ) {
+                    if ($.common.isEmpty(subjectContract)  || $.common.isEmpty(contractYear)
+                        || $.common.isEmpty(contractStar)  || $.common.isEmpty(contractEnd) ) {
+                        $.modal.alertWarning("如需录入合同信息请填写完整");
+                    }
+                }
+
+                $.operate.save(prefix + "/add", $('#form-emp-add').serialize());
+            }
+        }
+
+        $("input[name='birthday']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='nonManagerDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        $("input[name='graduationDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        function getTime(name,id) {
+
+            let value = $("input[name='"+name+"']").val();
+            if (!value){
+                $("#"+id).val('未知');
+            } else {
+                $("#"+id).val($.common.diffDate(value , new Date()));
+            }
+
+        };
+
+        layui.use('upload', function(){
+            var $ = layui.jquery
+                ,upload = layui.upload;
+
+            //普通图片上传
+            var uploadInst = upload.render({
+                elem: '#test1'
+                ,url: ctx + "common/upload" //改成您自己的上传接口
+                ,before: function(obj){
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function(index, file, result){
+
+                        $('#demo1').attr('src', result); //图片链接（base64）
+                    });
+                }
+                ,done: function(res){
+                    //如果上传失败
+                    if(res.code > 0){
+                        return layer.msg('上传失败');
+                    }
+                    //上传成功
+                    $('#photo').val(res.fileName); //图片路径
+                }
+                ,error: function(){
+                    //演示失败状态，并实现重传
+                    var demoText = $('#demoText');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                }
+            });
+        });
+
+
+        function showImg() {
+            if ($("#photo").val()){
+                $.table.imageViewSimp($("#photo").val());
+            }
+        }
+
+        //动态添加工作经历表单元素
+        function experienceAdd() {
+            var body = document.getElementById("experienceBody");
+            //创建div盒子用于包裹
+            var n=$(".cy-list-content").length+1;
+            var oDiv = document.createElement("div");
+            oDiv.setAttribute("class","cy-list-content");
+            oDiv.setAttribute("id","body["+n+"]");
+            oDiv.innerHTML =
+                <!--工作经历标记-->
+                '<div class="form-group col-sm-12">'
+                + '<label class="col-sm-3 control-label">工作经历('+n+')</label>'
+                +'</div>'
+                //入职日期时间input选择器
+                +'<div class="form-group col-sm-12">'
+                + '<label class="col-sm-3 control-label">入职日期：</label>'
+                + '<div class="col-sm-8">'
+                + '<div class="input-group date">'
+                + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+                + '<input name="entryDate'+n+'" class="form-control calcTotalSecondInput'+n+'" readonly="readonly" placeholder="yyyy-MM-dd" type="text">'
+                + '</div>'
+                + '</div>'
+                +'</div>'
+                //离职日期时间input选择器
+                +'<div class="form-group col-sm-12">'
+                + '<label class="col-sm-3 control-label">离职日期：</label>'
+                + '<div class="col-sm-8">'
+                + '<div class="input-group date">'
+                + '<span class="input-group-addon"><i class="fa fa-calendar"></i></span>'
+                + '<input name="quitDate'+n+'" class="form-control calcTotalSecondInput'+n+'" readonly="readonly" placeholder="yyyy-MM-dd" type="text">'
+                + '</div>'
+                + '</div>'
+                +'</div>'
+                //公司input
+                +'<div class="form-group col-sm-12">'
+                + '<label class="col-sm-3 control-label">公司：</label>'
+                + '<div class="col-sm-8">'
+                + '<input name="company'+n+'" class="form-control" type="text" >'
+                + '</div>'
+                +'</div>'
+                //职位input
+                +'<div class="form-group col-sm-12">'
+                + '<label class="col-sm-3 control-label">职位：</label>'
+                + '<div class="col-sm-8">'
+                + '<input name="position'+n+'" class="form-control" type="text">'
+                + '</div>'
+                +'</div>'
+                //离职原因input
+                +'<div class="form-group col-sm-12">'
+                + '<label class="col-sm-3 control-label">离职原因：</label>'
+                + '<div class="col-sm-8">'
+                + '<input name="remark'+n+'" class="form-control" type="text">'
+                + '</div>'
+                +'</div>'
+
+                +'<div class="form-group col-sm-12">'
+                +'<a class = "btn btn-danger" style="margin-left:800px" onclick="experienceDel(&quot;body['+n+']&quot;,'+n+')">'
+                +'<i class="fa fa-remove">删除</i>'
+                +'</a>'
+                +'</div>'
+            ;
+            body.appendChild(oDiv);
+
+            $("input[name=entryDate"+n+"]").datetimepicker({
+                format: "yyyy-mm-dd",
+                minView: 2,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+                autoclose: true
+            });
+
+            $("input[name=quitDate"+n+"]").datetimepicker({
+                format: "yyyy-mm-dd",
+                minView: 2,//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+                autoclose: true
+            });
+
+            //生成的工作经历数量
+            var count=$(".cy-list-content").size();
+            $("input[name = count]").val(count);
+
+        }
+
+        //动态删除工作经历表单元素
+        function experienceDel(id,num) {
+            document.getElementById(""+id+"").remove();
+            $($(".cy-list-content").toArray()).each(function (index,item) {
+                var n = index + 1;
+                $(item).attr("id","body["+n+"]");
+                $(item).find("div").first("div").find("label").html("工作经历("+n+")");
+                $(item).find("div").last("div").find("a").attr("onclick","experienceDel('body["+n+"]',"+n+")");
+
+                $(item).find("div").find("div").children("input").eq(0).attr("name","entryDate"+n+"");
+                $(item).find("div").find("div").children("input").eq(1).attr("name","quitDate"+n+"");
+                $(item).find("div").find("div").children("input").eq(2).attr("name","company"+n+"");
+                $(item).find("div").find("div").children("input").eq(3).attr("name","position"+n+"");
+                $(item).find("div").find("div").children("input").eq(4).attr("name","remark"+n+"");
+            });
+
+            //更新工作经历数量
+            var count=$(".cy-list-content").size();
+            $("input[name = count]").val(count);
+
+        }
+
+
+
+    </script>
+</body>
+</html>

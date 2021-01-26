@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('中台配置公共服务列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>系统名称：</label>
+                                <input type="text" name="name"/>
+                            </li>
+
+
+                            <li>
+                                <label>是否可用：</label>
+                                <!--<input type="text" name="enable"/>-->
+                                <select  name="enable" >
+                                    <option value="">不限</option>
+                                    <option value="1" >可用</option>
+                                    <option value="0" >非可用</option>
+                                </select>
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="centre:centrePublicConfig:add">
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="centre:centrePublicConfig:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="centre:centrePublicConfig:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="centre:centrePublicConfig:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table class="my-bootstrap-table" id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('centre:centrePublicConfig:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('centre:centrePublicConfig:remove')}]];
+        var prefix = ctx + "centre/centrePublicConfig";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "中台配置公共服务",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'serverId', 
+                    title: '服务id',
+                    visible: false
+                },
+                {
+                    field: 'name', 
+                    title: '系统名称'
+                },
+                {
+                    field: 'webUrl', 
+                    title: '网络地址'
+                },
+                {
+                    field: 'logo', 
+                    title: 'logo图片地址',
+                    formatter: function(value, row, index) {
+                        return $.table.imageViewMin(value);
+                    }
+                },
+                {
+                    field: 'enable', 
+                    title: '是否可用',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
+                    field: 'sortValue', 
+                    title: '排序值'
+                },
+                {
+                    field: 'createName', 
+                    title: '创建人姓名',
+                    visible: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.serverId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.serverId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+
+        /* 可用状态显示 */
+        function statusTools(row) {
+            if (row.enable == 0) {
+                return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="start(\'' + row.serverId +  '\')"></i> ';
+            } else {
+                return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="stop(\'' + row.serverId +  '\')"></i> ';
+            }
+        }
+        /* 可用状态-否 */
+        function stop(id) {
+            $.modal.confirm("确认设置当前系统配置为非可用吗？", function() {
+                $.operate.post(prefix + "/changeStatus", { "serverId": id  , "enable": 0 });
+            })
+        }
+
+        /* 可用状态-是 */
+        function start(id) {
+            $.modal.confirm("确认设置当前系统配置为可用吗？", function() {
+                $.operate.post(prefix + "/changeStatus", { "serverId": id , "enable": 1 });
+            })
+        }
+
+    </script>
+</body>
+</html>

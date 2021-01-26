@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改转正申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-regular-edit" th:object="${hrRegular}">
+        <input name="id" th:field="*{id}" type="hidden">
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">申请人：</label>
+            <div class="col-sm-8">
+                <input name="applyUserName" th:field="*{applyUserName}" class="form-control" type="text" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>入职时间：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input name="nonManagerDate" th:value="${#dates.format(hrRegular.nonManagerDate, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" required>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">转正时间：</label>
+            <div class="col-sm-8">
+                <div class="input-group date">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input name="quitTime" th:value="${#dates.format(hrRegular.regularTime, 'yyyy-MM-dd')}" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text" required>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>试用期限：</label>
+            <div class="col-sm-8">
+                <input name="trial" id="trial" th:field="*{trial}" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>试用期内对工作的总结：</label>
+            <div class="col-sm-8">
+                <textarea name="sumUp" id="sumUp" th:field="*{sumUp}" class="form-control" required></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label"><span style="color: red; ">*</span>对公司的意见和建议：</label>
+            <div class="col-sm-8">
+                <textarea name="suggest" id="suggest" th:field="*{suggest}" class="form-control" required></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">备注：</label>
+            <div class="col-sm-8">
+                <textarea name="remark" id="remark" th:field="*{remark}" class="form-control" ></textarea>
+            </div>
+        </div>
+
+        <div th:replace="include/fileUploadUtil::fileUploadShow(${hrRegular},'附件')" ></div>
+        <div th:replace="include/fileUploadUtil::fileUploadUtil('重新上传附件',5)" ></div>
+
+    </form>
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: datetimepicker-js" />
+<script type="text/javascript">
+    var prefix = ctx + "hr/regular";
+    $("#form-regular-edit").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            if ($('input[name="nonManagerDate"]').val() >= $('input[name="regularTime"]').val()) {
+                $.modal.alertWarning("转正时间必须大于入职时间");
+                return;
+            }
+            //上传图片
+            $("#testListAction").click();
+            if (!$("#demoList").html()){
+                //没有图片直接提交表单
+                submitFrom();
+            }
+        }
+    }
+
+    function submitFrom(){
+        $.operate.save(prefix + "/edit", $('#form-regular-edit').serialize());
+    }
+
+    $("input[name='regularTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='applyTime']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+
+    $("input[name='nonManagerDate']").datetimepicker({
+        format: "yyyy-mm-dd",
+        minView: "month",
+        autoclose: true
+    });
+</script>
+</body>
+</html>

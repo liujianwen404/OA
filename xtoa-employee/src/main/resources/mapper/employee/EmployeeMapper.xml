@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.employee.mapper.EmployeeMapper">
+    
+    <resultMap type="Employee" id="EmployeeResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="sex"    column="sex"    />
+        <result property="phone"    column="phone"    />
+        <result property="nation"    column="nation"    />
+        <result property="nativePlace"    column="native_place"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="healthy"    column="healthy"    />
+        <result property="address"    column="address"    />
+        <result property="education"    column="education"    />
+        <result property="email"    column="email"    />
+        <result property="image"    column="image"    />
+        <result property="nationality"    column="nationality"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="basicSituation"    column="basic_situation"    />
+        <result property="speciality"    column="speciality"    />
+        <result property="status"    column="status"    />
+        <result property="city"    column="city"    />
+        <result property="departmentId"    column="department_id"    />
+        <result property="departmentName"    column="department_name"    />
+        <result property="position"    column="position"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectEmployeeVo">
+        select id, name, sex, phone, nation, native_place, birthday, healthy, address, education, email, image, nationality, id_card, basic_situation, speciality, status, city, department_id, department_name, position, del_flag, create_by, create_time, update_by, update_time, remark from employee
+    </sql>
+
+    <select id="selectEmployeeList" parameterType="Employee" resultMap="EmployeeResult">
+        <include refid="selectEmployeeVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="nation != null  and nation != ''"> and nation = #{nation}</if>
+            <if test="nativePlace != null  and nativePlace != ''"> and native_place = #{nativePlace}</if>
+            <if test="birthday != null "> and birthday = #{birthday}</if>
+            <if test="healthy != null  and healthy != ''"> and healthy = #{healthy}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+            <if test="education != null  and education != ''"> and education = #{education}</if>
+            <if test="email != null  and email != ''"> and email = #{email}</if>
+            <if test="image != null  and image != ''"> and image = #{image}</if>
+            <if test="nationality != null  and nationality != ''"> and nationality = #{nationality}</if>
+            <if test="idCard != null  and idCard != ''"> and id_card = #{idCard}</if>
+            <if test="basicSituation != null  and basicSituation != ''"> and basic_situation = #{basicSituation}</if>
+            <if test="speciality != null  and speciality != ''"> and speciality = #{speciality}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="departmentId != null  and departmentId != ''"> and department_id = #{departmentId}</if>
+            <if test="departmentName != null  and departmentName != ''"> and department_name like concat('%', #{departmentName}, '%')</if>
+            <if test="position != null  and position != ''"> and position = #{position}</if>
+            <if test="delFlag != null  and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectEmployeeById" parameterType="Long" resultMap="EmployeeResult">
+        <include refid="selectEmployeeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertEmployee" parameterType="Employee" useGeneratedKeys="true" keyProperty="id">
+        insert into employee
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">name,</if>
+            <if test="sex != null ">sex,</if>
+            <if test="phone != null  and phone != ''">phone,</if>
+            <if test="nation != null  and nation != ''">nation,</if>
+            <if test="nativePlace != null  and nativePlace != ''">native_place,</if>
+            <if test="birthday != null ">birthday,</if>
+            <if test="healthy != null  and healthy != ''">healthy,</if>
+            <if test="address != null  and address != ''">address,</if>
+            <if test="education != null  and education != ''">education,</if>
+            <if test="email != null  and email != ''">email,</if>
+            <if test="image != null  and image != ''">image,</if>
+            <if test="nationality != null  and nationality != ''">nationality,</if>
+            <if test="idCard != null  and idCard != ''">id_card,</if>
+            <if test="basicSituation != null  and basicSituation != ''">basic_situation,</if>
+            <if test="speciality != null  and speciality != ''">speciality,</if>
+            <if test="status != null ">status,</if>
+            <if test="city != null  and city != ''">city,</if>
+            <if test="departmentId != null  and departmentId != ''">department_id,</if>
+            <if test="departmentName != null  and departmentName != ''">department_name,</if>
+            <if test="position != null  and position != ''">position,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="sex != null ">#{sex},</if>
+            <if test="phone != null  and phone != ''">#{phone},</if>
+            <if test="nation != null  and nation != ''">#{nation},</if>
+            <if test="nativePlace != null  and nativePlace != ''">#{nativePlace},</if>
+            <if test="birthday != null ">#{birthday},</if>
+            <if test="healthy != null  and healthy != ''">#{healthy},</if>
+            <if test="address != null  and address != ''">#{address},</if>
+            <if test="education != null  and education != ''">#{education},</if>
+            <if test="email != null  and email != ''">#{email},</if>
+            <if test="image != null  and image != ''">#{image},</if>
+            <if test="nationality != null  and nationality != ''">#{nationality},</if>
+            <if test="idCard != null  and idCard != ''">#{idCard},</if>
+            <if test="basicSituation != null  and basicSituation != ''">#{basicSituation},</if>
+            <if test="speciality != null  and speciality != ''">#{speciality},</if>
+            <if test="status != null ">#{status},</if>
+            <if test="city != null  and city != ''">#{city},</if>
+            <if test="departmentId != null  and departmentId != ''">#{departmentId},</if>
+            <if test="departmentName != null  and departmentName != ''">#{departmentName},</if>
+            <if test="position != null  and position != ''">#{position},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateEmployee" parameterType="Employee">
+        update employee
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="sex != null ">sex = #{sex},</if>
+            <if test="phone != null  and phone != ''">phone = #{phone},</if>
+            <if test="nation != null  and nation != ''">nation = #{nation},</if>
+            <if test="nativePlace != null  and nativePlace != ''">native_place = #{nativePlace},</if>
+            <if test="birthday != null ">birthday = #{birthday},</if>
+            <if test="healthy != null  and healthy != ''">healthy = #{healthy},</if>
+            <if test="address != null  and address != ''">address = #{address},</if>
+            <if test="education != null  and education != ''">education = #{education},</if>
+            <if test="email != null  and email != ''">email = #{email},</if>
+            <if test="image != null  and image != ''">image = #{image},</if>
+            <if test="nationality != null  and nationality != ''">nationality = #{nationality},</if>
+            <if test="idCard != null  and idCard != ''">id_card = #{idCard},</if>
+            <if test="basicSituation != null  and basicSituation != ''">basic_situation = #{basicSituation},</if>
+            <if test="speciality != null  and speciality != ''">speciality = #{speciality},</if>
+            <if test="status != null ">status = #{status},</if>
+            <if test="city != null  and city != ''">city = #{city},</if>
+            <if test="departmentId != null  and departmentId != ''">department_id = #{departmentId},</if>
+            <if test="departmentName != null  and departmentName != ''">department_name = #{departmentName},</if>
+            <if test="position != null  and position != ''">position = #{position},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteEmployeeById" parameterType="Long">
+        delete from employee where id = #{id}
+    </delete>
+
+    <delete id="deleteEmployeeByIds" parameterType="String">
+        delete from employee where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <update id="invalidEmployee" parameterType="Employee">
+        update employee
+	        set del_flag = 1
+	        , update_time = now()
+	        , update_by = #{updateBy}
+        <if test="remark != null  and remark != ''">, remark = #{remark}</if>
+        where id = #{id}
+    </update>
+    
+</mapper>

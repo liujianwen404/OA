@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('项目中心')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+         <div class="col-sm-8" >
+             <div class="col-sm-2 white-bg" style="width: 300px;height: 100px">
+                 <div onclick="$.modal.openMain('我的项目', '/project/project/projectInfo',($(window).width() - 1),($(window).height() - 1));">
+                     <div class="col-sm-6">
+                         <img src="/img/xtoa/icon@3x.png" style="width: 100px;height: 100px">
+                     </div>
+                     <div class="col-sm-6">
+                         <h2 id="myProject">0</h2>
+                         <h3 >项目中心</h3>
+                     </div>
+                 </div>
+             </div>
+             <div class="col-sm-2 white-bg" style="margin-left: 30px;width: 300px;height: 100px">
+                 <div onclick="$.modal.openMain('我的迭代', '/project/projectPlan/projectPlan',($(window).width() - 1),($(window).height() - 1));">
+                 <div class="col-sm-6">
+                     <img src="/img/xtoa/icon@3x.png" style="width: 100px;height: 100px">
+                 </div>
+                 <div class="col-sm-6">
+                     <h2 id="myProjectPlan">0</h2>
+                     <h3 >迭代计划</h3>
+                 </div>
+             </div>
+             </div>
+             <div class="col-sm-2 white-bg" style="margin-left: 30px;width: 300px;height: 100px">
+                 <div onclick="$.modal.openMain('需求管理', '/project/projectPlanTask/projectPlanTask',($(window).width() - 1),($(window).height() - 1));">
+                 <div class="col-sm-6">
+                         <img src="/img/xtoa/icon-l@3x.png" style="width: 100px;height: 100px" >
+                     </div>
+                     <div class="col-sm-6">
+                         <h2 id="myProjectPlanTask">0</h2>
+                         <h3 >需求管理</h3>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         <div class="col-sm-4" hidden>
+             <div class="col-sm-12 white-bg" >
+                 <div class="form-group" >
+                     <h3>（开发中，敬请期待）</h3>
+                     <div  class="table-responsive" style="height: 250px" >
+                         <table class="table table-condensed" style="font-size: 15px">
+                             <tr>
+                                 <td><!--<img src="/img/profile.jpg" style="width: 40px;height: 40px">--></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+
+                         </table>
+                     </div>
+                 </div>
+             </div>
+
+             <div class="col-sm-12 white-bg" style="margin-top: 50px">
+                 <div class="form-group" >
+                     <h3>（开发中，敬请期待）</h3>
+                     <div  class="table-responsive" style="height: 250px" >
+                         <table class="table table-condensed" style="font-size: 15px">
+                             <tr>
+                                 <td><!--<img src="/img/profile.jpg" style="width: 40px;height: 40px">--></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+                             <tr>
+                                 <td></td>
+                                 <td>通知！开发中，敬请期待</td>
+                                 <td>2020-06-29</td>
+                             </tr>
+
+                         </table>
+                     </div>
+                 </div>
+             </div>
+         </div>
+
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "project/project";
+
+        $(function() {
+            $.operate.ajax(prefix+"/getMyCount","post","json",{},function (result) {
+                if (result.code == 0){
+                    $("#myProject").html(result.data.myProject);
+                    $("#myProjectPlan").html(result.data.myProjectPlan);
+                    $("#myProjectPlanTask").html(result.data.myProjectPlanTask);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

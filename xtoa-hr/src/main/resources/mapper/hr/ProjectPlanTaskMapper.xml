@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.ProjectPlanTaskMapper">
+    <resultMap type="com.ruoyi.base.domain.ProjectPlanTask" id="ProjectPlanTaskResult">
+        <id property="id" column="id"/>
+            <result property="projectId" column="project_id"/>
+            <result property="projectPlanId" column="project_plan_id"/>
+            <result property="name" column="name"/>
+            <result property="contentDescribe" column="content_describe"/>
+            <result property="empId" column="emp_id"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+            <result property="status" column="status"/>
+            <result property="priority" column="priority"/>
+            <result property="recordId" column="record_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="introducerId" column="introducer_id"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap type="com.ruoyi.base.domain.VO.ProjectPlanTaskVO" id="ProjectPlanTaskVOResult">
+        <id property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectPlanId" column="project_plan_id"/>
+        <result property="name" column="name"/>
+        <result property="contentDescribe" column="content_describe"/>
+        <result property="empId" column="emp_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="recordId" column="record_id"/>
+        <result property="status" column="status"/>
+        <result property="priority" column="priority"/>
+        <result property="introducerId" column="introducer_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="baseColumns">
+            entity.id,
+            entity.project_id,
+            entity.project_plan_id,
+            entity.name,
+            entity.content_describe,
+            entity.emp_id,
+            entity.start_time,
+            entity.end_time,
+            entity.status,
+            entity.priority,
+            entity.introducer_id,
+            entity.record_id,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectProjectPlanTaskList" parameterType="com.ruoyi.base.domain.VO.ProjectPlanTaskVO" resultMap="ProjectPlanTaskVOResult">
+        SELECT
+        entity.id,
+        entity.project_id,
+        entity.project_plan_id,
+        entity.name,
+        entity.content_describe,
+        entity.emp_id,
+        entity.start_time,
+        entity.end_time,
+        entity.introducer_id,
+        entity.status,
+        entity.priority,
+        entity.record_id,
+        entity.create_id,
+        entity.create_time,
+        tp.name as projectName,tpp.name as projectPlanName,su.emp_name as empName
+        FROM t_project_plan_task entity
+        LEFT JOIN t_project_plan tpp ON entity.project_plan_id = tpp.id
+        LEFT JOIN t_project tp ON entity.project_id = tp.id
+        LEFT JOIN t_hr_emp su ON entity.emp_id = su.emp_id
+        <where>
+                entity.del_flag = '0'
+                <if test="projectId != null "> AND entity.project_id = #{projectId}</if>
+                <if test="projectPlanId != null "> AND entity.project_plan_id = #{projectPlanId}</if>
+<!--                <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>-->
+                <if test="empName != null and empName != '' "> AND su.emp_name LIKE CONCAT('%', #{empName}, '%')</if>
+<!--                <if test="startTime != null "> and entity.start_time = #{startTime}</if>-->
+<!--                <if test="endTime != null "> and entity.end_time = #{endTime}</if>-->
+                <if test="status != null "> AND entity.status = #{status}</if>
+                <if test="priority != null "> AND entity.priority = #{priority}</if>
+<!--                <if test="createBy != null "> and entity.create_by like concat('%', #{createBy}, '%')</if>-->
+                <!--<if test="recordId != null "> and entity.record_id = #{recordId}</if>-->
+<!--                <if test="createId != null "> and entity.create_id = #{createId}</if>-->
+               <!-- <if test="updateId != null "> and entity.update_id = #{updateId}</if>-->
+        </where>
+        ORDER BY entity.create_time DESC
+    </select>
+    <select id="selectProjectPlanTaskEmps" resultType="java.lang.Long">
+        select distinct emp_id from t_project_plan_task where project_id = #{projectId} and del_flag = '0' and status = 0
+    </select>
+    <select id="seletUnfinishedTask" resultMap="ProjectPlanTaskResult">
+        select <include refid="baseColumns"/>
+        ,tp.name as projectName,tpp.name as projectPlanName,su.user_name as empName
+        from t_project_plan_task entity
+        left join t_project_plan tpp on entity.project_plan_id = tpp.id
+        left join t_project tp on entity.project_id = tp.id
+        left join sys_user su on entity.emp_id = su.user_id
+        where  entity.del_flag = '0'
+        and tpp.status not in (1,2) and tp.status not in (1,2) and entity.status not in (1,2)
+    </select>
+
+    <select id="queryProjectPlanTaskById" parameterType="Long" resultMap="ProjectPlanTaskResult">
+        select
+            entity.id,
+            entity.project_id,
+            entity.project_plan_id,
+            entity.name,
+            entity.content_describe,
+            entity.emp_id,
+            entity.start_time,
+            entity.end_time,
+            entity.status,
+            entity.priority,
+            entity.introducer_id,
+            e.emp_name introducerName,
+            entity.record_id,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time from t_project_plan_task entity
+            LEFT JOIN t_hr_emp e ON entity.introducer_id = e.emp_id
+        where entity.id=#{id} and entity.del_flag = '0'
+    </select>
+
+    <update id="deleteProjectPlanTaskById" parameterType="Long">
+        update  t_project_plan_task set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteProjectPlanTaskByIds" parameterType="String">
+        update  t_project_plan_task set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

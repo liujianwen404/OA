@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrJobTransferMapper">
+    <resultMap type="com.ruoyi.hr.domain.HrJobTransfer" id="HrJobTransferResult">
+        <id property="jobTransferId" column="job_transfer_id"/>
+        <result property="empId" column="emp_id"/>
+        <result property="empName" column="emp_name"/>
+        <result property="nonManagerDate" column="non_manager_Date"/>
+        <result property="currentPostId" column="current_post_id"/>
+        <result property="currentDeptId" column="current_dept_id"/>
+        <result property="jobTransferrDate" column="job_transferr_Date"/>
+        <result property="jobTransferPostId" column="job_transfer_post_id"/>
+        <result property="jobTransferDeptId" column="job_transfer_dept_id"/>
+        <result property="jobTransferDescription" column="job_transfer_description"/>
+        <result property="jobTransferType" column="job_transfer_type"/>
+        <result property="currentDescription" column="current_description"/>
+        <result property="transferDescription" column="transfer_description"/>
+        <result property="currentLeaderId" column="current_leader_id"/>
+        <result property="transferLeaderId" column="transfer_leader_id"/>
+        <result property="status" column="status"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="instanceId" column="instance_id"/>
+        <result property="createId" column="create_id"/>
+        <result property="updateId" column="update_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="remark" column="remark"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+
+        <result property="applyUser" column="apply_user"/>
+        <result property="applyTime" column="apply_time"/>
+        <result property="applyUserName" column="apply_user_name"/>
+        <result property="attachment" column="attachment"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.job_transfer_id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.non_manager_Date,
+            entity.current_post_id,
+            entity.current_dept_id,
+            entity.job_transferr_Date,
+            entity.job_transfer_post_id,
+            entity.job_transfer_dept_id,
+            entity.job_transfer_description,
+            entity.job_transfer_type,
+            entity.current_description,
+            entity.transfer_description,
+            entity.current_leader_id,
+            entity.transfer_leader_id,
+            entity.status,
+            entity.audit_status,
+            entity.instance_id,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time,
+
+            entity.apply_user,
+            entity.apply_time,
+            entity.attachment,
+            entity.apply_user_name
+        </sql>
+
+    <sql id="whereSql">
+        <where>
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+            <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+            <if test="nonManagerDate != null "> and entity.non_manager_Date = #{nonManagerDate}</if>
+            <if test="currentPostId != null "> and entity.current_post_id = #{currentPostId}</if>
+            <if test="currentDeptId != null "> and entity.current_dept_id = #{currentDeptId}</if>
+            <if test="jobTransferrDate != null "> and entity.job_transferr_Date = #{jobTransferrDate}</if>
+            <if test="jobTransferPostId != null "> and entity.job_transfer_post_id = #{jobTransferPostId}</if>
+            <if test="jobTransferDeptId != null "> and entity.job_transfer_dept_id = #{jobTransferDeptId}</if>
+            <if test="jobTransferDescription != null  and jobTransferDescription != ''"> and entity.job_transfer_description = #{jobTransferDescription}</if>
+            <if test="jobTransferType != null  and jobTransferType != ''"> and entity.job_transfer_type = #{jobTransferType}</if>
+            <if test="currentDescription != null  and currentDescription != ''"> and entity.current_description = #{currentDescription}</if>
+            <if test="transferDescription != null  and transferDescription != ''"> and entity.transfer_description = #{transferDescription}</if>
+            <if test="currentLeaderId != null  and currentLeaderId != ''"> and entity.current_leader_id = #{currentLeaderId}</if>
+            <if test="transferLeaderId != null  and transferLeaderId != ''"> and entity.transfer_leader_id = #{transferLeaderId}</if>
+            <if test="status != null  and status != ''"> and entity.status = #{status}</if>
+
+            <if test="createId != null "> and (entity.create_id = #{createId} OR entity.emp_id  = #{createId} )</if>
+            <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+            <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(entity.apply_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(entity.apply_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+
+            <if test="auditStatus != null "> and entity.audit_status = #{auditStatus} </if>
+            <if test="deptId != null ">
+                and ( entity.current_dept_id = #{deptId} or entity.current_dept_id
+                IN (SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0'))</if>
+
+        </where>
+    </sql>
+    <select id="selectHrJobTransferList" parameterType="com.ruoyi.hr.domain.HrJobTransfer" resultMap="HrJobTransferResult">
+        select <include refid="baseColumns"/> from t_hr_job_transfer entity
+        LEFT JOIN t_hr_emp e ON entity.emp_id = e.emp_id
+        LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        <include refid="whereSql"></include>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by entity.create_time desc
+    </select>
+    <select id="selectHrJobTransferListManage" parameterType="com.ruoyi.hr.domain.HrJobTransfer" resultMap="HrJobTransferResult">
+        select <include refid="baseColumns"/> from t_hr_job_transfer entity
+        LEFT JOIN t_hr_emp e ON entity.emp_id = e.emp_id
+        LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        <include refid="whereSql"></include>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by entity.create_time desc
+    </select>
+<select id="selectHrJobTransferList2" parameterType="com.ruoyi.hr.domain.HrJobTransfer" resultMap="HrJobTransferResult">
+        select <include refid="baseColumns"/> from t_hr_job_transfer entity
+        LEFT JOIN t_hr_emp e ON entity.emp_id = e.emp_id
+        LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        <where>
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+            <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
+            <if test="nonManagerDate != null "> and entity.non_manager_Date = #{nonManagerDate}</if>
+            <if test="currentPostId != null "> and entity.current_post_id = #{currentPostId}</if>
+            <if test="currentDeptId != null "> and entity.current_dept_id = #{currentDeptId}</if>
+            <if test="jobTransferrDate != null "> and entity.job_transferr_Date = #{jobTransferrDate}</if>
+            <if test="jobTransferPostId != null "> and entity.job_transfer_post_id = #{jobTransferPostId}</if>
+            <if test="jobTransferDeptId != null "> and entity.job_transfer_dept_id = #{jobTransferDeptId}</if>
+            <if test="jobTransferDescription != null  and jobTransferDescription != ''"> and entity.job_transfer_description = #{jobTransferDescription}</if>
+            <if test="jobTransferType != null  and jobTransferType != ''"> and entity.job_transfer_type = #{jobTransferType}</if>
+            <if test="currentDescription != null  and currentDescription != ''"> and entity.current_description = #{currentDescription}</if>
+            <if test="transferDescription != null  and transferDescription != ''"> and entity.transfer_description = #{transferDescription}</if>
+            <if test="currentLeaderId != null  and currentLeaderId != ''"> and entity.current_leader_id = #{currentLeaderId}</if>
+            <if test="transferLeaderId != null  and transferLeaderId != ''"> and entity.transfer_leader_id = #{transferLeaderId}</if>
+            <if test="status != null  and status != ''"> and entity.status = #{status}</if>
+            <if test="auditStatus != null "> and entity.audit_status = #{auditStatus}</if>
+            <if test="createId != null "> and (entity.create_id = #{createId} OR entity.emp_id  = #{createId} )</if>
+            <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+            <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by entity.create_time desc
+    </select>
+
+
+    <update id="deleteHrJobTransferById" parameterType="Long">
+        update  t_hr_job_transfer set del_flag =  '1' where job_transfer_id = #{jobTransferId}
+    </update>
+
+    <update id="deleteHrJobTransferByIds" parameterType="String">
+        update  t_hr_job_transfer set del_flag =  '1' where job_transfer_id in
+        <foreach item="jobTransferId" collection="array" open="(" separator="," close=")">
+            #{jobTransferId}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrAttendanceGroupSonMapper">
+    <resultMap type="com.ruoyi.base.domain.HrAttendanceGroupSon" id="HrAttendanceGroupSonResult">
+        <id property="id" column="id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="parentId" column="parent_id"/>
+            <result property="empName" column="emp_name"/>
+            <result property="scheduDate" column="schedu_date"/>
+            <result property="classId1" column="class_id_1"/>
+            <result property="classId2" column="class_id_2"/>
+            <result property="classId3" column="class_id_3"/>
+            <result property="classId4" column="class_id_4"/>
+            <result property="classId5" column="class_id_5"/>
+            <result property="classId6" column="class_id_6"/>
+            <result property="classId7" column="class_id_7"/>
+            <result property="classId8" column="class_id_8"/>
+            <result property="classId9" column="class_id_9"/>
+            <result property="classId10" column="class_id_10"/>
+            <result property="classId11" column="class_id_11"/>
+            <result property="classId12" column="class_id_12"/>
+            <result property="classId13" column="class_id_13"/>
+            <result property="classId14" column="class_id_14"/>
+            <result property="classId15" column="class_id_15"/>
+            <result property="classId16" column="class_id_16"/>
+            <result property="classId17" column="class_id_17"/>
+            <result property="classId18" column="class_id_18"/>
+            <result property="classId19" column="class_id_19"/>
+            <result property="classId20" column="class_id_20"/>
+            <result property="classId21" column="class_id_21"/>
+            <result property="classId22" column="class_id_22"/>
+            <result property="classId23" column="class_id_23"/>
+            <result property="classId24" column="class_id_24"/>
+            <result property="classId25" column="class_id_25"/>
+            <result property="classId26" column="class_id_26"/>
+            <result property="classId27" column="class_id_27"/>
+            <result property="classId28" column="class_id_28"/>
+            <result property="classId29" column="class_id_29"/>
+            <result property="classId30" column="class_id_30"/>
+            <result property="classId31" column="class_id_31"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.parent_id,
+            entity.emp_id,
+            entity.emp_name,
+            entity.schedu_date,
+            entity.class_id_1,
+            entity.class_id_2,
+            entity.class_id_3,
+            entity.class_id_4,
+            entity.class_id_5,
+            entity.class_id_6,
+            entity.class_id_7,
+            entity.class_id_8,
+            entity.class_id_9,
+            entity.class_id_10,
+            entity.class_id_11,
+            entity.class_id_12,
+            entity.class_id_13,
+            entity.class_id_14,
+            entity.class_id_15,
+            entity.class_id_16,
+            entity.class_id_17,
+            entity.class_id_18,
+            entity.class_id_19,
+            entity.class_id_20,
+            entity.class_id_21,
+            entity.class_id_22,
+            entity.class_id_23,
+            entity.class_id_24,
+            entity.class_id_25,
+            entity.class_id_26,
+            entity.class_id_27,
+            entity.class_id_28,
+            entity.class_id_29,
+            entity.class_id_30,
+            entity.class_id_31,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectHrAttendanceGroupSonList" parameterType="com.ruoyi.base.domain.HrAttendanceGroupSon" resultMap="HrAttendanceGroupSonResult">
+        select <include refid="baseColumns"/> from t_hr_attendance_group_son entity
+        where  entity.del_flag = '0'
+                <if test="parentId != null "> and entity.parent_id = #{parentId}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="empName != null  and empName != ''"> and entity.emp_name = #{empName}</if>
+                <if test="scheduDate != null  and scheduDate != ''"> and entity.schedu_date = #{scheduDate}</if>
+                <if test="classId1 != null  and classId1 != ''"> and entity.class_id_1 = #{classId1}</if>
+                <if test="classId2 != null  and classId2 != ''"> and entity.class_id_2 = #{classId2}</if>
+                <if test="classId3 != null  and classId3 != ''"> and entity.class_id_3 = #{classId3}</if>
+                <if test="classId4 != null  and classId4 != ''"> and entity.class_id_4 = #{classId4}</if>
+                <if test="classId5 != null  and classId5 != ''"> and entity.class_id_5 = #{classId5}</if>
+                <if test="classId6 != null  and classId6 != ''"> and entity.class_id_6 = #{classId6}</if>
+                <if test="classId7 != null  and classId7 != ''"> and entity.class_id_7 = #{classId7}</if>
+                <if test="classId8 != null  and classId8 != ''"> and entity.class_id_8 = #{classId8}</if>
+                <if test="classId9 != null  and classId9 != ''"> and entity.class_id_9 = #{classId9}</if>
+                <if test="classId10 != null  and classId10 != ''"> and entity.class_id_10 = #{classId10}</if>
+                <if test="classId11 != null  and classId11 != ''"> and entity.class_id_11 = #{classId11}</if>
+                <if test="classId12 != null  and classId12 != ''"> and entity.class_id_12 = #{classId12}</if>
+                <if test="classId13 != null  and classId13 != ''"> and entity.class_id_13 = #{classId13}</if>
+                <if test="classId14 != null  and classId14 != ''"> and entity.class_id_14 = #{classId14}</if>
+                <if test="classId15 != null  and classId15 != ''"> and entity.class_id_15 = #{classId15}</if>
+                <if test="classId16 != null  and classId16 != ''"> and entity.class_id_16 = #{classId16}</if>
+                <if test="classId17 != null  and classId17 != ''"> and entity.class_id_17 = #{classId17}</if>
+                <if test="classId18 != null  and classId18 != ''"> and entity.class_id_18 = #{classId18}</if>
+                <if test="classId19 != null  and classId19 != ''"> and entity.class_id_19 = #{classId19}</if>
+                <if test="classId20 != null  and classId20 != ''"> and entity.class_id_20 = #{classId20}</if>
+                <if test="classId21 != null  and classId21 != ''"> and entity.class_id_21 = #{classId21}</if>
+                <if test="classId22 != null  and classId22 != ''"> and entity.class_id_22 = #{classId22}</if>
+                <if test="classId23 != null  and classId23 != ''"> and entity.class_id_23 = #{classId23}</if>
+                <if test="classId24 != null  and classId24 != ''"> and entity.class_id_24 = #{classId24}</if>
+                <if test="classId25 != null  and classId25 != ''"> and entity.class_id_25 = #{classId25}</if>
+                <if test="classId26 != null  and classId26 != ''"> and entity.class_id_26 = #{classId26}</if>
+                <if test="classId27 != null  and classId27 != ''"> and entity.class_id_27 = #{classId27}</if>
+                <if test="classId28 != null  and classId28 != ''"> and entity.class_id_28 = #{classId28}</if>
+                <if test="classId29 != null  and classId29 != ''"> and entity.class_id_29 = #{classId29}</if>
+                <if test="classId30 != null  and classId30 != ''"> and entity.class_id_30 = #{classId30}</if>
+                <if test="classId31 != null  and classId31 != ''"> and entity.class_id_31 = #{classId31}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteHrAttendanceGroupSonById" parameterType="Long">
+        update  t_hr_attendance_group_son set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrAttendanceGroupSonByIds" parameterType="String">
+        update  t_hr_attendance_group_son set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

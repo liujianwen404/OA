@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增招聘申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content" >
+        <form class="form-horizontal m" id="form-recruit-add">
+            <div class="form-group" style="background-color: beige">
+                <h3>需求信息</h3>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">申请人姓名：</label>
+                <div class="col-sm-3">
+                    <input name="empName" class="form-control" type="text" required>
+                </div>
+
+                <label class="col-sm-1 control-label is-required">申请部门：</label>
+                <div class="col-sm-3">
+                    <select name="recruitDeptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" required>
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+
+                <label class="col-sm-1 control-label is-required">申请日期：</label>
+                <div class="col-sm-3">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="applyDate" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">招聘岗位：</label>
+                <div class="col-sm-3">
+                    <select name="recruitPostId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" required>
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">申请到岗时间：</label>
+                <div class="col-sm-3">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="applyDutyDate" class="form-control" placeholder="yyyy-MM-dd" readonly="readonly" type="text" required>
+                    </div>
+                </div>
+                <label class="col-sm-1 control-label is-required">招聘人数：</label>
+                <div class="col-sm-3">
+                    <input name="recruitCount" class="form-control" type="number" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label "><span style="color: red; ">*</span>岗位职责啊：</label>
+                <div class="col-sm-8">
+                    <textarea name="recruitDescription" class="form-control" required></textarea>
+                </div>
+            </div>
+
+
+            <div class="form-group" style="background-color: beige">
+                <h3>资格要求</h3>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">学历：</label>
+                <div class="col-sm-3">
+                    <select name="recruitEducation" class="form-control m-b" th:with="type=${@dict.getType('sys_education')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">年龄下限：</label>
+                <div class="col-sm-3">
+                    <select name="recruitMinAge" class="form-control m-b" th:with="type=${@dict.getType('sys_age_limit')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">年龄上限：</label>
+                <div class="col-sm-3">
+                    <select name="recruitMaxAge" class="form-control m-b" th:with="type=${@dict.getType('sys_age_limit')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">婚姻：</label>
+                <div class="col-sm-3">
+                    <select name="recruitMarriage" class="form-control m-b" th:with="type=${@dict.getType('sys_marriage')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">性别：</label>
+                <div class="col-sm-3">
+                    <select name="recruitSex" class="form-control m-b" th:with="type=${@dict.getType('sys_user_sex')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">专业限制：</label>
+                <div class="col-sm-3">
+                    <input name="recruitMajor" class="form-control" type="text" required>
+                    <!--<select name="recruitMajor" class="form-control m-b" th:with="type=${@dict.getType('sys_major')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>-->
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">外语要求：</label>
+                <div class="col-sm-3">
+                    <input name="recruitEfl" class="form-control" type="text" required>
+                    <!--<select name="recruitEfl" class="form-control m-b" th:with="type=${@dict.getType('sys_EFL')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>-->
+                </div>
+                <label class="col-sm-1 control-label is-required">需要技能：</label>
+                <div class="col-sm-3">
+                    <input name="recruitSkill" class="form-control" type="text" required>
+                    <!--<select name="recruitSkill" class="form-control m-b" th:with="type=${@dict.getType('sys_skill')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>-->
+                </div>
+                <label class="col-sm-1 control-label is-required">薪资下限：</label>
+                <div class="col-sm-3">
+                    <select name="recruitMinSalary" class="form-control m-b" th:with="type=${@dict.getType('sys_salary')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-1 control-label is-required">薪资上限：</label>
+                <div class="col-sm-3">
+                    <select name="recruitMaxSalary" class="form-control m-b" th:with="type=${@dict.getType('sys_salary')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label">试用期：</label>
+                <div class="col-sm-3">
+                    <select name="recruitProbationDate" class="form-control m-b" th:with="type=${@dict.getType('sys_probation')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label is-required">试用期薪资：</label>
+                <div class="col-sm-3">
+                    <select name="recruitProbationSalary" class="form-control m-b" th:with="type=${@dict.getType('sys_salary')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">工作经验：</label>
+                <div class="col-sm-8">
+                    <textarea name="recruitJobDescription" class="form-control" required></textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">招聘类型：</label>
+                <div class="col-sm-8" style="margin-top: 5px">
+                    <div class="">
+                        需求 <input type="radio" name="recruitType" value="0" checked required>&nbsp;&nbsp;&nbsp;&nbsp;
+                        储备<input type="radio" name="recruitType" value="1" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">是否所有人可见：</label>
+                <div class="col-sm-8" style="margin-top: 5px">
+                    <div class="">
+                        是<input type="radio" name="showType" value="0" checked required>&nbsp;&nbsp;&nbsp;&nbsp;
+                        否<input type="radio" name="showType" value="1" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" hidden>
+                <label class="col-sm-3 control-label">发布状态：</label>
+                <div class="col-sm-8">
+                    <div class="">
+                        保存<input type="radio" name="releaseStatus" value="0" checked required>&nbsp;&nbsp;&nbsp;&nbsp;
+                        发布<input type="radio" name="releaseStatus" value="1" required>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/recruit"
+        $("#form-recruit-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler(type) {
+            // debugger
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-recruit-add').serialize());
+            }
+        }
+
+        function submitHandlerPush() {
+            // debugger
+            $(" input[name='releaseStatus']").each(function(){
+                if($(this).val() == 1){
+                    $(this).prop( "checked", true );
+                }
+            });
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-recruit-add').serialize());
+            }
+        }
+
+        $("input[name='applyDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='applyDutyDate']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+        /*// debugger
+        var btn1= $(" .layui-layer-btn0");
+        var btn2  = $("a .layui-layer-btn1");
+        var btn3= $(".layui-layer-btn .layui-layer-btn2");
+        btn1.css({
+            //css样式
+        })
+        btn1.css({
+            //css样式
+            //"属性名":"属性值",
+            "background-color":"#009688",
+
+        })*/
+
+    </script>
+</body>
+</html>

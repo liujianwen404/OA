@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('项目迭代任务列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div th:if="${addFlag}" class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" >
+                    <i class="fa fa-plus"></i> 添加
+                </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+     </div>
+     <th:block th:include="include :: footer" />
+     <script th:inline="javascript">
+         var statusDatas = [[${@dict.getType('sys_project_status')}]];
+         var priority = [[${@dict.getType('sys_project_priority')}]];
+         var prefix =  "/project/projectPlanTask";
+
+         var addFlag = [[${addFlag}]] == false ? "hidden" : "";
+         var parems = "";
+         parems = parems+"projectId=" + [[${projectId}]];
+         parems = parems+"&type=" + [[${type}]];
+         var projectPlanId = [[${projectPlanId}]];
+         parems = parems+"&projectPlanId="+ (projectPlanId == null ? "" : projectPlanId);
+
+         $(function() {
+             var options = {
+                 url: prefix + "/list?"+parems,
+                 createUrl: prefix + "/add?"+parems,
+                 updateUrl: prefix + "/edit/{id}?"+parems,
+                 removeUrl: prefix + "/remove",
+                 exportUrl: prefix + "/export",
+                 modalName: "项目迭代任务",
+                 columns: [
+                     {
+                         field: 'id',
+                         title: '任务id',
+                         visible: false
+                     },
+                     {
+                         field: 'projectId',
+                         title: '项目id',
+                         visible: false
+                     },{
+                         field: 'projectName',
+                         title: '项目名称'
+                     },
+                     {
+                         field: 'projectPlanId',
+                         title: '迭代id',
+                         visible: false
+                     },{
+                         field: 'projectPlanName',
+                         title: '迭代名称'
+                     },
+                     {
+                         field: 'name',
+                         title: '任务名称'
+                     },
+                     {
+                         field: 'contentDescribe',
+                         title: '描述'
+                     },
+                     {
+                         field: 'empId',
+                         title: '负责人',
+                         visible: false
+                     }, {
+                         field: 'empName',
+                         title: '负责人'
+                     },
+                     {
+                         field: 'startTime',
+                         title: '开始时间'
+                     },
+                     {
+                         field: 'endTime',
+                         title: '结束时间'
+                     },{
+                         field: 'priority',
+                         title: '优先级',
+                         formatter: function(value, row, index) {
+                             return $.table.selectDictLabel(priority, value);
+                         }
+                     },
+                     {
+                         field: 'status',
+                         title: '状态',
+                         formatter: function(value, row, index) {
+                             return $.table.selectDictLabel(statusDatas, value);
+                         }
+                     },
+                     {
+                         field: 'createId',
+                         title: '创建者id',
+                         visible: false
+                     },
+                     {
+                         field: 'updateId',
+                         title: '更新者id',
+                         visible: false
+                     },
+                     {
+                         field: 'remark',
+                         title: '备注',
+                         visible: false
+                     },
+                     {
+                         title: '操作',
+                         align: 'center',
+                         formatter: function(value, row, index) {
+                             var actions = [];
+                             if (row.status == 0 && '[[${projectPlan.status}]]' == '0'){
+                                 actions.push('<a class="btn btn-success btn-xs ' + addFlag + ' " href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                                 actions.push('<a class="btn btn-danger btn-xs ' + addFlag + ' " href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>关闭</a>');
+                                 if ((row.empId+"") == '[[${userId}]]'){
+                                     actions.push('<a class="btn btn-success btn-xs " href="javascript:void(0)" onclick="finishTask(\'' + row.id + '\')"><i class="fa fa-edit"></i>完成</a>');
+                                 }
+
+                             }
+                             return actions.join('');
+                         }
+                     }]
+             };
+             $.table.init(options);
+         });
+
+         function finishTask(id) {
+             $.modal.confirm("确定完成了吗?", function() {
+                 $.operate.submit(prefix + "/finishTask?id="+id);
+             });
+         }
+     </script>
+</body>
+</html>

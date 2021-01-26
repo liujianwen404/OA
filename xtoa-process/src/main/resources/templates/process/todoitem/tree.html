@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('字典树选择')" />
+	<th:block th:include="include :: ztree-css" />
+</head>
+<style>
+	body{height:auto;font-family: "Microsoft YaHei";}
+	button{font-family: "SimSun","Helvetica Neue",Helvetica,Arial;}
+</style>
+<body class="hold-transition box box-main">
+	<input id="treeId"   type="hidden" />
+	<input id="userId" type="hidden" />
+	<input id="userName" type="hidden" />
+	<input id="empNames" type="hidden" />
+	<input id="userNameShow" type="hidden" />
+	<div class="wrapper"><div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
+		<label id="btnShow" title="显示搜索" style="display:none;">︾</label>
+		<label id="btnHide" title="隐藏搜索">︽</label>
+	</div>
+	<div class="treeSearchInput" id="search">
+		<label for="keyword">关键字：</label><input type="text" class="empty" id="keyword" maxlength="50">
+		<button class="btn" id="btn" onclick="$.tree.searchNode()"> 搜索 </button>
+	</div>
+	<div id="tree" class="ztree treeselect"></div>
+	</div>
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: ztree-js" />
+	<script th:inline="javascript">
+
+		$(function() {
+			var url = ctx + "system/user/treeData";
+			var userIds = [[${userIds}]];
+			var options = {
+		        url: url,
+				expandLevel: 4,
+				onCheck : zOnCheck,
+				check: {
+					enable: true,             // 置 zTree 的节点上是否显示 checkbox / radio
+					chkStyle: "radio",
+				},
+                data: {
+                    key: {
+                        title: "title",         // 节点数据保存节点提示信息的属性名称
+                    },
+                    simpleData: {
+
+                        enable: true, //设置是否启用简单数据格式（zTree支持标准数据格式跟简单数据格式，上面例子中是标准数据格式）
+
+                        idKey: "deptId", //设置启用简单数据格式时id对应的属性名称
+
+                        pidKey: "pId" //设置启用简单数据格式时parentId对应的属性名称,ztree根据id及pid层级关系构建树结构
+
+                    },
+                },
+				checkedDate: userIds,
+		    };
+			$.tree.init(options);
+		});
+
+
+		function zTreeOnBeforeCheck(treeId, treeNode) {
+			// 获取当前所有被勾选数据的值
+			var treeObj = $.fn.zTree.getZTreeObj("tree");
+			var checkNodes = treeObj.getChangeCheckedNodes();
+			return true;
+		}
+		
+		function zOnCheck(event, treeId, treeNode) {
+			// debugger
+			// 获取当前所有被勾选数据的值
+			var treeObj = $.fn.zTree.getZTreeObj("tree");
+			var checkNodes = treeObj.getChangeCheckedNodes();
+
+			var userIds="";
+			var userNames="";
+			var userNameShows="";
+			var empNames="";
+
+			for ( var i=0 ; i < checkNodes.length ; i++ ){
+				if(checkNodes[i].id != null){
+					userIds+=checkNodes[i].id + ",";
+					userNames+=checkNodes[i].title + ",";
+					empNames+=checkNodes[i].empName + ",";
+					userNameShows+=checkNodes[i].name + ",";
+				}
+			}
+			$("#userId").val(userIds.substring(0,userIds.length-1));
+			$("#userName").val(userNames.substring(0,userNames.length-1));
+			$("#userNameShow").val(userNameShows.substring(0,userNameShows.length-1));
+			$("#empNames").val(empNames.substring(0,empNames.length-1));
+
+		}
+		
+		// function zTreeBeforeCheck(treeId, treeNode) {
+		// 	if (treeNode.children) {
+		// 		layer.msg('不可选择部门');
+		// 		return false;
+		// 	}
+		//
+		// }
+
+	</script>
+</body>
+</html>

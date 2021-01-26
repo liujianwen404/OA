@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>登录鲜恬人力管理系统</title>
+    <meta name="description" content="鲜恬人力管理系统">
+    <!-- 360浏览器急速模式 -->
+    <meta name="renderer" content="webkit">
+    <!-- 避免IE使用兼容模式 -->
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+        .main {
+            width: 100%;
+            height: 100%;
+            background: rgba(49, 29, 127, 0.3);
+            background-image: url(./img/newBcakground.jpg);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            -moz-background-size: 100% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .goHome {
+            width: 58px;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .content {
+            width: 94%;
+            height: 93%;
+            background: rgba(93, 113, 211, 0.39);
+            border-radius: 20px;
+            position: relative;
+        }
+        .contentIcon {
+            width: 234px;
+            position: absolute;
+            left: 34px;
+            top: 36px;
+        }
+        .contentName {
+            font-size: 42px;
+            color: #fff;
+            position: absolute;
+            left: 34px;
+            bottom: 61px;
+        }
+        .loginBox {
+            height: 100%;
+            background: #fff;
+            float: right;
+            padding: 100px 232px 177px 133px;
+            box-sizing: border-box;
+            border-radius: 0 20px 20px 0;
+            position: relative;
+        }
+        .loginTitle {
+            width: 100%;
+            /* height: 58px; */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 32px;
+            margin-bottom: 133px;
+        }
+        .titleUnderline {
+            width: 67px;
+            height: 4px;
+            background: #409eff;
+            border-radius: 2px;
+            margin: 0 auto;
+        }
+        .inputCommon {
+            width: 470px;
+            padding: 13px 0;
+            border-bottom: 1px solid #eef2fa;
+            margin-bottom: 42px;
+        }
+        .account {
+        }
+        .loginIcon {
+            width: 21px;
+        }
+        .accountInput {
+            font-size: 20px;
+            border: 0;
+            margin-left: 29px;
+            height: 28px;
+            line-height: 28px;
+        }
+        .accountInput:focus {
+            outline: 0;
+        }
+        .verifyBox {
+            width: 470px;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eef2fa;
+            margin-bottom: 50px;
+        }
+        .verifyNumber {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 179px;
+            height: 68px;
+            background: #409eff;
+            /*border-radius: 13px;*/
+            font-size: 20px;
+            color: #fff;
+            border: none;
+        }
+        .btn {
+            width: 470px;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 20px;
+        }
+        .loginBtn {
+            background: #409eff;
+            margin-bottom: 33px;
+            border: none;
+        }
+        .OAloginBtn {
+            background: #53ad6a;
+        }
+        .contentName768 {
+            display: none;
+            width: 100%;
+            height: 254px;
+        }
+        .loginBoxHome {
+            width: 58px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: none;
+        }
+        .nameP1 {
+            font-size: 32px;
+        }
+        .nameP2 {
+            font-size: 26px;
+        }
+        @media screen and (max-width: 1024px) {
+            .loginBox {
+                padding: 155px 20px 177px 20px;
+                border-radius: 0;
+            }
+            .goHome {
+                width: 40px;
+            }
+        }
+        @media screen and (max-width: 768px) {
+            .main {
+                display: block;
+                height: auto;
+                background: #fff;
+            }
+            .content {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 120px 0;
+            }
+            .goHome {
+                display: none;
+            }
+            .contentName {
+                display: none;
+            }
+            .loginBox {
+                width: 66%;
+                height: auto;
+                min-width: 320px;
+                padding: 20px 20px 90px 20px;
+                border-radius: 10px;
+            }
+            .contentName768 {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+            .loginBoxHome {
+                display: block;
+            }
+            .loginTitle {
+                font-size: 28px;
+                margin-bottom: 73px;
+            }
+            .inputCommon {
+                width: 72%;
+                min-width: 200px;
+                margin: 0 auto;
+                margin-bottom: 40px;
+            }
+            .verifyBox {
+                width: 77%;
+                min-width: 200px;
+                margin: 0 auto;
+                margin-bottom: 40px;
+            }
+            .verifyNumber {
+                width: 120px;
+                height: 46px;
+            }
+            .btn {
+                width: 84%;
+                margin: 0 auto;
+                margin-bottom: 30px;
+            }
+        }
+        @media screen and (max-width: 450px) {
+            .contentIcon {
+                width: 117px;
+            }
+            .loginBoxHome {
+                width: 29px;
+            }
+            .loginBox {
+                padding: 30px 10px;
+            }
+            .loginTitle {
+                font-size: 14px;
+                margin-bottom: 38px;
+            }
+            .titleUnderline {
+                width: 40px;
+            }
+            .inputCommon {
+                width: 85%;
+            }
+            .loginIcon {
+                width: 12px;
+            }
+            .accountInput {
+                margin-left: 15px;
+                font-size: 12px;
+            }
+            .verifyBox {
+                width: 85%;
+            }
+            .verifyNumber {
+                width: 60px;
+                height: 23px;
+                font-size: 12px;
+            }
+            .accountInput {
+                margin-left: 15px;
+            }
+            .btn {
+                height: 30px;
+                line-height: 30px;
+                font-size: 12px;
+            }
+            .contentName768 {
+                height: 127px;
+            }
+            .nameP1 {
+                font-size: 16px;
+            }
+            .nameP2 {
+                font-size: 13px;
+            }
+            .background-image{
+
+            }
+        }
+    </style>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="../static/favicon.ico" th:href="@{favicon.ico}"/>
+    <script>
+        if(window.top!==window.self){alert('未登录或登录超时。请重新登录');window.top.location=window.location};
+    </script>
+</head>
+<body>
+    <div class="main">
+        <img class="goHome" src="./img/goHome.png" alt="" />
+        <div class="content">
+            <img class="contentIcon icon" src="./img/newLogo.png" alt="" />
+            <div class="contentName">
+                <p style="margin-bottom: 17px">快马鲜生OA人力行政系统</p>
+                <p>Administrative System</p>
+            </div>
+            <div class="loginBox">
+                <img class="loginBoxHome" src="./img/gohome2.png" alt="" />
+                <div class="loginTitle">
+                    <p style="margin-bottom: 9px; text-align: center">欢迎登录</p>
+                    <p class="titleUnderline"></p>
+                </div>
+                <form id="signupForm" autocomplete="off">
+                    <input type="hidden" name="centreSysId" th:value="${centreSysId}">
+                    <input type="hidden" name="callBackUrl" th:value="${callBackUrl}">
+                    <div class="inputCommon account">
+                        <img class="loginIcon" src="./img/account.png" alt="" />
+                        <input
+                                name="username"
+                                class="accountInput"
+                                type="text"
+                                placeholder="请输入登录账号"
+                        />
+                    </div>
+                    <div class="inputCommon password">
+                        <img class="loginIcon" src="./img/password.png" alt="" />
+                        <input
+                                name="password"
+                                class="accountInput"
+                                type="password"
+                                placeholder="请输入登录密码"
+                        />
+                    </div>
+                    <div class="verifyBox">
+                        <input
+                                name="validateCode"
+                                class="accountInput"
+                                type="text"
+                                placeholder="请输入验证码"
+                        />
+    <!--                    <span th:src="@{captcha/captchaImage(type=${captchaType})}" class="imgcode verifyNumber">验证码</span>-->
+                        <img th:src="@{captcha/captchaImage(type=${captchaType})}" class="imgcode verifyNumber"/>
+                    </div>
+                    <div th:classappend="${captchaEnabled==false} ? 'm-t'" style="margin-bottom: 20px;">
+                        <input type="checkbox" id="rememberme" name="rememberme"> <label for="rememberme">记住我</label>
+                    </div>
+<!--                    <p class="btn loginBtn">登录</p>-->
+                    <button class="btn loginBtn" id="btnSubmit" data-loading="正在验证登录，请稍后...">登录</button>
+    <!--                <p class="btn OAloginBtn">OA一键登录</p>-->
+                </form>
+            </div>
+        </div>
+        <div class="contentName768">
+            <p
+                    class="nameP1"
+                    style="margin-bottom: 9px; color: #0067ed; text-align: center"
+            >
+                快马鲜生OA人力行政系统
+            </p>
+            <p class="nameP2" style="text-align: center">Administrative System</p>
+        </div>
+    </div>
+
+<script th:inline="javascript"> var ctx = [[@{/}]]; var captchaType = [[${captchaType}]]; </script>
+<!-- 全局js -->
+<script src="../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 验证插件 -->
+<script src="../static/ajax/libs/validate/jquery.validate.min.js" th:src="@{/ajax/libs/validate/jquery.validate.min.js}"></script>
+<script src="../static/ajax/libs/validate/messages_zh.min.js" th:src="@{/ajax/libs/validate/messages_zh.min.js}"></script>
+<script src="../static/ajax/libs/layer/layer.min.js" th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<script src="../static/ajax/libs/blockUI/jquery.blockUI.js" th:src="@{/ajax/libs/blockUI/jquery.blockUI.js}"></script>
+<script src="../static/ruoyi/js/ry-ui.js" th:src="@{/ruoyi/js/ry-ui.js?v=4.2.0}"></script>
+<script src="../static/ruoyi/login.js" th:src="@{/ruoyi/login.js}"></script>
+</body>
+</html>

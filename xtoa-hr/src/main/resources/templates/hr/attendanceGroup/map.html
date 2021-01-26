@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <th:block th:include="include :: header('考勤地图')" />
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+</head>
+<body>
+    <div id="container"></div>
+    <div class="info">
+        <div class="input-item">
+            <div class="input-item-prepend">
+                <span class="input-item-text" style="width:8rem;">请输入关键字</span>
+            </div>
+            <input id='tipinput' type="text">
+            <input name='scope' th:value="${scope}" type="hidden">
+            <input name='address' type="hidden">
+            <input name='longitude' type="hidden">
+            <input name='latitude' type="hidden">
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=4611f58483d79aa58bf6d2b508078f9c&plugin=AMap.Autocomplete,AMap.PlaceSearch"></script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <script th:inline="javascript">
+        //地图加载
+        var map = new AMap.Map("container", {
+            resizeEnable: true
+        });
+
+        //输入提示
+        var autoOptions = {
+            input: "tipinput"
+        };
+        var auto = new AMap.Autocomplete(autoOptions);
+        //构造地点查询类
+        var placeSearch = new AMap.PlaceSearch({
+            city: '',
+        });
+        //注册监听，当选中某条记录时会触发
+        AMap.event.addListener(auto, "select", select);
+        function select(e) {
+            placeSearch.search(e.poi.name);  //关键字查询查询
+            map.setZoomAndCenter(16, [e.poi.location.lng, e.poi.location.lat]); //同时设置地图层级与中心点
+
+            var scope = $("input[name=scope]").val();
+            var circle = new AMap.Circle({
+                center: [e.poi.location.lng, e.poi.location.lat],
+                radius: scope, //半径
+                borderWeight: 3,
+                strokeColor: "#FF33FF",
+                strokeOpacity: 1,
+                strokeWeight: 6,
+                strokeOpacity: 0.2,
+                fillOpacity: 0.4,
+                strokeStyle: 'dashed',
+                strokeDasharray: [10, 10],
+                // 线样式还支持 'dashed'
+                fillColor: '#1791fc',
+                zIndex: 50,
+            });
+
+            map.add(circle);
+
+            circle.setMap(map)
+            // 缩放地图到合适的视野级别
+            map.setFitView([ circle ])
+
+            //给隐藏表单域赋值保存
+            $("input[name=longitude]").val(e.poi.location.lng);
+            $("input[name=latitude]").val(e.poi.location.lat);
+            $("input[name=address]").val(e.poi.name);
+
+        }
+
+        function submitHandler() {
+            parent.$('#longitude').val($("input[name=longitude]").val());
+            parent.$('#latitude').val($("input[name=latitude]").val());
+            parent.$('#address').val($("input[name=address]").val());
+            $.modal.close();
+        }
+
+    </script>
+</body>
+</html>

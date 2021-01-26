@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.employee.mapper.EmployeeJobRecordMapper">
+    
+    <resultMap type="EmployeeJobRecord" id="EmployeeJobRecordResult">
+        <result property="id"    column="id"    />
+        <result property="employeeId"    column="employee_id"    />
+        <result property="employeeName"    column="employee_name"    />
+        <result property="company"    column="company"    />
+        <result property="city"    column="city"    />
+        <result property="position"    column="position"    />
+        <result property="entryTime"    column="entry_time"    />
+        <result property="leaveTime"    column="leave_time"    />
+        <result property="leaveProve"    column="leave_prove"    />
+        <result property="salary"    column="salary"    />
+        <result property="witness"    column="witness"    />
+        <result property="witnessPhone"    column="witness_phone"    />
+        <result property="status"    column="status"    />
+        <result property="leaveReason"    column="leave_reason"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectEmployeeJobRecordVo">
+        select id, employee_id, employee_name, company, city, position, entry_time, leave_time, leave_prove, salary, witness, witness_phone, status, leave_reason, del_flag, create_by, create_time, update_by, update_time, remark from employee_job_record
+    </sql>
+
+    <select id="selectEmployeeJobRecordList" parameterType="EmployeeJobRecord" resultMap="EmployeeJobRecordResult">
+        <include refid="selectEmployeeJobRecordVo"/>
+        <where>  
+            <if test="employeeId != null "> and employee_id = #{employeeId}</if>
+            <if test="employeeName != null  and employeeName != ''"> and employee_name like concat('%', #{employeeName}, '%')</if>
+            <if test="company != null  and company != ''"> and company = #{company}</if>
+            <if test="city != null  and city != ''"> and city = #{city}</if>
+            <if test="position != null  and position != ''"> and position = #{position}</if>
+            <if test="entryTime != null "> and entry_time = #{entryTime}</if>
+            <if test="leaveTime != null "> and leave_time = #{leaveTime}</if>
+            <if test="leaveProve != null  and leaveProve != ''"> and leave_prove = #{leaveProve}</if>
+            <if test="salary != null "> and salary = #{salary}</if>
+            <if test="witness != null  and witness != ''"> and witness = #{witness}</if>
+            <if test="witnessPhone != null  and witnessPhone != ''"> and witness_phone = #{witnessPhone}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="leaveReason != null  and leaveReason != ''"> and leave_reason = #{leaveReason}</if>
+        </where>
+    </select>
+    
+    <select id="selectEmployeeJobRecordById" parameterType="Long" resultMap="EmployeeJobRecordResult">
+        <include refid="selectEmployeeJobRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertEmployeeJobRecord" parameterType="EmployeeJobRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into employee_job_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="employeeId != null ">employee_id,</if>
+            <if test="employeeName != null  and employeeName != ''">employee_name,</if>
+            <if test="company != null  and company != ''">company,</if>
+            <if test="city != null  and city != ''">city,</if>
+            <if test="position != null  and position != ''">position,</if>
+            <if test="entryTime != null ">entry_time,</if>
+            <if test="leaveTime != null ">leave_time,</if>
+            <if test="leaveProve != null  and leaveProve != ''">leave_prove,</if>
+            <if test="salary != null ">salary,</if>
+            <if test="witness != null  and witness != ''">witness,</if>
+            <if test="witnessPhone != null  and witnessPhone != ''">witness_phone,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="leaveReason != null  and leaveReason != ''">leave_reason,</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="employeeId != null ">#{employeeId},</if>
+            <if test="employeeName != null  and employeeName != ''">#{employeeName},</if>
+            <if test="company != null  and company != ''">#{company},</if>
+            <if test="city != null  and city != ''">#{city},</if>
+            <if test="position != null  and position != ''">#{position},</if>
+            <if test="entryTime != null ">#{entryTime},</if>
+            <if test="leaveTime != null ">#{leaveTime},</if>
+            <if test="leaveProve != null  and leaveProve != ''">#{leaveProve},</if>
+            <if test="salary != null ">#{salary},</if>
+            <if test="witness != null  and witness != ''">#{witness},</if>
+            <if test="witnessPhone != null  and witnessPhone != ''">#{witnessPhone},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="leaveReason != null  and leaveReason != ''">#{leaveReason},</if>
+            <if test="delFlag != null  and delFlag != ''">#{delFlag},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateEmployeeJobRecord" parameterType="EmployeeJobRecord">
+        update employee_job_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="employeeId != null ">employee_id = #{employeeId},</if>
+            <if test="employeeName != null  and employeeName != ''">employee_name = #{employeeName},</if>
+            <if test="company != null  and company != ''">company = #{company},</if>
+            <if test="city != null  and city != ''">city = #{city},</if>
+            <if test="position != null  and position != ''">position = #{position},</if>
+            <if test="entryTime != null ">entry_time = #{entryTime},</if>
+            <if test="leaveTime != null ">leave_time = #{leaveTime},</if>
+            <if test="leaveProve != null  and leaveProve != ''">leave_prove = #{leaveProve},</if>
+            <if test="salary != null ">salary = #{salary},</if>
+            <if test="witness != null  and witness != ''">witness = #{witness},</if>
+            <if test="witnessPhone != null  and witnessPhone != ''">witness_phone = #{witnessPhone},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="leaveReason != null  and leaveReason != ''">leave_reason = #{leaveReason},</if>
+            <if test="delFlag != null  and delFlag != ''">del_flag = #{delFlag},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="remark != null  and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteEmployeeJobRecordById" parameterType="Long">
+        delete from employee_job_record where id = #{id}
+    </delete>
+
+    <delete id="deleteEmployeeJobRecordByIds" parameterType="String">
+        delete from employee_job_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

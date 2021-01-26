@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.FinancePaymentMapper">
+    <resultMap type="com.ruoyi.base.domain.FinancePayment" id="FinancePaymentResult">
+        <id property="id" column="id"/>
+            <result property="title" column="title"/>
+            <result property="reason" column="reason"/>
+            <result property="type" column="type"/>
+            <result property="companyType" column="company_type"/>
+            <result property="amount" column="amount"/>
+            <result property="mode" column="mode"/>
+            <result property="paymentDate" column="payment_date"/>
+            <result property="object" column="object"/>
+            <result property="bank" column="bank"/>
+            <result property="account" column="account"/>
+            <result property="attachment" column="attachment"/>
+            <result property="path" column="path"/>
+            <result property="empId" column="emp_id"/>
+            <result property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"/>
+            <result property="postId" column="post_id"/>
+            <result property="postName" column="post_name"/>
+            <result property="instanceId" column="instance_id"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="applyUserName" column="apply_user_name"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+            <result property="auditStatus" column="audit_status"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.title,
+            entity.reason,
+            entity.type,
+            entity.company_type,
+            entity.amount,
+            entity.mode,
+            entity.payment_date,
+            entity.object,
+            entity.bank,
+            entity.account,
+            entity.attachment,
+            entity.path,
+            entity.emp_id,
+            entity.dept_id,
+            entity.dept_name,
+            entity.post_id,
+            entity.post_name,
+            entity.instance_id,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.apply_user_name,
+            entity.del_flag,
+            entity.remark,
+            entity.audit_status
+        </sql>
+
+    <select id="selectFinancePaymentList" parameterType="com.ruoyi.base.domain.FinancePayment" resultMap="FinancePaymentResult">
+        select <include refid="baseColumns"/> from t_finance_payment entity
+        where  entity.del_flag = '0'
+            <if test="title != null  and title != ''"> and entity.title like concat('%', #{title}, '%')</if>
+            <if test="reason != null  and reason != ''"> and entity.reason = #{reason}</if>
+            <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+            <if test="companyType != null  and companyType != ''"> and entity.company_type = #{companyType}</if>
+            <if test="amount != null "> and entity.amount = #{amount}</if>
+            <if test="mode != null  and mode != ''"> and entity.mode = #{mode}</if>
+            <if test="paymentDate != null "> and entity.payment_date = #{paymentDate}</if>
+            <if test="object != null  and object != ''"> and entity.object = #{object}</if>
+            <if test="bank != null  and bank != ''"> and entity.bank = #{bank}</if>
+            <if test="account != null  and account != ''"> and entity.account = #{account}</if>
+            <if test="attachment != null  and attachment != ''"> and entity.attachment = #{attachment}</if>
+            <if test="path != null  and path != ''"> and entity.path = #{path}</if>
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+            <if test="deptId != null "> and entity.dept_id = #{deptId}</if>
+            <if test="deptName != null  and deptName != ''"> and entity.dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="postId != null "> and entity.post_id = #{postId}</if>
+            <if test="postName != null  and postName != ''"> and entity.post_name like concat('%', #{postName}, '%')</if>
+            <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+            <if test="createId != null "> and entity.create_id = #{createId}</if>
+            <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+            <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and entity.audit_status = #{auditStatus}</if>
+            <if test="createTime != null"> and DATE_FORMAT(entity.create_time,'%Y-%m-%d') = DATE_FORMAT(#{createTime}, '%Y-%m-%d')</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+
+    </select>
+
+
+    <update id="deleteFinancePaymentById" parameterType="Long">
+        update  t_finance_payment set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteFinancePaymentByIds" parameterType="String">
+        update  t_finance_payment set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

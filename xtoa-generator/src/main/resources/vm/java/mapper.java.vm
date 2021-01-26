@@ -1,0 +1,38 @@
+package ${packageName}.mapper;
+
+import com.ruoyi.common.mapper.MyBaseMapper;
+import ${packageName}.domain.${ClassName};
+import java.util.List;
+/**
+ * ${functionName} 数据层
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+public interface ${ClassName}Mapper extends MyBaseMapper<${ClassName}> {
+
+    /**
+     * 查询${functionName}列表
+     *
+     * @param ${className} ${functionName}
+     * @return ${functionName}集合
+     */
+    public List<${ClassName}> select${ClassName}List(${ClassName} ${className});
+
+    /**
+     * 删除${functionName}
+     *
+     * @param ${pkColumn.javaField} ${functionName}ID
+     * @return 结果
+     */
+    public int delete${ClassName}ById(${pkColumn.javaType} ${pkColumn.javaField});
+
+    /**
+     * 批量删除${functionName}
+     *
+     * @param ${pkColumn.javaField}s 需要删除的数据ID
+     * @return 结果
+     */
+    public int delete${ClassName}ByIds(String[] ${pkColumn.javaField}s);
+
+}

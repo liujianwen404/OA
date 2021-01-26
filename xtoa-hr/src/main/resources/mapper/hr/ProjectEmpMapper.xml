@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.ProjectEmpMapper">
+    <resultMap type="com.ruoyi.base.domain.ProjectEmp" id="ProjectEmpResult">
+        <id property="id" column="id"/>
+            <result property="projectId" column="project_id"/>
+            <result property="projectPlanId" column="project_plan_id"/>
+            <result property="projectPlanTaskId" column="project_plan_task_id"/>
+            <result property="empId" column="emp_id"/>
+            <result property="type" column="type"/>
+            <result property="createId" column="create_id"/>
+            <result property="updateId" column="update_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="remark" column="remark"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.project_id,
+            entity.project_plan_id,
+            entity.project_plan_task_id,
+            entity.emp_id,
+            entity.type,
+            entity.create_id,
+            entity.update_id,
+            entity.create_by,
+            entity.update_by,
+            entity.remark,
+            entity.del_flag,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+
+    <select id="selectProjectEmpList" parameterType="com.ruoyi.base.domain.ProjectEmp" resultMap="ProjectEmpResult">
+        select <include refid="baseColumns"/> from t_project_emp entity
+        where  entity.del_flag = '0'
+            <if test="projectId != null "> and entity.project_id = #{projectId}</if>
+                <if test="projectPlanId != null "> and entity.project_plan_id = #{projectPlanId}</if>
+                <if test="projectPlanTaskId != null "> and entity.project_plan_task_id = #{projectPlanTaskId}</if>
+                <if test="empId != null "> and entity.emp_id = #{empId}</if>
+                <if test="type != null "> and entity.type = #{type}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+
+    </select>
+
+
+    <update id="deleteProjectEmpById" parameterType="Long">
+        update  t_project_emp set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteProjectEmpByIds" parameterType="String">
+        update  t_project_emp set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="resetEmpToProject">
+        update  t_project_emp set project_plan_id = null , type = 0
+        where  emp_id in
+        <foreach item="id" collection="empIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+    <delete id="deleteProjectEmpByCallBack" parameterType="com.ruoyi.base.domain.ProjectEmp">
+        update  t_project_emp set del_flag =  '1',update_by = #{updateBy},update_id = #{updateId}
+        where del_flag =  '0' and project_id = #{projectId} and emp_id in
+        <foreach item="id" collection="empIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteProjectEmpByIdsByProjectId">
+        update  t_project_emp set del_flag =  '1' where project_id = #{pId} and type = 1 and del_flag = '0'
+        and  emp_id in
+        <foreach item="id" collection="empIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.AreaMapper">
+    <resultMap type="com.ruoyi.base.domain.Area" id="AreaResult">
+        <id property="id" column="id"/>
+            <result property="createddate" column="createdDate"/>
+            <result property="lastmodifieddate" column="lastModifiedDate"/>
+            <result property="version" column="version"/>
+            <result property="orders" column="orders"/>
+            <result property="fullname" column="fullName"/>
+            <result property="grade" column="grade"/>
+            <result property="name" column="name"/>
+            <result property="treepath" column="treePath"/>
+            <result property="parentId" column="parent_id"/>
+            <result property="alias" column="alias"/>
+            <result property="isOpen" column="is_open"/>
+            <result property="serverUrl" column="server_url"/>
+            <result property="isOpenServer" column="is_open_server"/>
+            <result property="h5Url" column="h5_url"/>
+            <result property="pushStoreId" column="push_store_id"/>
+            <result property="pushStoreName" column="push_store_name"/>
+            <result property="jxcUrl" column="jxc_url"/>
+            <result property="adminUrl" column="admin_url"/>
+            <result property="storageLat" column="storage_lat"/>
+            <result property="storageLng" column="storage_lng"/>
+            <result property="isOpenOrder" column="is_open_order"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.createdDate,
+            entity.lastModifiedDate,
+            entity.version,
+            entity.orders,
+            entity.fullName,
+            entity.grade,
+            entity.name,
+            entity.treePath,
+            entity.parent_id,
+            entity.alias,
+            entity.is_open,
+            entity.server_url,
+            entity.is_open_server,
+            entity.h5_url,
+            entity.push_store_id,
+            entity.push_store_name,
+            entity.jxc_url,
+            entity.admin_url,
+            entity.storage_lat,
+            entity.storage_lng,
+            entity.is_open_order
+        </sql>
+
+    <select id="selectAreaList" parameterType="com.ruoyi.base.domain.Area" resultMap="AreaResult">
+        select <include refid="baseColumns"/> from area entity
+        <where>
+            <if test="createddate != null "> and entity.createdDate = #{createddate}</if>
+                <if test="lastmodifieddate != null "> and entity.lastModifiedDate = #{lastmodifieddate}</if>
+                <if test="version != null "> and entity.version = #{version}</if>
+                <if test="orders != null "> and entity.orders = #{orders}</if>
+                <if test="fullname != null  and fullname != ''"> and entity.fullName like concat('%', #{fullname}, '%')</if>
+                <if test="grade != null "> and entity.grade = #{grade}</if>
+                <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+                <if test="treepath != null  and treepath != ''"> and entity.treePath = #{treepath}</if>
+                <if test="parentId != null "> and entity.parent_id = #{parentId}</if>
+                <if test="alias != null  and alias != ''"> and entity.alias = #{alias}</if>
+                <if test="isOpen != null "> and entity.is_open = #{isOpen}</if>
+                <if test="serverUrl != null  and serverUrl != ''"> and entity.server_url = #{serverUrl}</if>
+                <if test="isOpenServer != null "> and entity.is_open_server = #{isOpenServer}</if>
+                <if test="h5Url != null  and h5Url != ''"> and entity.h5_url = #{h5Url}</if>
+                <if test="pushStoreId != null  and pushStoreId != ''"> and entity.push_store_id = #{pushStoreId}</if>
+                <if test="pushStoreName != null  and pushStoreName != ''"> and entity.push_store_name like concat('%', #{pushStoreName}, '%')</if>
+                <if test="jxcUrl != null  and jxcUrl != ''"> and entity.jxc_url = #{jxcUrl}</if>
+                <if test="adminUrl != null  and adminUrl != ''"> and entity.admin_url = #{adminUrl}</if>
+                <if test="storageLat != null "> and entity.storage_lat = #{storageLat}</if>
+                <if test="storageLng != null "> and entity.storage_lng = #{storageLng}</if>
+                <if test="isOpenOrder != null "> and entity.is_open_order = #{isOpenOrder}</if>
+        </where>
+        order by orders asc
+    </select>
+
+
+    <update id="deleteAreaById" parameterType="Long">
+        update  area set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteAreaByIds" parameterType="String">
+        update  area set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

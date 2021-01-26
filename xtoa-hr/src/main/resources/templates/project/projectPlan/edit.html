@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改项目迭代')" />
+    <th:block th:include="include :: datetimepicker-css" />
+    <th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-projectPlan-edit" th:object="${projectPlan}">
+            <input name="id" th:field="*{id}" type="hidden">
+         <!--  <div class="form-group" hidden>
+                <label class="col-sm-3 control-label is-required">项目id：</label>
+                <div class="col-sm-8">
+                    <input name="projectId" th:field="*{projectId}" class="form-control" type="text">
+                </div>
+            </div>-->
+
+            <div class="form-group" >
+                <label class="col-sm-3 control-label is-required">迭代名称：</label>
+                <div class="col-sm-8">
+                    <input name="name" th:field="*{name}"  class="form-control" type="text">
+                </div>
+            </div>
+
+            <div class="form-group" id="empIdDiv">
+                <label class="col-sm-3 control-label is-required">负责人：</label>
+                <div class="col-sm-8">
+                    <div class='input-group'>
+                        <input class='form-control' type='hidden'  th:field="*{empId}" name="empId" id='empId' required>
+                        <input class='form-control' type='text'  id='userAuditName' th:value="${empUser.name}" readonly="readonly" required>
+                        <span class='input-group-addon input-sm' onclick='selectDictTree("", this)'>
+                            <i class='fa fa-search'>选择</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">所属项目：</label>
+                <div class="col-sm-8">
+                    <select id="projectId" class="form-control">
+                        <option th:each="projectSelectList:${projectSelectList}" th:value="${projectSelectList.id}" th:text="${projectSelectList.name}" th:field="*{projectId}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">迭代周期：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="startTime" th:value="${#dates.format(projectPlan.startTime, 'yyyy-MM-dd')}" class="form-control"  placeholder="请选择开始时间" type="text" required>
+                    </div>
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="endTime" th:value="${#dates.format(projectPlan.endTime, 'yyyy-MM-dd')}"  class="form-control" placeholder="请选择结束时间" type="text" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">迭代状态：</label>
+                <div class="col-sm-8">
+                    <select name="status" th:with="type=${@dict.getType('sys_project_status')}" class="form-control m-b">
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{status}"></option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">描述：</label>
+                <div class="col-sm-8">
+                    <textarea name="contentDescribe" th:field="*{contentDescribe}" id="contentDescribe" placeholder="给项目写点描述"  class="form-control"></textarea>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "project/projectPlan";
+        $("#form-projectPlan-edit").validate({
+            focusCleanup: true
+        });
+
+        $("input[name='name']").keyup(function(){
+            var str = $("input[name='name']").val();
+            if (str.length > 20 ){
+                $("input[name='name']").val(str.substring(0,20));
+                $.modal.alertWarning("字数限制在20字以内");
+            }
+        });
+
+        $("#contentDescribe").keyup(function(){
+            var str = $("#contentDescribe").val();
+            if (str.length > 100 ){
+                $("#contentDescribe").val(str.substring(0,100));
+                $.modal.alertWarning("字数限制在100字以内");
+            }
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+
+                var dataParam = $('#form-projectPlan-edit').serialize();
+                dataParam += "&projectId="+ $('#projectId').val();
+
+                $.operate.save(prefix + "/edit", dataParam);
+            }
+        }
+        $.fn.datetimepicker.dates['zh-CN'] = {
+            days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"],
+            daysShort: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+            daysMin:  ["日", "一", "二", "三", "四", "五", "六", "日"],
+            months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            today: "今天",
+            suffix: [],
+            meridiem: ["上午", "下午"]
+        };
+
+        $("input[name='startTime']").datetimepicker({
+            format:'yyyy-mm-dd',
+            startView:'year',
+            maxView:'year',
+            minView:'month',
+            autoclose:true,
+            pickerPosition: "bottom-left",
+            language:'zh-CN',
+        });
+
+        $("input[name='endTime']").datetimepicker({
+            format:'yyyy-mm-dd',
+            startView:'year',
+            maxView:'year',
+            minView:'month',
+            autoclose:true,
+            pickerPosition: "bottom-left",
+            language:'zh-CN',
+        });
+
+
+        function selectDictTree(columnId, obj) {
+            var url = ctx + "system/user/selectUserTree?projectId=" + $("#projectId").val();
+            var options = {
+                title: '选择审核人',
+                width: "380",
+                url: url,
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmit(index, layero){
+            // debugger
+            var body = layer.getChildFrame('body', index);
+            var userId = body.find('#userId').val();
+            var userNameShow = body.find('#userNameShow').val();
+            layer.close(index);
+            $("#empId").val(userId);
+            $("#userAuditName").val(userNameShow);
+            // document.getElementById("userName").value=userName;
+        }
+
+
+    </script>
+</body>
+</html>

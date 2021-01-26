@@ -1,0 +1,129 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="deptSearch" th:fragment="deptSearch">
+
+    <li >
+        <input type="hidden" id="deptIdSearch" name="deptId">
+        <label>所属部门：</label>
+        <select id="deptLevel_1" name="deptLevel_1" class="deptLevel_1" onchange="deptLevel_1Select(this)" style="width: 95px">
+        </select>
+        <span>-</span>
+        <select id="deptLevel_2" name="deptLevel_2" class="deptLevel_2" onchange="deptLevel_2Select(this)" style="width: 95px">
+            <option value="">请选择</option>
+        </select>
+
+        <span>-</span>
+        <select id="deptLevel_3" name="deptLevel_3" class="deptLevel_3" onchange="deptLevel_3Select(this)" style="width: 95px">
+            <option value="">请选择</option>
+        </select>
+    </li>
+
+    <script>
+        // debugger
+        var deptUrl = '/system/dept/roleDeptListById';
+        function deptLevel_1Select(obj){
+            if (obj && obj.value) {
+                var deptLevel_1 = obj.value;
+                //再利用ajax将数据传到后端，来获取到对应下拉框选项而出现的值
+                var config = {
+                    url: deptUrl,
+                    type: "get",
+                    dataType: "json",
+                    data: {"deptId":deptLevel_1},
+                    success: function(result) {
+                        if (result.code == 0){
+                            //对应的值传回，拼出html下拉框语句
+                            var tmp='<option value="">请选择</option>';
+                            var tmp1='<option value="">请选择</option>';
+
+                            for (var i in result.data){
+                                tmp +='<option value="'+result.data[i].deptId+'">'+result.data[i].deptName+'</option>';
+                            }
+                            $("#deptLevel_2").html(tmp);
+                            $("#deptLevel_3").html(tmp1);
+
+
+                            $("#deptIdSearch").val(deptLevel_1);
+
+                        }
+                    }
+                };
+                $.ajax(config);
+            }else {
+                $("#deptIdSearch").val("");
+                $("#deptLevel_2").html('<option value="">请选择</option>');
+                $("#deptLevel_3").html('<option value="">请选择</option>');
+            }
+        }
+        function deptLevel_2Select(obj){
+            if (obj && obj.value) {
+                var deptLevel_2 = obj.value;
+                //再利用ajax将数据传到后端，来获取到对应下拉框选项而出现的值
+                var config = {
+                    url: deptUrl,
+                    type: "get",
+                    dataType: "json",
+                    data: {"deptId":deptLevel_2},
+                    success: function(result) {
+                        if (result.code == 0){
+                            //对应的值传回，拼出html下拉框语句
+                            var tmp='<option value="">请选择</option>';
+                            for (var i in result.data){
+                                tmp +='<option value="'+result.data[i].deptId+'">'+result.data[i].deptName+'</option>';
+                            }
+                            $("#deptLevel_3").html(tmp);
+                            $("#deptIdSearch").val(deptLevel_2);
+
+                        }
+                    }
+                };
+                $.ajax(config);
+            }else {
+                $("#deptIdSearch").val("");
+                $("#deptLevel_3").html('<option value="">请选择</option>');
+            }
+        }
+
+        function deptLevel_3Select(obj){
+            var deptLevel_3 = obj.value;
+            if (deptLevel_3){
+                $("#deptIdSearch").val(deptLevel_3);
+            } else {
+                $("#deptIdSearch").val($("#deptLevel_2").val());
+            }
+        }
+
+        document.onreadystatechange = function() 　　//当页面加载状态改变的时候执行function
+        {
+            if(document.readyState == "complete")
+            { 　　//当页面加载状态为完全结束时进入
+                // debugger
+                var config = {
+                    url: deptUrl,
+                    type: "get",
+                    dataType: "json",
+                    data: "",
+                    beforeSend: function () {
+                    },
+                    success: function(result) {
+                        if (result.code == 0){
+                            // layer.alert(1122)
+                            //对应的值传回，拼出html下拉框语句
+                            var tmp='<option value="">请选择</option>';
+                            for (var i in result.data){
+                                tmp +='<option value="'+result.data[i].deptId+'">'+result.data[i].deptName+'</option>';
+                            }
+                            console.info("deptLevel_1:" + tmp);
+                            $("#deptLevel_1").html(tmp);
+                        }
+                    }
+                };
+                $.ajax(config);
+            }
+        };
+
+    </script>
+</div>
+</body>
+</html>

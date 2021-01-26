@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('招聘申请列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="addRecruit()" shiro:hasPermission="hr:recruit:add">
+                    <i class="fa fa-plus"></i> 新增岗位
+                </a>
+                <a class="btn btn-success" onclick="addInterpolate()" shiro:hasPermission="hr:interpolate:add">
+                    <i class="fa fa-plus"></i> 我要内推
+                </a>
+               <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="hr:recruit:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:recruit:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:recruit:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>-->
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:recruit:edit')}]];
+
+        var recruitDeptAllDatas = [[${@deptService.getDeptAll()}]];
+        var recruitPostAllDatas = [[${@postService.getPostAll()}]];
+
+        var prefix = ctx + "hr/recruit";
+        var prefixInterpolate = ctx + "hr/interpolate";
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                detailUrl: prefix + "/detail/{id}",
+                exportUrl: prefix + "/export",
+                modalName: "招聘申请",
+                uniqueId: "recruitId",
+                columns: [
+                    {
+                        title: '序号',
+                        formatter: function (value, row, index) {
+                            return index+1;
+                        }
+                    },
+                    {
+                        field: 'recruitPostId',
+                        title: '招聘岗位',
+                        formatter: function(value, row, index) {
+                           return $.table.selectPostLabel(recruitPostAllDatas, value);
+                        }
+
+                    },
+                    {
+                        field: 'recruitCount',
+                        title: '招聘人数'
+                    },
+                    {
+                        field: 'empName',
+                        title: '申请人'
+                    },
+                    {
+                        field: 'recruitDeptId',
+                        title: '申请部门',
+                        formatter: function(value, row, index) {
+                            return $.table.selectDeptLabel(recruitDeptAllDatas, value);
+                        }
+                    },
+
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.recruitId + '\')"><i class="fa fa-edit"></i>详情</a> ');
+
+                        if (row.releaseStatus == 0){
+                            actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="submitRecruit(\'' + row.recruitId + '\')"><i class="fa fa-remove"></i>提交</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function submitRecruit(recruitId) {
+            $.operate.post(prefix + "/submitRecruit", {"recruitId":recruitId},function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.alertSuccess(result.msg)
+                    } else if (result.code == web_status.WARNING) {
+                        $.modal.alertWarning(result.msg)
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                    $.modal.closeLoading();
+            });
+        }
+
+
+        function addRecruit() {
+            $.operate.openDiv("招聘岗位申请" ,  prefix + "/add",1300);
+        }
+
+        function addInterpolate() {
+            openDiv2("内推申请" ,  prefixInterpolate + "/add",1500);
+        }
+
+        function openDiv2(title, url, width, height, callback) {
+            //如果是移动端，就使用自适应大小弹窗
+            if ($.common.isMobile()) {
+                width = 'auto';
+                height = 'auto';
+            }
+            if ($.common.isEmpty(title)) {
+                title = false;
+            }
+            if ($.common.isEmpty(url)) {
+                url = "/404.html";
+            }
+            if ($.common.isEmpty(width)) {
+                width = 800;
+            }
+            if ($.common.isEmpty(height)) {
+                height = ($(window).height() - 50);
+            }
+
+            layer.open({
+                type: 2,
+                area: [width + 'px', height + 'px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: title,
+                content: url,
+                btn: ['保存', '关闭'],
+                // 弹层外区域关闭
+                shadeClose: false,
+                yes: function(index, layero) {
+                    // debugger
+                    var iframeWin = layero.find('iframe')[0];
+                    iframeWin.contentWindow.submitHandler(index, layero);
+                },
+                cancel: function(index) {
+                    // debugger
+                    return true;
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

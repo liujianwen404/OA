@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增项目迭代任务')" />
+   <th:block th:include="include :: datetimepicker-css" />
+<!--    <th:block th:include="include :: summernote-css" />-->
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-projectPlanTask-add">
+          <!--  <div class="form-group" hidden>
+                <label class="col-sm-3 control-label is-required">项目id：</label>
+                <div class="col-sm-8">
+                    <input name="projectId" th:value="${projectId}" class="form-control" type="text" required>
+                </div>
+            </div>-->
+           <!-- <div class="form-group" hidden>
+                <label class="col-sm-3 control-label is-required">迭代id：</label>
+                <div class="col-sm-8">
+                    <input name="projectPlanId" th:value="${projectPlanId}" class="form-control" type="text" required>
+                </div>
+            </div>-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">标题：</label>
+                <div class="col-sm-8">
+                    <input name="name" class="form-control" type="text"  placeholder="字数限制在200字以内" required>
+                    <span id="name" class="admin_modify_warn" style="display: none;"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">负责人：</label>
+                <div class="col-sm-8">
+                    <div class='input-group'>
+                        <input class='form-control' type='hidden' name="empId" id='empId' required>
+                        <input class='form-control' type='text'  id='userAuditName' readonly="readonly" required>
+                        <span class='input-group-addon input-sm' onclick='selectDictTree("", this)'>
+                            <i class='fa fa-search'>选择</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">提出人：</label>
+                <div class="col-sm-8">
+                    <div class='input-group'>
+                        <input class='form-control' type='hidden' name="introducerId" id='introducerId' required>
+                        <input class='form-control' type='text'  name='introducerName' readonly="readonly" required>
+                        <span class='input-group-addon input-sm' onclick='selectToDictTree("", this)'>
+                            <i class='fa fa-search'>选择</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">所属项目：</label>
+                <div class="col-sm-8">
+                    <select name="projectId"  class="form-control" onchange="changeLac(this.value)">
+                        <option th:each="projectSelectList:${projectSelectList}" th:value="${projectSelectList.id}" th:text="${projectSelectList.name}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">所属迭代：</label>
+                <div class="col-sm-8">
+                    <select id="projectPlanId" class="form-control">
+                        <option th:each="projectPlanSelectList:${projectPlanSelectList}" th:value="${projectPlanSelectList.id}" th:text="${projectPlanSelectList.name}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">开始时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="startTime" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">结束时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="endTime" class="form-control" readonly="readonly" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">优先级：</label>
+                <div class="col-sm-8">
+                    <select name="priority" th:with="type=${@dict.getType('sys_project_priority')}"  class="form-control m-b" >
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label is-required">状态：</label>
+                <div class="col-sm-8">
+                    <select name="status" th:with="type=${@dict.getType('sys_project_task_status')}"  class="form-control m-b" >
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">描述：</label>
+                <div class="col-sm-8">
+                    <div>
+                        <textarea  name="contentDescribe" id="contentDescribe" class="form-control" placeholder="给项目写点描述"></textarea>
+                    </div>
+                </div>
+            </div>
+
+           <!-- <div class="form-group">
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('sys_project_status')}">
+                        <input type="radio" th:id="${'status_' + dict.dictCode}" name="status" th:value="${dict.dictValue}" th:checked="${dict.default}" required>
+                        <label th:for="${'status_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">创建者id：</label>
+                <div class="col-sm-8">
+                    <input name="createId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">更新者id：</label>
+                <div class="col-sm-8">
+                    <input name="updateId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">删除标志：</label>
+                <div class="col-sm-8">
+                    <input name="delFlag" class="form-control" type="text">
+                </div>
+            </div>-->
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+<!--    <th:block th:include="include :: summernote-js" />-->
+    <script type="text/javascript">
+        var prefix = ctx + "project/projectPlanTask"
+        $("#form-projectPlanTask-add").validate({
+            focusCleanup: true
+        });
+
+        function changeLac(value){
+            var projectId=value;
+            $.post(prefix+'/getProjectPlanSelectList?dataType=json', {"projectId":projectId},function(data){
+                $("#projectPlanId").empty();
+                for(var projectPlan in data){
+                    $("#projectPlanId").append("<option value='"+data[projectPlan].id+"'>"+data[projectPlan].name+"</option>");
+                }
+            });
+        }
+
+        $("input[name='name']").keyup(function(){
+            var str = $("input[name='name']").val();
+            if (str.length > 200 ){
+                $("input[name='name']").val(str.substring(0,200));
+                $.modal.alertWarning("字数限制在200字以内");
+            }
+        });
+
+        $("#contentDescribe").keyup(function(){
+            var str = $("#contentDescribe").val();
+            if (str.length > 500 ){
+                $("#contentDescribe").val(str.substring(0,500));
+                $.modal.alertWarning("字数限制在500字以内");
+            }
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                var startTime = $("input[name='startTime']").data("datetimepicker").getDate();
+                var endTime = $("input[name='endTime']").data("datetimepicker").getDate();
+                if (startTime > endTime){
+                    $.modal.alertWarning("开始时间不能在结束时间之后。");
+                    return;
+                }
+
+                var dataParam = $('#form-projectPlanTask-add').serialize();
+                var projectPlanIdVal= $('#projectPlanId').val();
+                if(projectPlanIdVal!=null){
+                    dataParam += "&projectPlanId="+projectPlanIdVal;
+                }
+                dataParam += "&projectId="+ $("input[name='projectId']").val();
+
+                $.operate.save(prefix + "/add", dataParam);
+            }
+        }
+
+
+
+        $.fn.datetimepicker.dates['zh-CN'] = {
+            days: ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"],
+            daysShort: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+            daysMin:  ["日", "一", "二", "三", "四", "五", "六", "日"],
+            months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+            today: "今天",
+            suffix: [],
+            meridiem: ["上午", "下午"]
+        };
+
+        $("input[name='startTime']").datetimepicker({
+            format:'yyyy-mm-dd',
+            startView:'year',
+            maxView:'year',
+            minView:'month',
+            autoclose:true,
+            pickerPosition: "bottom-left",
+            language:'zh-CN',
+        });
+
+        $("input[name='endTime']").datetimepicker({
+            format:'yyyy-mm-dd',
+            startView:'year',
+            maxView:'year',
+            minView:'month',
+            autoclose:true,
+            pickerPosition: "bottom-left",
+            language:'zh-CN',
+        });
+
+
+        function selectDictTree(columnId, obj) {
+            // var dictType = $.common.nullToStr($(obj).parent().find("input").val());
+            var url = ctx + "system/user/selectUserTree";
+            var options = {
+                title: '选择审核人',
+                width: "380",
+                url: url,
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmit(index, layero){
+            // debugger
+            var body = layer.getChildFrame('body', index);
+            var userId = body.find('#userId').val();
+            var userNameShow = body.find('#userNameShow').val();
+            layer.close(index);
+            $("#empId").val(userId);
+            $("#userAuditName").val(userNameShow);
+            // document.getElementById("userName").value=userName;
+        }
+
+
+        function selectToDictTree(columnId, obj) {
+            var url = ctx + "system/user/selectUserTree"
+            var options = {
+                title: '选择审核人',
+                width: "380",
+                url: url,
+                callBack: doToSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doToSubmit(index, layero){
+
+             var body = layer.getChildFrame('body', index);
+             var userId = body.find('#userId').val();
+             var userNameShow = body.find('#userNameShow').val();
+             layer.close(index);
+            $("input[name='introducerId']").val(userId);
+            $("input[name='introducerName']").val(userNameShow);
+
+            // document.getElementById("userName").value=userName;
+        }
+
+    </script>
+</body>
+</html>

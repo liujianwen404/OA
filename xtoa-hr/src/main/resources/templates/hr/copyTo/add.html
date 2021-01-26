@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增流程抄送关系')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-copyTo-add">
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">抄送流程：</label>
+                <div class="col-sm-8">
+                    <select name="processKey" id="processKey" class="form-control m-b" th:with="processKey=${@dict.getType('process_key')}" required>
+                        <option th:each="dict : ${processKey}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label labelReqerd">抄送人：</label>
+                <div class="col-sm-8">
+                    <div class='input-group'>
+                        <input class='form-control' type='hidden' name='empId' id='empId' required>
+                        <input class='form-control' type='hidden' name='userId' id='userId' required>
+                        <input class='form-control' type='text' name='empName' id='empName' readonly="readonly" required>
+                        <span class='input-group-addon input-sm' onclick='selectEmpTree("", this)'>
+                            <i class='fa fa-search'>选择</i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/copyTo"
+        $("#form-copyTo-add").validate({
+            focusCleanup: true
+        });
+
+        // 选择字典处理函数
+        function selectEmpTree(columnId, obj) {
+            // var dictType = $.common.nullToStr($(obj).parent().find("input").val());
+            var url = ctx + "system/user/selectUserTreeCheckbox";
+            var options = {
+                title: '选择流程抄送人员',
+                width: "380",
+                url: url,
+                callBack: doSubmit
+            };
+            $.modal.openOptions(options);
+        }
+
+        function doSubmit(index){
+            // debugger
+            var body = layer.getChildFrame('body', index);
+            var userId = body.find('#userId').val();
+            var empName = body.find('#empName').val();
+            var userNameShow = body.find('#userNameShow').val();
+            layer.close(index);
+            $("#empId").val(userId);
+            $("#userId").val(userId);
+            $("#empName").val(empName);
+            // $("#auditName").val(loginName);
+            // document.getElementById("userName").value=userName;
+        }
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-copyTo-add').serialize());
+            }
+        }
+    </script>
+</body>
+</html>

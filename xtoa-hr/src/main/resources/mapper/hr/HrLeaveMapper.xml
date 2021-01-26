@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrLeaveMapper">
+
+    <resultMap type="com.ruoyi.base.domain.HrLeave" id="HrLeaveResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="title"    column="title"    />
+        <result property="reason"    column="reason"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="totalTime"    column="total_time"    />
+        <result property="totalHours"    column="total_hours"    />
+        <result property="instanceId"    column="instance_id"    />
+        <result property="createId"    column="create_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="applyUser"    column="apply_user"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="applyUserNum" column="apply_user_num"/>
+        <result property="applyUserName" column="apply_user_name"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="postId" column="post_id"/>
+        <result property="imgUrls" column="img_urls"/>
+        <result property="empId" column="emp_id"/>
+        <result property="holidayIds" column="holiday_ids"/>
+    </resultMap>
+
+    <sql id="selectHrLeave">
+        select id, type, title, reason, start_time, end_time, total_time, total_hours, instance_id, create_by,img_urls,
+         create_time, update_by, update_time, apply_user, apply_time , apply_user_num, apply_user_name,emp_id,holiday_ids,
+          audit_status ,del_flag,dept_id,post_id,create_id from t_hr_leave
+    </sql>
+
+    <sql id="selectHrLeaveView">
+        select entity.id, entity.type, entity.title, entity.reason, entity.start_time, entity.end_time, entity.total_time,
+         entity.total_hours, entity.instance_id, entity.create_by,entity.img_urls,
+         entity.create_time, entity.update_by, entity.update_time, entity.apply_user, entity.apply_time ,
+          entity.apply_user_num, entity.apply_user_name,entity.emp_id,entity.holiday_ids,
+          entity.audit_status ,entity.del_flag,entity.dept_id,entity.post_id,entity.create_id from t_hr_leave entity
+    </sql>
+
+
+    <select id="selectHrLeaveList" parameterType="com.ruoyi.base.domain.HrLeave" resultMap="HrLeaveResult">
+        <include refid="selectHrLeave"/>
+        <where>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="startTime != null "> and start_time = #{startTime}</if>
+            <if test="endTime != null "> and end_time = #{endTime}</if>
+            <if test="totalTime != null "> and total_time = #{totalTime}</if>
+            <if test="totalHours != null "> and total_hours = #{totalHours}</if>
+            <if test="instanceId != null  and instanceId != ''"> and instance_id = #{instanceId}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="createId != null ">and create_id = #{createId}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(start_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(end_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="postId != null "> and post_id = #{postId}</if>
+            <if test="empId != null "> and emp_id = #{empId}</if>
+            and del_flag = 0
+        </where>
+    </select>
+
+    <select id="selectHrLeaveViewList" parameterType="com.ruoyi.base.domain.HrLeave" resultMap="HrLeaveResult">
+        <include refid="selectHrLeaveView"/>
+        LEFT JOIN t_hr_emp e ON entity.emp_id = e.emp_id
+        LEFT JOIN sys_dept d ON e.dept_id = d.dept_id
+        <where>
+            <if test="type != null  and type != ''"> and entity.type = #{type}</if>
+            <if test="title != null  and title != ''"> and entity.title like concat('%', #{title}, '%')</if>
+            <if test="reason != null  and reason != ''"> and entity.reason = #{reason}</if>
+            <if test="startTime != null "> and entity.start_time = #{startTime}</if>
+            <if test="endTime != null "> and entity.end_time = #{endTime}</if>
+            <if test="totalTime != null "> and entity.total_time = #{totalTime}</if>
+            <if test="totalHours != null "> and entity.total_hours = #{totalHours}</if>
+            <if test="instanceId != null  and instanceId != ''"> and entity.instance_id = #{instanceId}</if>
+            <if test="createBy != null  and createBy != ''"> and entity.create_by = #{createBy}</if>
+            <if test="createId != null ">and entity.create_id = #{createId}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(entity.start_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(entity.end_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+
+            <if test="empId != null "> and entity.emp_id = #{empId}</if>
+
+            <if test="auditStatus != null and auditStatus != '' "> and entity.audit_status = #{auditStatus} </if>
+            <if test="applyUserName != null  and applyUserName != ''"> and entity.apply_user_name like concat('%', #{applyUserName}, '%')</if>
+            <if test="deptId != null ">
+                and ( entity.dept_id = #{deptId} or entity.dept_id
+                IN (SELECT dept_id FROM sys_dept WHERE ancestors like CONCAT(CONCAT_WS(',',(SELECT ancestors FROM sys_dept
+                WHERE dept_id = #{deptId} and STATUS = '0' and del_flag = '0'),#{deptId}),'%') and STATUS = '0' and del_flag = '0'))</if>
+            <if test="postId != null "> and entity.post_id = #{postId}</if>
+
+            and entity.del_flag = 0
+        </where>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by entity.create_time desc
+    </select>
+
+    <select id="selectHrLeaveById" parameterType="Long" resultMap="HrLeaveResult">
+        <include refid="selectHrLeave"/>
+        where id = #{id} and del_flag = 0
+    </select>
+
+    <insert id="insertHrLeave" parameterType="com.ruoyi.base.domain.HrLeave" useGeneratedKeys="true" keyProperty="id">
+        insert into t_hr_leave
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="type != null  and type != ''">type,</if>
+            <if test="title != null  and title != ''">title,</if>
+            <if test="reason != null  and reason != ''">reason,</if>
+            <if test="startTime != null ">start_time,</if>
+            <if test="endTime != null ">end_time,</if>
+            <if test="totalTime != null ">total_time,</if>
+            <if test="totalHours != null ">total_hours,</if>
+            <if test="instanceId != null  and instanceId != ''">instance_id,</if>
+            <if test="createBy != null  and createBy != ''">create_by,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateBy != null  and updateBy != ''">update_by,</if>
+            <if test="updateTime != null ">update_time,</if>
+            <if test="applyUser != null ">apply_user,</if>
+            <if test="applyTime != null ">apply_time,</if>
+            <if test="applyUserNum != null  and applyUserNum != ''">apply_user_num,</if>
+            <if test="applyUserName != null  and applyUserName != ''">apply_user_name,</if>
+            <if test="deptId != null ">dept_id,</if>
+            <if test="postId != null ">post_id,</if>
+            <if test="auditStatus != null ">audit_status,</if>
+            <if test="imgUrls != null and imgUrls != ''  ">img_urls,</if>
+            <if test="createId != null ">create_id,</if>
+            <if test="empId != null ">emp_id,</if>
+            <if test="holidayIds != null ">holiday_ids,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="type != null  and type != ''">#{type},</if>
+            <if test="title != null  and title != ''">#{title},</if>
+            <if test="reason != null  and reason != ''">#{reason},</if>
+            <if test="startTime != null ">#{startTime},</if>
+            <if test="endTime != null ">#{endTime},</if>
+            <if test="totalTime != null ">#{totalTime},</if>
+            <if test="totalHours != null ">#{totalHours},</if>
+            <if test="instanceId != null  and instanceId != ''">#{instanceId},</if>
+            <if test="createBy != null  and createBy != ''">#{createBy},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+            <if test="applyUser != null ">#{applyUser},</if>
+            <if test="applyTime != null ">#{applyTime},</if>
+            <if test="applyUserNum != null ">#{applyUserNum},</if>
+            <if test="applyUserName != null ">#{applyUserName},</if>
+            <if test="deptId != null ">#{deptId},</if>
+            <if test="postId != null ">#{postId},</if>
+            <if test="auditStatus != null ">#{auditStatus},</if>
+            <if test="imgUrls != null and imgUrls != ''  ">#{imgUrls},</if>
+            <if test="createId != null ">#{createId},</if>
+            <if test="empId != null ">#{empId},</if>
+            <if test="holidayIds != null ">#{holidayIds},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHrLeave" parameterType="com.ruoyi.base.domain.HrLeave">
+        update t_hr_leave
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null  and type != ''">type = #{type},</if>
+            <if test="title != null  and title != ''">title = #{title},</if>
+            <if test="reason != null  and reason != ''">reason = #{reason},</if>
+            <if test="startTime != null ">start_time = #{startTime},</if>
+            <if test="endTime != null ">end_time = #{endTime},</if>
+            <if test="totalTime != null ">total_time = #{totalTime},</if>
+            <if test="totalHours != null ">total_hours = #{totalHours},</if>
+            <if test="instanceId != null  and instanceId != ''">instance_id = #{instanceId},</if>
+            <if test="createBy != null  and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateBy != null  and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+            <if test="applyUser != null ">apply_user = #{applyUser},</if>
+            <if test="applyTime != null ">apply_time = #{applyTime},</if>
+            <if test="applyUserNum != null ">apply_user_num = #{applyUserNum},</if>
+            <if test="applyUserName != null ">apply_user_name = #{applyUserName},</if>
+            <if test="realityStartTime != null ">reality_start_time = #{realityStartTime},</if>
+            <if test="realityEndTime != null ">reality_end_time = #{realityEndTime},</if>
+            <if test="deptId != null ">dept_id = #{deptId},</if>
+            <if test="postId != null ">post_id = #{postId},</if>
+            <if test="imgUrls != null  ">img_urls = #{imgUrls},</if>
+            <if test="createId != null "> create_id = #{createId},</if>
+            <if test="empId != null "> emp_id = #{empId},</if>
+            <if test="holidayIds != null ">holiday_ids = #{holidayIds},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteHrLeaveById" parameterType="Long">
+        update  t_hr_leave set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrLeaveByIds" parameterType="String">
+        update  t_hr_leave set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectHrLeaveByCondition" resultType="com.ruoyi.base.domain.HrLeave">
+        SELECT
+            *
+        FROM
+            t_hr_leave a
+        WHERE
+            1 = 1
+            AND a.apply_user = #{applyUser}
+            AND a.apply_time = #{applyTime}
+            AND a.start_time = #{startTime}
+            AND a.end_time = #{endTime}
+            AND a.type = #{type}
+            AND a.del_flag =  '0'
+    </select>
+
+    <select id="selectLeaveByType" resultType="double">
+        SELECT
+            IFNULL(SUM(a.total_hours),0) as hours
+        FROM
+            t_hr_leave a
+        WHERE
+            1 = 1
+            AND a.del_flag =  '0'
+            AND a.audit_status = 2
+            AND a.emp_id = #{empId}
+            AND YEAR(a.start_time) = #{year}
+            AND MONTH(a.start_time) = #{month}
+            AND a.type = #{type}
+    </select>
+
+</mapper>

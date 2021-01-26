@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('日期列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li class="select-time">
+                                <label>日期：</label>
+                                <input type="text" class="time-input" id="startTime"
+                                       placeholder="开始时间" name="params[beginDay]"/>
+                                <span>-</span>
+                                <input type="text" class="time-input" id="endTime"
+                                       placeholder="结束时间" name="params[endDay]"/>
+                            </li>
+                            <!--<li>
+                                <label>是否为节假日：</label>
+                                <input type="text" name="flag"/>
+                            </li>-->
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-sm-12 select-table table-striped">
+                <table class="my-bootstrap-table" id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:date:edit')}]];
+        // var removeFlag = [[${@permission.hasPermi('hr:date:remove')}]];
+        var prefix = ctx + "hr/date";
+
+        $(function() {
+            var date = new Date();
+            date.setDate(date.getDate() + 1);
+            $("#startTime").val(date.Format("yyyy-MM-dd"));
+            // $("#endTime").val(new Date());
+
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "日期",
+                columns: [
+                {
+                    field: 'id', 
+                    title: '主键ID',
+                    visible: false
+                },
+                {
+                    field: 'day', 
+                    title: '日期'
+                },
+                {
+
+                    visible: editFlag == 'hidden' ? false : true,
+                    title: '是否为节假日',
+                    align: 'center',
+                    field: 'flag',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                }
+                ]
+            };
+            $.table.init(options);
+        });
+
+        /* 节假日状态显示 */
+        function statusTools(row) {
+            if (row.flag == 0) {
+                return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="start(\'' + row.id +'\',\''+ row.day +  '\')"></i> ';
+            } else {
+                return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="stop(\'' + row.id +'\',\''+ row.day +  '\')"></i> ';
+            }
+        }
+        /* 节假日状态-否 */
+        function stop(id,day) {
+            $.modal.confirm("更改此选项会影响考勤汇总报表数据统计，确认设置？", function() {
+                $.operate.post(prefix + "/changeStatus", { "id": id , "day":day ,  "flag": 0 });
+            })
+        }
+
+        /* 节假日状态-是 */
+        function start(id,day) {
+            $.modal.confirm("更改此选项会影响考勤汇总报表数据统计，确认设置？", function() {
+                $.operate.post(prefix + "/changeStatus", { "id": id, "day":day ,  "flag": 1 });
+            })
+        }
+
+    </script>
+</body>
+</html>

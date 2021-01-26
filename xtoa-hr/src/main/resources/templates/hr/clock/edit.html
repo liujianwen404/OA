@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改补卡申请')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-clock-edit" th:object="${hrFillClock}">
+            <input name="id" th:field="*{id}" type="hidden">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">部门：</label>
+                <div class="col-sm-8">
+                    <select name="deptId" class="form-control m-b" th:with="deptAll=${@deptService.getDeptAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}" th:selected="${dept.getDeptId() == hrEmp?.deptId}" th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">岗位：</label>
+                <div class="col-sm-8">
+                    <select name="postId" class="form-control m-b" th:with="postAll=${@postService.getPostAll()}" disabled="disabled">
+                        <option value="">请选择</option>
+                        <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:selected="${post.getPostId() == hrEmp?.postId}" th:hidden="${post.getStatus() == '1'}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请人：</label>
+                <div class="col-sm-8">
+                    <input name="applyUser" th:field="*{applyUserName}" class="form-control" type="text" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">申请时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="applyTime" th:value="${#dates.format(hrFillClock.applyTime, 'yyyy-MM-dd')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">原因：</label>
+                <div class="col-sm-8">
+                    <textarea name="reason" class="form-control" required>[[*{reason}]]</textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">补卡类型：</label>
+                <div class="col-sm-8">
+                    <select class="form-control noselect2 selectpicker" name="checkType" required>
+                        <option value="">请选择</option>
+                        <option th:text="上班" th:selected="${hrFillClock.checkType == 'OnDuty'}"  th:value="OnDuty"></option>
+                        <option th:text="下班" th:selected="${hrFillClock.checkType == 'OffDuty'}"  th:value="OffDuty"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">补卡时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="dates" th:value="${#dates.format(hrFillClock.dates, 'yyyy-MM-dd HH:mm:ss')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">第一次未打卡：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="firstTime" th:value="${#dates.format(hrFillClock.firstTime, 'yyyy-MM-dd HH:mm:ss')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">第二次未打卡：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="secondTime" th:value="${#dates.format(hrFillClock.secondTime, 'yyyy-MM-dd HH:mm:ss')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">第三次未打卡：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="thirdTime" th:value="${#dates.format(hrFillClock.thirdTime, 'yyyy-MM-dd HH:mm:ss')}"  readonly="readonly"  class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "hr/clock";
+        $("#form-clock-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $("select[name=deptId]").attr("disabled",false);
+                $("select[name=postId]").attr("disabled",false);
+                $.operate.save(prefix + "/edit", $('#form-clock-edit').serialize());
+            }
+        }
+
+        $("input[name='dates']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+        $("input[name='firstTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+        $("input[name='secondTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+        $("input[name='thirdTime']").datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            minView: 0,
+            autoclose: true
+        });
+
+    </script>
+</body>
+</html>

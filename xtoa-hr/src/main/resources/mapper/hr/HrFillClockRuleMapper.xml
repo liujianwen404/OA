@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.hr.mapper.HrFillClockRuleMapper">
+    <resultMap type="com.ruoyi.base.domain.HrFillClockRule" id="HrFillClockRuleResult">
+        <id property="id" column="id"/>
+            <result property="january" column="january"/>
+            <result property="february" column="february"/>
+            <result property="march" column="march"/>
+            <result property="april" column="april"/>
+            <result property="may" column="may"/>
+            <result property="june" column="june"/>
+            <result property="july" column="july"/>
+            <result property="august" column="august"/>
+            <result property="september" column="september"/>
+            <result property="october" column="october"/>
+            <result property="november" column="november"/>
+            <result property="december" column="december"/>
+            <result property="createId" column="create_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateId" column="update_id"/>
+            <result property="updateBy" column="update_by"/>
+            <result property="updateTime" column="update_time"/>
+            <result property="delFlag" column="del_flag"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.january,
+            entity.february,
+            entity.march,
+            entity.april,
+            entity.may,
+            entity.june,
+            entity.july,
+            entity.august,
+            entity.september,
+            entity.october,
+            entity.november,
+            entity.december,
+            entity.create_id,
+            entity.create_by,
+            entity.create_time,
+            entity.update_id,
+            entity.update_by,
+            entity.update_time,
+            entity.del_flag,
+            entity.remark
+        </sql>
+
+    <select id="selectHrFillClockRuleList" parameterType="com.ruoyi.base.domain.HrFillClockRule" resultMap="HrFillClockRuleResult">
+        select <include refid="baseColumns"/> from t_hr_fill_clock_rule entity
+        where  entity.del_flag = '0'
+            <if test="january != null "> and entity.january = #{january}</if>
+                <if test="february != null "> and entity.february = #{february}</if>
+                <if test="march != null "> and entity.march = #{march}</if>
+                <if test="april != null "> and entity.april = #{april}</if>
+                <if test="may != null "> and entity.may = #{may}</if>
+                <if test="june != null "> and entity.june = #{june}</if>
+                <if test="july != null "> and entity.july = #{july}</if>
+                <if test="august != null "> and entity.august = #{august}</if>
+                <if test="september != null "> and entity.september = #{september}</if>
+                <if test="october != null "> and entity.october = #{october}</if>
+                <if test="november != null "> and entity.november = #{november}</if>
+                <if test="december != null "> and entity.december = #{december}</if>
+                <if test="createId != null "> and entity.create_id = #{createId}</if>
+                <if test="updateId != null "> and entity.update_id = #{updateId}</if>
+          <if test="delFlag != null  and delFlag != ''"> and entity.del_flag = #{delFlag} </if>
+          <if test="remark != null  and remark != ''"> and entity.remark = #{remark} </if>
+
+    </select>
+
+
+    <update id="deleteHrFillClockRuleById" parameterType="Long">
+        update  t_hr_fill_clock_rule set del_flag =  '1' where id = #{id}
+    </update>
+
+    <update id="deleteHrFillClockRuleByIds" parameterType="String">
+        update  t_hr_fill_clock_rule set del_flag =  '1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

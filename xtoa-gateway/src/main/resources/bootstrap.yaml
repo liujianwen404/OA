@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: xt-hrm-gateway
+
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+#        namespace: 499d50eb-2c5d-4ef9-8ac9-08a3512225aa
+#        group: dev
+        file-extension: YAML
+
+

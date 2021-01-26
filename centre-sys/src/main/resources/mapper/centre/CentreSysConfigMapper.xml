@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.centre.mapper.CentreSysConfigMapper">
+    <resultMap type="com.ruoyi.centre.domain.CentreSysConfig" id="CentreSysConfigResult">
+        <id property="id" column="id"/>
+            <result property="sysId" column="sys_id"/>
+            <result property="name" column="name"/>
+            <result property="englishName" column="english_name"/>
+            <result property="productLine" column="product_line"/>
+            <result property="areaId" column="area_id"/>
+            <result property="sysType" column="sys_type"/>
+            <result property="secretKey" column="secret_key"/>
+            <result property="callBackUrl" column="call_back_url"/>
+            <result property="logo" column="logo"/>
+            <result property="enable" column="enable"/>
+            <result property="sortValue" column="sort_value"/>
+            <result property="createName" column="create_name"/>
+            <result property="createTime" column="create_time"/>
+            <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="baseColumns">
+            entity.id,
+            entity.sys_id,
+            entity.name,
+            entity.english_name,
+            entity.product_line,
+            entity.area_id,
+            entity.sys_type,
+            entity.secret_key,
+            entity.call_back_url,
+            entity.logo,
+            entity.enable,
+            entity.sort_value,
+            entity.create_name,
+            entity.create_time,
+            entity.update_time
+        </sql>
+
+    <select id="selectCentreSysConfigList" parameterType="com.ruoyi.centre.domain.CentreSysConfig" resultMap="CentreSysConfigResult">
+        select <include refid="baseColumns"/> from centre_sys_config entity
+        <where>
+            <if test="name != null  and name != ''"> and entity.name like concat('%', #{name}, '%')</if>
+            <if test="areaId != null  and areaId != ''"> and entity.area_id  = #{areaId}</if>
+            <if test="englishName != null  and englishName != ''"> and entity.english_name like concat('%', #{englishName}, '%')</if>
+            <if test="productLine != null  and productLine != ''"> and entity.product_line = #{productLine}</if>
+            <if test="sysType != null "> and entity.sys_type = #{sysType}</if>
+            <if test="secretKey != null  and secretKey != ''"> and entity.secret_key = #{secretKey}</if>
+            <if test="callBackUrl != null  and callBackUrl != ''"> and entity.call_back_url = #{callBackUrl}</if>
+            <if test="logo != null  and logo != ''"> and entity.logo = #{logo}</if>
+            <if test="enable != null "> and entity.enable = #{enable}</if>
+            <if test="createName != null "> and entity.create_name like concat('%', #{createName}, '%')</if>
+        </where>
+        order by sort_value desc
+    </select>
+
+
+    <delete id="deleteCentreSysConfigById" parameterType="Integer">
+        delete from centre_sys_config where id = #{id}
+    </delete>
+
+    <delete id="deleteCentreSysConfigByIds" parameterType="String">
+        delete from centre_sys_config  where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

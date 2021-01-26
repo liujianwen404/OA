@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('考勤统计列表')" />
+    <th:block th:include="include :: bootstrap-fileinput-css" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>员工姓名：</label>
+                                <input type="text" name="empName"/>
+                            </li>
+
+                           <!-- <li>
+                                <label>部门：</label>
+                                <select id="deptId" name="deptId" th:with="deptAll=${@deptService.getDeptAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="dept : ${deptAll}" th:text="${dept.getShowName()}" th:value="${dept.getDeptId()}"  th:hidden="${dept.getStatus() == '1' || dept.getDelFlag() != '0' }"></option>
+                                </select>
+                            </li>-->
+                            <div th:include="include/deptSearch::deptSearch"></div>
+                            <li>
+                                <label>岗位：</label>
+                                <select id="postId" name="postId" th:with="postAll=${@postService.getPostAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="post : ${postAll}" th:text="${post.getPostName()}" th:value="${post.getPostId()}"  th:hidden="${post.getStatus() == '1'}"></option>
+                                </select>
+                            </li>
+
+                            <li>
+                                <label>同步状态：</label>
+                                <select id="status" name="status">
+                                    <option value="">所有</option>
+                                    <option value="0">未同步</option>
+                                    <option value="1">已同步</option>
+                                    <option value="2">失败</option>
+                                    <option value="3">同步中</option>
+                                </select>
+                            </li>
+
+                            <!--<li>
+                                <label>上班班次：</label>
+                                <select id="classId" name="classId" th:with="classList=${@attendanceThymeleafService.getAttendanceClassAll()}">
+                                    <option value="">所有</option>
+                                    <option th:each="attendaceClass : ${classList}" th:text="${attendaceClass.getName()}" th:value="${attendaceClass.getId()}"  ></option>
+                                </select>
+                            </li>-->
+
+                            <li>
+                                <label>日期：</label>
+                                <input name="finalDate" class="form-control" readonly="readonly" placeholder="yyyy-MM" type="text">
+                            </li>
+
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="attInit()">
+                    <i class="fa fa-plus"></i> 初始化
+                </a>
+                <!--<a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="hr:attendanceStatistics:edit">
+                    <i class="fa fa-edit"></i> 修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="hr:attendanceStatistics:remove">
+                    <i class="fa fa-remove"></i> 删除
+                </a>-->
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="hr:attendanceStatistics:export">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+                <div th:replace="include/importUtil::importUtil('/hr/attendanceStatistics/downloadTemplate','/hr/attendanceStatistics/importData','/hr/attendanceStatistics/checkUrl','/hr/attendanceStatistics/exportErrorList','/hr/attendanceStatistics/exportError')"
+                     shiro:hasPermission="hr:salaryStructure:export" ></div>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+     <!-- 导入区域 -->
+     <div class="container-div" id="hiddenDiv" style="display: none;" >
+         <div class="row">
+             <form class="form-horizontal m" id="form-toolRepeal">
+                 <div class="ibox-content">
+                     <div class="form-group">
+                         <label class="font-noraml">文件上传</label>
+                         <div class="file-loading">
+                             <input id="fileinput" name="files" class="file" type="file" multiple data-min-file-count="1" data-theme="fas">
+                             <input type="hidden" id="month">
+                         </div>
+                     </div>
+                 </div>
+             </form>
+         </div>
+     </div>
+    <th:block th:include="include :: footer" />
+     <th:block th:include="include :: bootstrap-fileinput-js" />
+     <th:block th:include="include :: datetimepicker-js" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('hr:attendanceStatistics:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('hr:attendanceStatistics:remove')}]];
+        var prefix = ctx + "hr/attendanceStatistics";
+
+        var deptIdMap = {};
+        $('#deptId option').each(function(i, n){
+            deptIdMap[$(n).val()] = $(n).text();
+        });
+
+        var postIdsMap = {};
+        $('#postId option').each(function(i, n){
+            postIdsMap[$(n).val()] = $(n).text();
+        });
+
+        var attendaceClassIdsMap = {};
+        $('#classId option').each(function(i, n){
+            attendaceClassIdsMap[$(n).val()] = $(n).text();
+        });
+
+        $("input[name='finalDate']").datetimepicker({
+            format: "yyyy-mm",
+            startView: "year",
+            minView: "year",//打开时显示的视图。0-'hour' 1-'day' 2-'month' 3-'year' 4-'decade'
+            autoclose: true
+        });
+
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "考勤统计",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id', 
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'empId', 
+                    title: '员工id',
+                    visible: false
+                },
+                {
+                    field: 'empNum',
+                    title: '工号'
+                },
+                {
+                    field: 'empName', 
+                    title: '员工姓名'
+                },
+                {
+                    field: 'deptId', 
+                    title: '部门',
+                    visible: false
+                },
+                {
+                    field: 'deptName', 
+                    title: '部门名称',
+                    visible: false
+                },
+                {
+                    field: 'firstDeptId', 
+                    title: '一级部门id',
+                    visible: false
+                },
+                {
+                    field: 'firstDeptName', 
+                    title: '一级部门名称'
+                },
+                {
+                    field: 'secondDeptId', 
+                    title: '二级部门id',
+                    visible: false
+                },
+                {
+                    field: 'secondDeptName', 
+                    title: '二级部门名称'
+                },
+                {
+                    field: 'postId', 
+                    title: '岗位ID',
+                    visible: false
+                },
+                {
+                    field: 'postName', 
+                    title: '岗位名称',
+                    align: 'center'
+                },
+                {
+                    field: 'nonManagerDate',
+                    title: '入职日期',
+                    formatter: function (value, row, index) {
+                        if(value != "" && value!= null){
+                            return value.substring(0,10);
+                        }
+                    },
+                    align: 'center'
+                },
+                {
+                    field: 'quitDate',
+                    title: '离职日期',
+                    formatter: function (value, row, index) {
+                        if(value != "" && value!= null){
+                            return value.substring(0,10);
+                        }
+                    },
+                    align: 'center',
+                    visible: false
+                },
+                {
+                    field: 'finalDate',
+                    title: '结算日期',
+                    formatter: function (value, row, index) {
+                        if(value != "" && value!= null){
+                            return value.substring(0,10);
+                        }
+                    }
+                },
+                {
+                    field: 'classId',
+                    title: '班次ID',
+                    visible: false
+                },
+                {
+                    field: 'className',
+                    title: '上班班次',
+                    align: 'center'
+                },
+                {
+                    field: 'shouldAttendance',
+                    title: '应出勤小时数',
+                    align: 'center'
+                },
+                {
+                    field: 'shouldPublicHoliday',
+                    title: '应公休小时数',
+                    align: 'center'
+                },
+                {
+                    field: 'actualAttendance', 
+                    title: '实出勤小时数',
+                    align: 'center'
+                },
+                {
+                    field: 'actualAttendanceDay', 
+                    title: '实出勤天数',
+                    align: 'center'
+                },
+                {
+                    field: 'actualPublicHoliday', 
+                    title: '实公休小时数',
+                    align: 'center'
+                },
+                {
+                    field: 'actualPublicHolidayDay', 
+                    title: '实公休天数',
+                    align: 'center'
+                },
+                {
+                    field: 'legalPublicHoliday', 
+                    title: '法定假工时',
+                    align: 'center'
+                },
+                {
+                    field: 'workDuration', 
+                    title: '上班时长',
+                    visible: false
+                },
+                {
+                    field: 'legalOvertime', 
+                    title: '法定假加班',
+                    align: 'center'
+                },
+                {
+                    field: 'generalOvertime', 
+                    title: '平时加班',
+                    align: 'center'
+                },
+                {
+                    field: 'lieuLeave', 
+                    title: '调休',
+                    align: 'center'
+                },
+                {
+                    field: 'sickLeave', 
+                    title: '病假',
+                    align: 'center'
+                },
+                {
+                    field: 'personalLeave', 
+                    title: '事假',
+                    align: 'center'
+                },
+                {
+                    field: 'annualLeave', 
+                    title: '年假',
+                    align: 'center'
+                },
+                {
+                    field: 'otherLeave', 
+                    title: '产假，陪产假，婚假，丧假',
+                    align: 'center'
+                },
+                {
+                    field: 'absentLeave', 
+                    title: '旷工',
+                    align: 'center'
+                },
+                {
+                    field: 'payWorkHour',
+                    title: '计薪工时',
+                    align: 'center'
+                },
+                {
+                    field: 'previousHoliday', 
+                    title: '上月累计余假',
+                    align: 'center'
+                },
+                {
+                    field: 'overtimeHoliday', 
+                    title: '本月加班存休',
+                    align: 'center'
+                },
+                {
+                    field: 'allHoliday', 
+                    title: '本月累计余假',
+                    align: 'center'
+                },
+                {
+                    field: 'workingAge', 
+                    title: '工龄',
+                    align: 'center'
+                },
+                {
+                    field: 'overAnnualLeave', 
+                    title: '剩余年假',
+                    align: 'center'
+                },
+                {
+                    field: 'attendanceBonus', 
+                    title: '全勤奖',
+                    align: 'center'
+                },
+                {
+                    field: 'nightSubsidy', 
+                    title: '夜班补贴',
+                    align: 'center'
+                },
+                {
+                    field: 'mealSubsidy', 
+                    title: '餐补',
+                    align: 'center'
+                },
+                {
+                    field: 'otherSubsidy', 
+                    title: '其他补贴',
+                    align: 'center'
+                },
+                {
+                    field: 'lateNums', 
+                    title: '迟到次数',
+                    visible: false
+                },
+                {
+                    field: 'lateDeduct', 
+                    title: '迟到扣费',
+                    align: 'center'
+                },
+                {
+                    field: 'notClockDeduct', 
+                    title: '未打卡扣费',
+                    align: 'center'
+                },
+                {
+                    field: 'earlyDeduct', 
+                    title: '早退扣费',
+                    align: 'center'
+                },
+                {
+                    field: 'waterElectricityDeduct', 
+                    title: '水电扣费',
+                    align: 'center'
+                },
+                {
+                    field: 'otherDeduct', 
+                    title: '其他扣费',
+                    align: 'center'
+                },
+                {
+                    field: 'empSignature', 
+                    title: '员工签名',
+                    visible: false
+                },
+                {
+                    field: 'remark', 
+                    title: '备注',
+                    visible: false
+                },
+                {
+                    field: 'statisticsDate',
+                    title: '统计时间'
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    formatter: function(value, row, index) {
+                        if (value == "0") {
+                            return "未同步";
+                        } else if (value == "1") {
+                            return "已同步";
+                        } else if (value == "3") {
+                            return "同步中";
+                        } else {
+                            return "失败";
+                        }
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        if (row.status != "0" && row.status != "3") {
+                            actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="restart(\'' + row.id + '\')"><i class="fa fa-remove"></i>重试</a>');
+                        }
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function start(id) {
+            // 打开遮罩层
+            $.modal.loading("开始统计数据，请稍后...");
+            var url = prefix + "/start";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: id,
+                dataType: 'json',
+                success: function(result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.alertSuccess("统计成功");
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                },
+                error: function(error) {
+                    $.modal.alertWarning("系统错误，请联系管理员！");
+                }
+            });
+            // 关闭遮罩层
+            $.modal.closeLoading();
+            // 重新加载
+            // $.modal.reload();
+        }
+
+        function attInit() {
+            $.modal.loading("正在初始化数据，请稍后...");
+            var url = prefix + "/init";
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: 'json',
+                success: function(result) {
+                    if (result.code == web_status.SUCCESS) {
+                        $.modal.alertSuccess("初始化完成！");
+                        $.table.refresh();
+                        $.modal.closeLoading();
+                    } else {
+                        $.modal.alertError(result.msg);
+                        $.modal.closeLoading();
+                    }
+                },
+                error: function(error) {
+                    $.modal.alertWarning("系统错误，请联系管理员！");
+                    $.modal.closeLoading();
+                }
+            });
+
+        }
+
+        function restart(id) {
+            $.modal.confirm("重试操作比较耗时，将在后台自动进行，确认操作？", function() {
+                var url = prefix + "/restart";
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {id:id},
+                    dataType: 'json',
+                    success: function(result) {
+                        debugger
+                        if (result.code == web_status.SUCCESS) {
+                            $.table.refresh();
+                        } else {
+                            $.modal.alertError(result.msg);
+                        }
+                    },
+                    error: function(error) {
+                        $.modal.alertWarning("系统错误，请联系管理员！");
+                    }
+                });
+            });
+
+        }
+
+        function openUpload(){
+            layer.open({
+                type: 1,
+                area: ['1200px', '600px'],
+                fix: false,
+                //不固定
+                maxmin: true,
+                shade: 0.3,
+                title: "上传文件",
+                content: $('#hiddenDiv'),
+                btn: '关闭',
+                closeBtn: 1,
+                // 弹层外区域关闭
+                shadeClose: false,
+                btn1:function(index, layero){
+                    window.location.reload();
+                },
+                cancel: function(){
+                    window.location.reload();
+                }
+            });
+
+        }
+
+        var uploadUrl = prefix + "/importData";
+        $("#fileinput").fileinput({
+            theme: 'explorer-fas',
+            uploadAsync: false, //关闭异步上传，改为同步上传，异步情况下多文件上传会请求后台接口多次。
+            uploadUrl: uploadUrl,
+            overwriteInitial: false,    //不允许覆盖初始的预览，所以添加文件时不会覆盖
+            initialPreviewAsData: true, // 确定你是否仅发送预览数据，而不是原始标记
+            allowedFileExtensions: ["xlsx", "xls"],  //允许的文件后缀
+            dropZoneTitle:'<p style="color: #a02828">将文档放到此处上传</p>',
+            layoutTemplates: {
+                actionUpload: '', //去除上传预览缩略图中的上传图片
+                actionZoom:'',   //去除上传预览缩略图中的查看详情预览的缩略图标
+                actionDownload:'' ,//去除上传预览缩略图中的下载图标
+                /*actionDelete:'', //去除上传预览的缩略图中的删除图标*/
+            },
+        }).on('filebatchuploadsuccess', function(event,data,previewId,index) {//同步上传回调
+            if(data.response.code == 0){
+                $.modal.alertSuccess(data.response.msg);
+            }else if(data.response.code == 500){
+                $.modal.alertError(data.response.msg);
+            }else {
+                $.modal.alertWarning(data.response.msg);
+            }
+        });
+    </script>
+</body>
+</html>

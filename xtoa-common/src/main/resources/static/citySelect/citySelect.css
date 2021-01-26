@@ -1,0 +1,108 @@
+html body{
+    background-color: rgba(16, 14, 4, 0.03);
+}
+.searchCitySelect{
+    width: 272px;
+    display: flex;
+    margin-left: 45px;
+    /*margin:100px auto;*/
+    /*background-color: white;*/
+}
+.citySelect{
+    width:100px;
+    height:42px;
+    position: relative;
+    cursor: pointer;
+    /*padding-left: 15px;*/
+
+}
+.cityName{
+    display: block;
+    padding-left: 10px;
+    width: 180px;
+    font-size: 13px;
+    overflow: hidden;
+    cursor: pointer;
+    line-height: 30px;
+}
+.iconDown{
+    width:16px;
+    height:16px;
+    position:absolute;
+    top:15px;
+    right:-70px;
+    background-image: url("icons.png");
+    background-repeat: no-repeat;
+    background-position: 0 -2044px;
+    cursor:pointer;
+    display: inline-block;
+}
+.dropUl{
+    list-style: none;
+    height:300px;
+    overflow: scroll;
+    padding:0;
+}
+.dropUl::-webkit-scrollbar {/*滚动条整体样式*/
+    width: 5px;     /*高宽分别对应横竖滚动条的尺寸*/
+    height: 0;
+}
+.dropUl::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+    background: #d1d4db;
+}
+.dropUl::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    -webkit-box-shadow: none;
+    border-radius: 0px;
+    /*background: #EDEDED;*/
+}
+.dropProvUl li{
+    width: 120px;
+    height:50px;
+    padding-left: 20px;
+    color:#9fa3b0;
+    line-height: 50px;
+    background-color: white;
+    cursor: pointer;
+}
+.dropProvUl li:hover{
+    background-color: #f1f3f6;
+}
+.dropCityUl{
+    margin-left: 5px;
+    background-color:white;
+}
+.dropCityUl li{
+    width: 150px;
+    height:50px;
+    padding-left: 5px;
+    color:#9fa3b0;
+    line-height: 50px;
+    cursor: pointer;
+
+}
+.dropCityUl li:hover{
+   background-color:#f1f3f6;
+}
+.dropDown div{
+    width:120px;
+    height:300px;
+    float: left;
+    display: none;/*
+    position: absolute;
+    z-index: 99;
+    background: #fff;*/
+}
+/*
+.dropProv div{
+    position: absolute;
+    z-index: 99;
+    background: #fff;
+}
+
+.dropCity div{
+    position: absolute;
+    z-index: 99;
+    background: #fff;
+}*/
