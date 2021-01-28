@@ -25,7 +25,7 @@
 8. xtoa-generator代码生成模块，包含xtoa-common通用工具模块
 9. xtoa-framework框架核心模块
 10. xtoa-employee模块，已废弃
-# 以上一共就web，admin,gateway三个服务，其余都是子模块
+# web,admin,gateway三个服务，其余都是子模块
 
 
 
