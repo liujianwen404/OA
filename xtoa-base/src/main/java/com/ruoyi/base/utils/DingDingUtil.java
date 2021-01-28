@@ -645,4 +645,25 @@ public class DingDingUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(cal.getTime());
     }
+
+    public static String getDingDingUserIdByPhone(String phonenumber) throws ApiException {
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/get_by_mobile");
+        OapiUserGetByMobileRequest req = new OapiUserGetByMobileRequest();
+        req.setMobile(phonenumber);
+        req.setHttpMethod("GET");
+        OapiUserGetByMobileResponse rsp = client.execute(req, dingConfig.getAccessToken());
+        if (rsp != null) {
+            JSONObject userObject = JSON.parseObject(rsp.getBody());
+            Object userid = userObject.get("userid");
+            if(userid == null){
+                log.error("找不到手机号为[{}]用户的钉钉userid。",phonenumber);
+                return null;
+            }
+            String dingdingUserId = String.valueOf(userid);
+            if (StringUtils.isNotBlank(dingdingUserId)){
+                return dingdingUserId;
+            }
+        }
+        return null;
+    }
 }

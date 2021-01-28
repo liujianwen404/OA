@@ -1,8 +1,11 @@
 import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiChatGetRequest;
+import com.dingtalk.api.request.OapiUserGetByMobileRequest;
 import com.dingtalk.api.response.OapiChatGetResponse;
+import com.dingtalk.api.response.OapiUserGetByMobileResponse;
 import com.ruoyi.XtHrmApplication;
+import com.ruoyi.base.dingTalk.DingConfig;
 import com.ruoyi.base.domain.DTO.DateOperation;
 import com.ruoyi.base.domain.HrLeave;
 import com.ruoyi.base.domain.HrOvertime;
@@ -53,12 +56,17 @@ public class ZegoUtilTest {
     @Autowired
     private AttendanceStatisticsOfDayTask task;
 
+    @Autowired
+    private DingConfig dingConfig;
+
     @Test
-    public void test01(){
-        long startTime = System.currentTimeMillis();
-        task.countAttendance();
-        long endTime = System.currentTimeMillis();
-        logger.info("统计时长: " + (endTime - startTime));
+    public void test01() throws ApiException {
+        DingTalkClient client = new DefaultDingTalkClient("https://oapi.dingtalk.com/user/get_by_mobile");
+        OapiUserGetByMobileRequest req = new OapiUserGetByMobileRequest();
+        req.setMobile("18928255923");
+        req.setHttpMethod("GET");
+        OapiUserGetByMobileResponse rsp = client.execute(req, dingConfig.getAccessToken());
+        System.out.println(rsp.getBody());
     }
 
 
@@ -95,8 +103,8 @@ public class ZegoUtilTest {
     SysDeptMapper sysDeptMapper;
 
     @Test
-    public void test05(){
-//        System.out.println(serviceBeanTest.sayHello("liujianwen"));
+    public void ttsD(){
+
     }
 
 

@@ -713,4 +713,9 @@ public class SysUserServiceImpl implements ISysUserService
     public SysUser selectUserByPhoneNumberLike(String mobile) {
         return userMapper.selectUserByPhoneNumberLike(mobile);
     }
+
+    @Override
+    public List<SysUser> selectUserListWithDingUserIdNull() {
+        return userMapper.selectUserListWithDingUserIdNull();
+    }
 }

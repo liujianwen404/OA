@@ -274,7 +274,7 @@
 		<module>xtoa-hr</module>
 		<module>xtoa-base</module>
         <module>web-api</module>
-		<module>centre-sys</module>
+		<module>xtoa-authentication</module>
 	</modules>
     <packaging>pom</packaging>
 

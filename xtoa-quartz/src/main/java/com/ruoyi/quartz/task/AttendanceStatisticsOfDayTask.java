@@ -22,6 +22,7 @@ import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysUserService;
+import com.taobao.api.ApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,9 @@ public class AttendanceStatisticsOfDayTask
      * **/
     public void countAttendance()
     {
+
+        List<SysUser> userList = sysUserService.selectUserListWithDingUserIdNull();
+        synDingDingUser(userList);
         log.info("考勤汇总报表定时任务开始");
         long startTime = System.currentTimeMillis();
         String statisticsDate = DateUtil.now();
@@ -366,6 +370,34 @@ public class AttendanceStatisticsOfDayTask
 //            }
 //        }
 
+    }
+
+    private void synDingDingUser(List<SysUser> userList){
+        Map<String,String> phoneMap = new HashMap<>();
+        for (SysUser user : userList) {
+            String userName = user.getUserName();
+            String phonenumber = user.getPhonenumber();
+            String dingDingUserId = null;
+            try {
+                //单个接口的频率不可超过40次/秒，否则返回错误码90018
+                Thread.sleep(100);
+                dingDingUserId = DingDingUtil.getDingDingUserIdByPhone(phonenumber);
+                if(StringUtils.isNotBlank(dingDingUserId)) {
+                    user.setDingUserId(dingDingUserId);
+                    sysUserService.updateUserInfo(user);
+                    log.info("同步员工dingdingUserId成功,userName:{},phonenumber:{}", userName, phonenumber);
+                }else{
+                    phoneMap.put(userName,phonenumber);
+                }
+            } catch (ApiException e) {
+                e.printStackTrace();
+                log.error("同步dingDingUserId失败,userName:{},phonenumber:{}", userName, phonenumber);
+            } catch (InterruptedException e) {
+                log.error("同步dingDingUserId接口调用超时");
+                e.printStackTrace();
+            }
+        }
+        log.info("钉钉userid获取不到的手机号集合：{}",phoneMap.toString());
     }
 
     private HrAttendanceStatistics setDept(Map<String, Object> map, HrAttendanceStatistics hrAttendanceStatistics) {

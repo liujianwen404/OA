@@ -78,6 +78,7 @@ public class HrEmp extends BaseEntity
     /** 手机号码 */
     @Excel(name = "手机号码")
     private String phonenumber;
+    private String phonenumberOther;
     /** 用户邮箱 */
     @Excel(name = "用户邮箱")
     private String email;

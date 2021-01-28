@@ -11,6 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="empName"    column="emp_name"    />
         <result property="email"    column="email"    />
         <result property="phonenumber"    column="phonenumber"    />
+        <result property="phonenumberOther"    column="phonenumber_other"    />
         <result property="sex"    column="sex"    />
         <result property="ethnic"    column="ethnic"    />
         <result property="birthday"    column="birthday"    />
@@ -81,7 +82,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectTHrEmpVo">
-        select emp_id, user_id, emp_status, emp_name, email, phonenumber, sex, ethnic, birthday, health,
+        select emp_id, user_id, emp_status, emp_name, email, phonenumber, phonenumber_other, sex, ethnic, birthday, health,
          now_residence, education, nationality, id_number, information, description, city, dept_id, post_id,
           create_id, update_id, create_by, update_by, remark, del_flag, create_time,
           update_time,emp_num,non_manager_date,positive_date,quit_date,
@@ -105,6 +106,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="empName != null  and empName != ''"> and entity.emp_name like concat('%', #{empName}, '%')</if>
             <if test="email != null  and email != ''"> and entity.email = #{email}</if>
             <if test="phonenumber != null  and phonenumber != ''"> and entity.phonenumber = #{phonenumber}</if>
+            <if test="phonenumberOther != null  and phonenumberOther != ''"> and entity.phonenumber_other = #{phonenumberOther}</if>
             <if test="sex != null  and sex != ''"> and entity.sex = #{sex}</if>
             <if test="ethnic != null  and ethnic != ''"> and entity.ethnic = #{ethnic}</if>
             <if test="birthday != null "> and entity.birthday = #{birthday}</if>
@@ -207,6 +209,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="empName != null  and empName != ''">emp_name,</if>
             <if test="email != null  and email != ''">email,</if>
             <if test="phonenumber != null  and phonenumber != ''">phonenumber,</if>
+            <if test="phonenumberOther != null  and phonenumberOther != ''">phonenumber_other,</if>
             <if test="sex != null  and sex != ''">sex,</if>
             <if test="ethnic != null  and ethnic != ''">ethnic,</if>
             <if test="birthday != null ">birthday,</if>
@@ -279,6 +282,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="empName != null  and empName != ''">#{empName},</if>
             <if test="email != null  and email != ''">#{email},</if>
             <if test="phonenumber != null  and phonenumber != ''">#{phonenumber},</if>
+            <if test="phonenumberOther != null  and phonenumberOther != ''">#{phonenumberOther},</if>
             <if test="sex != null  and sex != ''">#{sex},</if>
             <if test="ethnic != null  and ethnic != ''">#{ethnic},</if>
             <if test="birthday != null ">#{birthday},</if>
@@ -354,6 +358,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="empName != null  and empName != ''">emp_name = #{empName},</if>
             <if test="email != null  and email != ''">email = #{email},</if>
             <if test="phonenumber != null  and phonenumber != ''">phonenumber = #{phonenumber},</if>
+            <if test="phonenumberOther != null  and phonenumberOther != ''">phonenumber_other = #{phonenumberOther},</if>
             <if test="sex != null  and sex != ''">sex = #{sex},</if>
             <if test="ethnic != null  and ethnic != ''">ethnic = #{ethnic},</if>
             <if test="birthday != null ">birthday = #{birthday},</if>

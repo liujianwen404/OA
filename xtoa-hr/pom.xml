@@ -44,7 +44,7 @@
 
         <dependency>
             <groupId>com.xtoa</groupId>
-            <artifactId>centre-sys</artifactId>
+            <artifactId>xtoa-authentication</artifactId>
             <version>4.2.0</version>
         </dependency>
 

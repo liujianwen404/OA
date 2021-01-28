@@ -145,4 +145,6 @@ public interface SysUserMapper
     SysUser getSysUserByDingUserId(@Param("dingUserId") String dingUserId);
 
     SysUser selectUserByPhoneNumberLike(@Param("mobile") String mobile);
+
+    List<SysUser> selectUserListWithDingUserIdNull();
 }

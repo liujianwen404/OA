@@ -42,7 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -1008,8 +1007,7 @@ public class HrEmpServiceImpl implements HrEmpService
                     String extension = file.getName();
                     if (extension.contains("bmp") || extension.contains("gif") || extension.contains("jpg")
                             || extension.contains("jpeg") || extension.contains("png")) {
-                        FileInputStream input = new FileInputStream(file);
-                        MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/plain", input);
+                        MultipartFile multipartFile = FileUtils.fileToMultipartFile(file);
                         String oldname = multipartFile.getOriginalFilename();
                         Assert.notNull(oldname,"图片名不能为空");
                         String empNum = oldname.split("-")[0];
@@ -1043,6 +1041,7 @@ public class HrEmpServiceImpl implements HrEmpService
         }
         return results;
     }
+
 
     private String toStr(List<Object> objects, int i) {
         if (!(objects.size() > i)){
@@ -1289,5 +1288,8 @@ public class HrEmpServiceImpl implements HrEmpService
 
         return null;
     }
+
+
+
 
 }

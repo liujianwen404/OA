@@ -258,4 +258,10 @@ public interface ISysUserService
      * @return
      */
     SysUser selectUserByPhoneNumberLike(String mobile);
+
+    /**
+     * 查询所有dingUserId为空的用户
+     * @return
+     */
+    List<SysUser> selectUserListWithDingUserIdNull();
 }
