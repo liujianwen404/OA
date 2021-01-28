@@ -273,8 +273,11 @@
 		<module>xtoa-process</module>
 		<module>xtoa-hr</module>
 		<module>xtoa-base</module>
-        <module>web-api</module>
 		<module>xtoa-authentication</module>
+
+        <module>web-api</module>
+		<module>xtoa-gateway</module>
+
 	</modules>
     <packaging>pom</packaging>
 
